@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-07-25
+
+### Changed
+
+* Alignement de la plateforme sur Ohana-Agent 1.2.1 et
+  Ohana-Vision 1.2.0.
+* Découverte automatique de tous les services DNS déclarés dans
+  l'infrastructure.
+* Prise en compte dynamique de l'ajout, de la modification, de la
+  désactivation et de la suppression d'un service DNS sans redémarrage
+  d'Ohana-Agent.
+* Association des observations DNS à l'identifiant exact de chaque service.
+
 ## [1.0.3] - 2026-07-24
 
 ### Added
