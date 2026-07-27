@@ -26,4 +26,4 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
-| 1.4.0 | 1.5.0 | 1.0.4 | 1.0.7 |
+| 1.4.1 | 1.5.0 | 1.0.4 | 1.0.7 |
