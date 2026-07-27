@@ -6,6 +6,22 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-07-25
+
+### Changed
+
+* Alignement de la plateforme sur Ohana-Agent 1.3.0 et Ohana-Vision 1.3.0.
+
+## [1.0.5] - 2026-07-27
+
+### Changed
+
+* Alignement de la plateforme sur Ohana-Agent 1.2.1 et
+  Ohana-Vision 1.2.1.
+* Suppression cohérente d’un équipement.
+* Configuration de l’architecture.
+* Carte Infrastructure.
+
 ## [1.0.4] - 2026-07-25
 
 ### Changed
