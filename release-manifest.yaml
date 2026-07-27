@@ -2,7 +2,7 @@ schema_version: 1
 
 platform:
   name: Ohana
-  version: "1.0.9"
+  version: "1.0.10"
 
 runtime:
   python:
@@ -12,8 +12,8 @@ components:
   agent:
     name: Ohana-Agent
     repository: cedric-HAOS/Ohana-Agent
-    version: "1.5.0"
-    release_tag: v1.5.0
+    version: "1.5.1"
+    release_tag: v1.5.1
 
     package:
       type: wheel
@@ -69,8 +69,8 @@ components:
   vision:
     name: Ohana-Vision
     repository: cedric-HAOS/Ohana-Vision
-    version: "1.4.3"
-    release_tag: v1.4.3
+    version: "1.4.4"
+    release_tag: v1.4.4
 
     package:
       type: wheel
