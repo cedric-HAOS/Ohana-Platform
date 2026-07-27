@@ -6,13 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
-## [1.0.7] - 2026-07-25
+## [1.0.8] - 2026-07-27
+
+### Changed
+
+* Alignement de la plateforme sur Ohana-Vision 1.4.1.
+
+## [1.0.7] - 2026-07-27
 
 ### Changed
 
 * Alignement de la plateforme sur Ohana-Agent 1.5.0 et Ohana-Vision 1.4.0.
 
-## [1.0.6] - 2026-07-25
+## [1.0.6] - 2026-07-27
 
 ### Changed
 
