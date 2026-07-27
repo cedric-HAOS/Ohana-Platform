@@ -1,6 +1,6 @@
 # Installer et mettre à jour Ohana-Platform
 
-La composition 1.0.6 installe Ohana-Agent 1.3.0 et Ohana-Vision 1.3.0.
+La composition 1.0.4 installe Ohana-Agent 1.2.1 et Ohana-Vision 1.2.0.
 
 Ohana-Installer 1.0.2 ou une version ultérieure est recommandé afin de
 bénéficier de l'auto-mise à jour de l'Installer, de la préparation de
