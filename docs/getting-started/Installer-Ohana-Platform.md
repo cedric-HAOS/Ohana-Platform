@@ -173,6 +173,8 @@ ohana-agent \
     --config config/shikamaru.yaml \
     --infrastructure config/infrastructure.yaml \
     --dns-config config/plugins/dns.yaml
+    --ntp-config config/plugins/ntp.yaml
+    --mqtt-config config/plugins/mqtt.yaml
 ```
 
 Le journal doit indiquer que l'agent est démarré.

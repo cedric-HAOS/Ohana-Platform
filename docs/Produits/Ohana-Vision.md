@@ -3,7 +3,7 @@
 Ohana-Vision est l'interface web de supervision et d'administration de la
 plateforme Ohana.
 
-## Administration graphique 1.2.0
+## Administration graphique 1.3.0
 
 La section **Configuration** évite toute édition directe de YAML :
 
@@ -26,4 +26,4 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
-| 1.2.1 | 1.2.1 | 1.0.1 | 1.0.5 |
+| 1.3.0 | 1.3.0 | 1.0.2 | 1.0.6 |

@@ -138,6 +138,8 @@ ohana-agent \
     --config config/shikamaru.yaml \
     --infrastructure config/infrastructure.yaml \
     --dns-config config/plugins/dns.yaml
+    --mqtt-config config/plugins/mqtt.yaml
+    --ntp-config config/plugins/ntp.yaml
 ```
 
 Au démarrage, le journal doit confirmer le chargement de la configuration et l'initialisation des plugins.
