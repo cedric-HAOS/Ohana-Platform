@@ -74,11 +74,11 @@ components:
         - /etc/ohana-agent/plugins/network.yaml
         - --dhcp-config
         - /etc/ohana-agent/plugins/dhcp.yaml
-        - --dhcp-config
+        - --shelly-telemetry-config
         - /etc/ohana-agent/plugins/shelly-telemetry.yaml
-        - --dhcp-config
+        - --wireguard-config
         - /etc/ohana-agent/plugins/wireguard.yaml
-        - --dhcp-config
+        - --zwave-config
         - /etc/ohana-agent/plugins/zwave.yaml
 
   vision:
