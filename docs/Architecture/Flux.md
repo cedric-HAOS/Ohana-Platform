@@ -67,7 +67,7 @@ Les événements favorisent une architecture faiblement couplée.
 
 # 5. Flux de santé
 
-À partir des observations reçues, les moteurs d'analyse déterminent l'état de santé des capacités, des services et de l'infrastructure.
+À partir des observations reçues, le moteur de santé d'Ohana Vision détermine l'état des capacités, des services, des nœuds et de l'infrastructure.
 
 Le résultat constitue une vue synthétique de la plateforme.
 
@@ -83,7 +83,7 @@ Ce flux permet d'identifier rapidement les anomalies.
 
 # 6. Flux de chronologie
 
-Les observations successives sont regroupées afin de construire une chronologie des états.
+Dans Ohana Vision, les observations successives sont regroupées afin de construire une chronologie des états.
 
 Cette chronologie permet de représenter l'évolution des capacités dans le temps.
 
@@ -117,9 +117,9 @@ La visualisation ne modifie jamais les données produites par le runtime.
 
 # 8. Flux de configuration
 
-La configuration décrit les capacités supervisées ainsi que le comportement de la plateforme.
+Agent possède la configuration déclarative de l'infrastructure et des capacités supervisées. Chaque produit possède uniquement sa configuration applicative.
 
-Les fichiers de configuration sont interprétés par les différents composants lors de leur initialisation.
+Vision lit et modifie la configuration métier par l'API d'administration d'Agent ; il ne conserve pas de copie métier indépendante.
 
 La configuration reste déclarative.
 

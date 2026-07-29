@@ -49,9 +49,17 @@ Il supervise les capacités, collecte les observations et expose les information
 
 ## Ohana Vision
 
-Interface utilisateur.
+Interface utilisateur et portail d'administration.
 
-Elle consomme les données produites par l'agent afin d'offrir une représentation graphique de l'infrastructure.
+Elle consomme les données produites par Agent et transmet les opérations d'administration à son API authentifiée.
+
+---
+
+## Ohana Installer
+
+Gestionnaire de cycle de vie.
+
+Il lit le manifeste publié par Platform, installe Agent et Vision, prépare leurs configurations et gère les unités systemd.
 
 ---
 
@@ -151,13 +159,11 @@ Cette séparation garantit l'indépendance des composants.
 
 # 7. Configuration
 
-Chaque composant possède sa propre configuration.
+Agent est la source de vérité de l'infrastructure déclarative et des services observés. Vision possède uniquement sa configuration applicative et utilise l'API d'administration d'Agent pour toute modification métier.
 
-Les configurations sont déclaratives.
+Installer déploie les fichiers initiaux définis par le manifeste Platform, puis préserve les personnalisations locales lors des mises à jour.
 
-Les composants ne modifient jamais directement la configuration des autres produits.
-
-La plateforme privilégie les formats ouverts et lisibles.
+La plateforme privilégie les formats ouverts, lisibles et validés avant écriture.
 
 ---
 

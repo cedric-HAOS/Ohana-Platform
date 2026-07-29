@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Architecture de déploiement</title>
+  <desc id="desc">Déploiement standard recommandé de la plateforme Ohana.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#38D6C6"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#9FB0C5"/>
+    </marker>
+    <style>
+      .title { font: 700 42px Inter, Segoe UI, Arial, sans-serif; fill: #E8EEF7; }
+      .subtitle { font: 400 19px Inter, Segoe UI, Arial, sans-serif; fill: #9FB0C5; }
+      .section { font: 700 22px Inter, Segoe UI, Arial, sans-serif; fill: #E8EEF7; }
+      .label { font: 650 20px Inter, Segoe UI, Arial, sans-serif; fill: #E8EEF7; }
+      .small { font: 400 16px Inter, Segoe UI, Arial, sans-serif; fill: #9FB0C5; }
+      .tiny { font: 500 14px Inter, Segoe UI, Arial, sans-serif; fill: #9FB0C5; }
+      .box { fill: #111B2E; stroke: #22324A; stroke-width: 2; rx: 22; }
+      .box2 { fill: #16243A; stroke: #22324A; stroke-width: 2; rx: 18; }
+      .accent-box { fill: #111B2E; stroke: #38D6C6; stroke-width: 3; rx: 22; }
+      .line { fill: none; stroke: #38D6C6; stroke-width: 4; marker-end: url(#arrow); }
+      .line-muted { fill: none; stroke: #9FB0C5; stroke-width: 3; marker-end: url(#arrow-muted); }
+      .dash { fill: none; stroke: #38D6C6; stroke-width: 3; stroke-dasharray: 10 10; marker-end: url(#arrow); }
+      .node { fill: #38D6C6; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#0B1220"/>
+  <text x="80" y="80" class="title">Architecture de déploiement</text>
+  <text x="80" y="118" class="subtitle">Déploiement standard recommandé de la plateforme Ohana.</text>
+<rect x="90" y="230" width="420" height="470" class="box" filter="url(#shadow)"/><text x="300.0" y="274" text-anchor="middle" class="label">Infrastructure supervisée</text><text x="300.0" y="305" text-anchor="middle" class="small">Réseau</text><text x="300.0" y="328" text-anchor="middle" class="small">Services</text><text x="300.0" y="351" text-anchor="middle" class="small">Équipements</text><text x="300.0" y="374" text-anchor="middle" class="small">Systèmes</text><rect x="640" y="260" width="340" height="190" class="accent-box" filter="url(#shadow)"/><text x="810.0" y="304" text-anchor="middle" class="label">Ohana Agent</text><text x="810.0" y="335" text-anchor="middle" class="small">Plugins · Scheduler</text><text x="810.0" y="358" text-anchor="middle" class="small">Observations · Export</text><rect x="640" y="520" width="340" height="160" class="box" filter="url(#shadow)"/><text x="810.0" y="564" text-anchor="middle" class="label">Configuration</text><text x="810.0" y="595" text-anchor="middle" class="small">Infrastructure et capacités</text><rect x="1110" y="260" width="400" height="190" class="box" filter="url(#shadow)"/><text x="1310.0" y="304" text-anchor="middle" class="label">Ohana Vision</text><text x="1310.0" y="335" text-anchor="middle" class="small">API · Timeline</text><text x="1310.0" y="358" text-anchor="middle" class="small">Dashboard · Topologie</text><rect x="1110" y="520" width="400" height="160" class="box" filter="url(#shadow)"/><text x="1310.0" y="564" text-anchor="middle" class="label">Utilisateurs</text><text x="1310.0" y="595" text-anchor="middle" class="small">Consultation et administration</text><path d="M510 365 H640" class="line"/><path d="M810 520 V450" class="line"/><path d="M980 355 H1110" class="line"/><path d="M1310 520 V450" class="line-muted"/><path d="M1110 600 H980" class="dash"/>
+      <line x1="80" y1="842" x2="1520" y2="842" stroke="#22324A" stroke-width="2"/>
+      <text x="80" y="874" class="tiny">Ohana Platform · Architecture de référence</text>
+      <text x="1520" y="874" text-anchor="end" class="tiny">Version 1.0</text>
+    </svg>
+    

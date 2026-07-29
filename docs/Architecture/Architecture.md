@@ -22,6 +22,8 @@ La plateforme Ohana est organisée autour de plusieurs produits complémentaires
 
 * **Ohana Vision** est l'interface de visualisation et d'administration. Il présente l'état de l'infrastructure en temps réel, conserve l'historique des observations et offre une représentation graphique des capacités supervisées.
 
+* **Ohana Installer** applique le manifeste de composition publié par Platform. Il installe, met à jour et désinstalle Agent et Vision sur Linux/systemd.
+
 * **Ohana House** est le déploiement de référence de la plateforme. Il constitue une implémentation réelle permettant de valider les choix d'architecture, les guides de déploiement et les évolutions de la plateforme.
 
 Ces produits forment ensemble l'écosystème Ohana.
@@ -81,6 +83,12 @@ Il exploite les observations produites par l'agent afin de présenter :
 * les indicateurs de supervision.
 
 Vision reste indépendant du moteur d'exécution.
+
+---
+
+## Ohana Installer
+
+Ohana Installer gère le cycle de vie des composants publiés. Il lit le manifeste de Platform, vérifie les artefacts officiels et réconcilie les configurations et unités systemd sans contenir de logique métier.
 
 ---
 

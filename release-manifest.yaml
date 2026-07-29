@@ -2,7 +2,7 @@ schema_version: 1
 
 platform:
   name: Ohana
-  version: "1.0.13"
+  version: "1.0.14"
 
 runtime:
   python:
@@ -12,12 +12,12 @@ components:
   agent:
     name: Ohana-Agent
     repository: cedric-HAOS/Ohana-Agent
-    version: "1.7.3"
-    release_tag: v1.7.3
+    version: "1.7.4"
+    release_tag: v1.7.4
 
     package:
       type: wheel
-      filename: ohana_agent-1.7.3-py3-none-any.whl
+      filename: ohana_agent-1.7.4-py3-none-any.whl
 
     configuration:
       directory: /etc/ohana-agent
@@ -45,10 +45,10 @@ components:
 
         - source: wireguard.example.yaml
           destination: plugins/wireguard.yaml
-        
+
         - source: shelly-telemetry.example.yaml
           destination: plugins/shelly-telemetry.yaml
-        
+
         - source: zwave.example.yaml
           destination: plugins/zwave.yaml
 
@@ -84,12 +84,12 @@ components:
   vision:
     name: Ohana-Vision
     repository: cedric-HAOS/Ohana-Vision
-    version: "1.6.2"
-    release_tag: v1.6.2
+    version: "1.6.3"
+    release_tag: v1.6.3
 
     package:
       type: wheel
-      filename: ohana_vision-1.6.2-py3-none-any.whl
+      filename: ohana_vision-1.6.3-py3-none-any.whl
 
     configuration:
       directory: /etc/ohana-vision

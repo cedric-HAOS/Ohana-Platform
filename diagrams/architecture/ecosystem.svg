@@ -1,38 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
   <title id="title">Écosystème Ohana</title>
-  <desc id="desc">Produits, responsabilités et relations de référence.</desc>
+  <desc id="desc">Les cinq projets Ohana, leurs responsabilités et leurs relations.</desc>
   <defs>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.28"/>
-    </filter>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L12,6 L0,12 Z" fill="#38D6C6"/>
-    </marker>
-    <marker id="arrow-muted" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L12,6 L0,12 Z" fill="#9FB0C5"/>
-    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.28"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L12,6 L0,12 Z" fill="#38D6C6"/></marker>
+    <marker id="arrow-muted" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L12,6 L0,12 Z" fill="#9FB0C5"/></marker>
     <style>
-      .title { font: 700 42px Inter, Segoe UI, Arial, sans-serif; fill: #E8EEF7; }
-      .subtitle { font: 400 19px Inter, Segoe UI, Arial, sans-serif; fill: #9FB0C5; }
-      .section { font: 700 22px Inter, Segoe UI, Arial, sans-serif; fill: #E8EEF7; }
-      .label { font: 650 20px Inter, Segoe UI, Arial, sans-serif; fill: #E8EEF7; }
-      .small { font: 400 16px Inter, Segoe UI, Arial, sans-serif; fill: #9FB0C5; }
-      .tiny { font: 500 14px Inter, Segoe UI, Arial, sans-serif; fill: #9FB0C5; }
-      .box { fill: #111B2E; stroke: #22324A; stroke-width: 2; rx: 22; }
-      .box2 { fill: #16243A; stroke: #22324A; stroke-width: 2; rx: 18; }
-      .accent-box { fill: #111B2E; stroke: #38D6C6; stroke-width: 3; rx: 22; }
-      .line { fill: none; stroke: #38D6C6; stroke-width: 4; marker-end: url(#arrow); }
-      .line-muted { fill: none; stroke: #9FB0C5; stroke-width: 3; marker-end: url(#arrow-muted); }
-      .dash { fill: none; stroke: #38D6C6; stroke-width: 3; stroke-dasharray: 10 10; marker-end: url(#arrow); }
-      .node { fill: #38D6C6; }
+      .title{font:700 42px Inter,Segoe UI,Arial,sans-serif;fill:#E8EEF7}.subtitle{font:400 19px Inter,Segoe UI,Arial,sans-serif;fill:#9FB0C5}.label{font:650 20px Inter,Segoe UI,Arial,sans-serif;fill:#E8EEF7}.small{font:400 16px Inter,Segoe UI,Arial,sans-serif;fill:#9FB0C5}.tiny{font:500 14px Inter,Segoe UI,Arial,sans-serif;fill:#9FB0C5}.box{fill:#111B2E;stroke:#22324A;stroke-width:2;rx:22}.accent-box{fill:#111B2E;stroke:#38D6C6;stroke-width:3;rx:22}.line{fill:none;stroke:#38D6C6;stroke-width:4;marker-end:url(#arrow)}.line-muted{fill:none;stroke:#9FB0C5;stroke-width:3;marker-end:url(#arrow-muted)}.dash{fill:none;stroke:#38D6C6;stroke-width:3;stroke-dasharray:10 10;marker-end:url(#arrow)}
     </style>
   </defs>
   <rect width="100%" height="100%" fill="#0B1220"/>
   <text x="80" y="80" class="title">Écosystème Ohana</text>
-  <text x="80" y="118" class="subtitle">Produits, responsabilités et relations de référence.</text>
-<rect x="560" y="180" width="480" height="140" class="accent-box" filter="url(#shadow)"/><text x="800.0" y="224" text-anchor="middle" class="label">Ohana Platform</text><text x="800.0" y="255" text-anchor="middle" class="small">Architecture · Documentation · Déploiement</text><rect x="180" y="450" width="360" height="170" class="box" filter="url(#shadow)"/><text x="360.0" y="494" text-anchor="middle" class="label">Ohana Agent</text><text x="360.0" y="525" text-anchor="middle" class="small">Observation</text><text x="360.0" y="548" text-anchor="middle" class="small">Plugins · Runtime · Export</text><rect x="620" y="450" width="360" height="170" class="box" filter="url(#shadow)"/><text x="800.0" y="494" text-anchor="middle" class="label">Ohana Vision</text><text x="800.0" y="525" text-anchor="middle" class="small">Visualisation</text><text x="800.0" y="548" text-anchor="middle" class="small">Timeline · Santé · Topologie</text><rect x="1060" y="450" width="360" height="170" class="box" filter="url(#shadow)"/><text x="1240.0" y="494" text-anchor="middle" class="label">Ohana House</text><text x="1240.0" y="525" text-anchor="middle" class="small">Déploiement de référence</text><text x="1240.0" y="548" text-anchor="middle" class="small">Infrastructure réelle</text><path d="M800 320 V390 H360 V450" class="line"/><path d="M800 390 H800 V450" class="line"/><path d="M800 390 H1240 V450" class="line"/><path d="M540 535 H620" class="dash"/><path d="M980 535 H1060" class="dash"/>
-      <line x1="80" y1="842" x2="1520" y2="842" stroke="#22324A" stroke-width="2"/>
-      <text x="80" y="874" class="tiny">Ohana Platform · Architecture de référence</text>
-      <text x="1520" y="874" text-anchor="end" class="tiny">Version 1.0</text>
-    </svg>
-    
+  <text x="80" y="118" class="subtitle">Architecture, exécution, visualisation, installation et déploiement de référence.</text>
+
+  <rect x="560" y="170" width="480" height="140" class="accent-box" filter="url(#shadow)"/>
+  <text x="800" y="214" text-anchor="middle" class="label">Ohana Platform</text>
+  <text x="800" y="245" text-anchor="middle" class="small">Architecture · Contrats · Design System</text>
+  <text x="800" y="270" text-anchor="middle" class="small">Manifeste de composition</text>
+
+  <rect x="55" y="470" width="330" height="170" class="box" filter="url(#shadow)"/>
+  <text x="220" y="514" text-anchor="middle" class="label">Ohana Agent</text>
+  <text x="220" y="545" text-anchor="middle" class="small">Source de vérité</text>
+  <text x="220" y="568" text-anchor="middle" class="small">Plugins · Observations · API</text>
+
+  <rect x="440" y="470" width="330" height="170" class="box" filter="url(#shadow)"/>
+  <text x="605" y="514" text-anchor="middle" class="label">Ohana Vision</text>
+  <text x="605" y="545" text-anchor="middle" class="small">Visualisation et administration</text>
+  <text x="605" y="568" text-anchor="middle" class="small">Santé · Timeline · Topologie</text>
+
+  <rect x="825" y="470" width="330" height="170" class="box" filter="url(#shadow)"/>
+  <text x="990" y="514" text-anchor="middle" class="label">Ohana Installer</text>
+  <text x="990" y="545" text-anchor="middle" class="small">Cycle de vie Linux/systemd</text>
+  <text x="990" y="568" text-anchor="middle" class="small">Installer · Mettre à jour · Retirer</text>
+
+  <rect x="1210" y="470" width="330" height="170" class="box" filter="url(#shadow)"/>
+  <text x="1375" y="514" text-anchor="middle" class="label">Ohana House</text>
+  <text x="1375" y="545" text-anchor="middle" class="small">Déploiement de référence</text>
+  <text x="1375" y="568" text-anchor="middle" class="small">Infrastructure réelle et cible</text>
+
+  <path d="M700 310 V390 H220 V470" class="line"/>
+  <path d="M760 310 V410 H605 V470" class="line"/>
+  <path d="M840 310 V410 H990 V470" class="line"/>
+  <path d="M900 310 V390 H1375 V470" class="line"/>
+  <path d="M385 555 H440" class="dash"/>
+  <path d="M990 470 V430 H385 V470" class="line-muted"/>
+  <path d="M990 470 V445 H770 V470" class="line-muted"/>
+  <path d="M770 585 H1210" class="line-muted"/>
+
+  <line x1="80" y1="842" x2="1520" y2="842" stroke="#22324A" stroke-width="2"/>
+  <text x="80" y="874" class="tiny">Ohana Platform · Architecture de référence</text>
+  <text x="1520" y="874" text-anchor="end" class="tiny">Version 1.0.14</text>
+</svg>
