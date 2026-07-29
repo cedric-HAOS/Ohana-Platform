@@ -18,7 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
-| 1.8.0 | 1.7.0 | 1.0.8 | 1.0.16 |
+| 1.8.1 | 1.7.0 | 1.0.9 | 1.0.17 |
 
 ## Plugins de la composition courante
 
@@ -29,6 +29,6 @@ Voir également [le guide de déploiement](../Guides/Déployer-Ohana-Agent.md).
 
 ## Téléinformation Linky
 
-Ohana-Agent 1.8.0 contrôle la fraîcheur des données Linky publiées par
+Ohana-Agent 1.8.1 contrôle la fraîcheur des données Linky publiées par
 `teleinfo2mqtt` vers Home Assistant et expose la capacité
 `teleinformation.freshness`, avec interprétation des six périodes Tempo.

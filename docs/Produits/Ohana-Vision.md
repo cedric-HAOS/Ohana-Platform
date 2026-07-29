@@ -26,7 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
-| 1.7.0 | 1.8.0 | 1.0.8 | 1.0.16 |
+| 1.7.0 | 1.8.1 | 1.0.9 | 1.0.17 |
 
 
 ## Téléinformation Linky

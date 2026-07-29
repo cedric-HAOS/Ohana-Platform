@@ -22,8 +22,8 @@ sudo journalctl -u ohana-vision.service -n 100 --no-pager
 ohana --version
 ```
 
-Pour Platform 1.0.16, les versions attendues sont Agent 1.8.0, Vision 1.7.0 et
-Installer 1.0.8.
+Pour Platform 1.0.17, les versions attendues sont Agent 1.8.1, Vision 1.7.0 et
+Installer 1.0.9.
 
 ## Vision ne communique pas avec Agent
 

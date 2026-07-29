@@ -6,6 +6,17 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.17] - 2026-07-29
+
+### Changed
+
+* Alignement sur Ohana-Agent 1.8.1, Ohana-Vision 1.7.0 et
+  Ohana-Installer 1.0.9.
+* La composition Téléinformation applique désormais une fraîcheur contextuelle :
+  `NTARF` et les index Tempo inactifs ne provoquent plus de fausse alerte.
+* `SINSTS` et l’index désigné par le tarif courant restent les données
+  effectivement surveillées.
+
 ## [1.0.16] - 2026-07-29
 
 ### Added
