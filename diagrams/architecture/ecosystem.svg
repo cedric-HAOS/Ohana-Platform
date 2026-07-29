@@ -49,5 +49,5 @@
 
   <line x1="80" y1="842" x2="1520" y2="842" stroke="#22324A" stroke-width="2"/>
   <text x="80" y="874" class="tiny">Ohana Platform · Architecture de référence</text>
-  <text x="1520" y="874" text-anchor="end" class="tiny">Version 1.0.14</text>
+  <text x="1520" y="874" text-anchor="end" class="tiny">Version 1.0.16</text>
 </svg>

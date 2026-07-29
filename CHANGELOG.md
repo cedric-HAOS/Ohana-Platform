@@ -6,6 +6,32 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.16] - 2026-07-29
+
+### Added
+
+* Ajout du plugin Téléinformation Linky dans la composition officielle.
+* Déploiement de `teleinformation.example.yaml` vers
+  `/etc/ohana-agent/plugins/teleinformation.yaml`.
+* Ajout de l’argument systemd `--teleinformation-config`.
+
+### Changed
+
+* Alignement sur Ohana-Agent 1.8.0, Ohana-Vision 1.7.0 et
+  Ohana-Installer 1.0.8.
+* Documentation commune complétée pour `SINSTS`, `NTARF` et les six index
+  Tempo `EASF01` à `EASF06`.
+
+## [1.0.15] - 2026-07-29
+
+### Changed
+
+* Alignement de la plateforme sur Ohana-Agent 1.7.5 et Ohana-Vision 1.6.3.
+* Correction du routage des tâches périodiques Shelly Telemetry : le plugin
+  technique `shelly_telemetry` publie de nouveau la capacité
+  `shelly.telemetry.freshness` vers Vision.
+* Alignement documentaire sur Ohana-Installer 1.0.7.
+
 ## [1.0.14] - 2026-07-29
 
 ### Changed
