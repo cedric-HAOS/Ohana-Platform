@@ -26,11 +26,11 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
-| 1.7.0 | 1.8.1 | 1.0.9 | 1.0.17 |
+| 1.7.1 | 1.8.1 | 1.0.10 | 1.0.18 |
 
 
 ## Téléinformation Linky
 
-Ohana-Vision 1.7.0 configure le service Téléinformation du RPI-Linky, les
+Ohana-Vision 1.7.1 configure le service Téléinformation du RPI-Linky, les
 entités SINSTS, NTARF et EASF01 à EASF06, puis affiche les observations
 produites par Agent.

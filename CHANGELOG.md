@@ -6,6 +6,16 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.18] - 2026-07-29
+
+### Changed
+
+* Alignement sur Ohana-Agent 1.8.1, Ohana-Vision 1.7.1 et
+  Ohana-Installer 1.0.10.
+* Vision valide désormais les noms DNS des réservations DHCP avant leur envoi
+  à Agent et explique que les espaces et caractères `_` doivent être remplacés
+  par des tirets.
+
 ## [1.0.17] - 2026-07-29
 
 ### Changed

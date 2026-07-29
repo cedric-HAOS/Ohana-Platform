@@ -18,7 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
-| 1.8.1 | 1.7.0 | 1.0.9 | 1.0.17 |
+| 1.8.1 | 1.7.1 | 1.0.10 | 1.0.18 |
 
 ## Plugins de la composition courante
 
