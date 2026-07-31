@@ -9,7 +9,7 @@ Le déploiement de production d'Ohana-Vision est réalisé par
 sudo ohana install
 ```
 
-La composition Platform 1.0.22 installe Ohana-Vision 1.10.0 sous
+La composition Platform 1.0.23 installe Ohana-Vision 1.10.0 sous
 `/opt/ohana-vision`, déploie sa configuration sous `/etc/ohana-vision` et crée
 `ohana-vision.service`.
 

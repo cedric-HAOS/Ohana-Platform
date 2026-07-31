@@ -4,10 +4,10 @@
 
 | Produit | Version | État |
 |---|---:|---|
-| Ohana-Platform | 1.0.22 | prête à publier |
-| Ohana-Agent | 1.11.0 | prêt à publier |
+| Ohana-Platform | 1.0.23 | publiée |
+| Ohana-Agent | 1.11.1 | publié |
 | Ohana-Vision | 1.10.0 | prêt à publier |
-| Ohana-Installer | 1.5.0 | prêt à publier |
+| Ohana-Installer | 1.6.1 | prêt à publier |
 | Ohana-House | 2.0 Hashirama | référentiel d'infrastructure |
 
 ## Prochaines évolutions

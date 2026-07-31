@@ -6,6 +6,28 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.23] - 2026-07-31
+
+### Corrigé
+
+* Référencement d’Ohana-Agent 1.11.1, qui supprime les anciens baux dnsmasq
+  incompatibles avec une nouvelle réservation DHCP.
+* Lecture correcte des listes DNS NetworkManager et déploiement du helper DHCP
+  privilégié restreint.
+
+### Modifié
+
+* La composition recommandée devient Ohana-Agent 1.11.1, Ohana-Vision 1.10.0
+  et Ohana-Installer 1.6.1.
+* Platform 1.0.22 reste disponible avec le statut `supported`.
+* Le catalogue ne propose plus les versions Platform sans release GitHub
+  téléchargeable (`1.0.15` et `1.0.19` à `1.0.21`).
+
+### Validation
+
+* Concordance du manifeste et du catalogue avec les copies embarquées dans
+  Ohana-Installer 1.6.1.
+
 ## [1.0.22] - 2026-07-30
 
 ### Ajouté

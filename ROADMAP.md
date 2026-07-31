@@ -101,6 +101,13 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] fork Home Assistant installable et image multiarchitecture.
 
 
+## Version 1.0.23 — Fiabilité DHCP
+
+- [x] Référencer Ohana-Agent 1.11.1 et Ohana-Vision 1.10.0.
+- [x] Déployer le helper de purge ciblée avec Ohana-Installer 1.6.1.
+- [x] Conserver Platform 1.0.22 comme composition supportée.
+- [x] Publier le manifeste et le catalogue coordonnés.
+
 ## Version 1.0.22 — Catalogue de compositions
 
 - [x] Publier `release-catalog.yaml` dans la release Platform.

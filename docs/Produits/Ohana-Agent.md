@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.11.1 | 1.10.0 | 1.6.1 | 1.0.23 |
 | 1.11.0 | 1.10.0 | 1.5.0 | 1.0.22 |
 | 1.11.0 | 1.10.0 | 1.0.13 | 1.0.21 |
 | 1.10.0 | 1.9.0 | 1.0.12 | 1.0.20 |
@@ -47,3 +48,7 @@ plages horaires d’équipements et l’état `suspended`.
 Ohana-Agent 1.11.0 expose l’état NetworkManager de l’hôte et applique une
 configuration IPv4 via un helper privilégié limité, avec sauvegarde,
 confirmation et restauration automatique.
+
+Ohana-Agent 1.11.1 supprime uniquement les anciens baux dnsmasq qui contredisent
+une nouvelle réservation DHCP et normalise les listes DNS retournées par
+NetworkManager.

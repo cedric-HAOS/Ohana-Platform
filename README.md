@@ -72,6 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.23 | 1.11.1 | 1.10.0 | 3.13+ | Linux/systemd |
 | 1.0.22 | 1.11.0 | 1.10.0 | 3.13+ | Linux/systemd |
 | 1.0.21 | 1.11.0 | 1.10.0 | 3.13+ | Linux/systemd |
 | 1.0.20 | 1.10.0 | 1.9.0 | 3.13+ | Linux/systemd |
@@ -109,6 +110,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.23
+
+Cette composition corrige l’application des réservations DHCP : Agent détecte
+les baux devenus incompatibles et un helper privilégié restreint supprime
+uniquement ces baux avant de redémarrer dnsmasq. Installer 1.6.1 déploie ce
+helper et conserve le contrat systemd requis pour l’administration réseau.
 
 ## Composition 1.0.22
 
