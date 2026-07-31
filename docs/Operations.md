@@ -2,7 +2,8 @@
 
 ## Mise à jour
 
-Ohana-Installer découvre la dernière release stable d'Ohana-Platform et compare
+Ohana-Installer télécharge le catalogue de la dernière release stable
+d'Ohana-Platform, sélectionne la composition demandée et compare
 les versions installées au manifeste :
 
 ```bash
@@ -16,6 +17,8 @@ réinstallation. Ohana-Installer lui-même se met à jour séparément.
 
 Ouvrir `http://ADRESSE_DU_SERVEUR:8000`, puis **Configuration**.
 
+- utiliser **Réseau Agent** pour consulter l’interface d’INFRA-01 et appliquer
+  une nouvelle configuration IPv4 avec retour automatique ;
 - utiliser **Baux DHCP** pour le serveur dnsmasq ;
 - utiliser **Architecture > Déplacer** pour organiser la grille ;
 - utiliser **Architecture > Relier** pour créer les connexions ;
@@ -29,3 +32,33 @@ l'application. Les journaux utiles sont :
 sudo journalctl -u ohana-agent.service -n 100 --no-pager
 sudo journalctl -u ohana-vision.service -n 100 --no-pager
 ```
+
+
+### Modification réseau sécurisée
+
+Lors d’une modification de l’adresse d’INFRA-01, Agent sauvegarde la connexion
+NetworkManager actuelle et programme sa restauration. Après reconnexion à la
+nouvelle adresse, confirmer la transaction dans Vision. Sans confirmation dans
+le délai choisi, l’ancienne adresse est restaurée automatiquement.
+
+La première adresse statique peut être provisionnée pendant l’installation :
+
+```bash
+sudo ohana install --yes \
+  --network-interface eth0 \
+  --network-address 192.168.1.10/24 \
+  --network-gateway 192.168.1.1 \
+  --network-dns 192.168.1.11 \
+  --network-dns 192.168.1.12
+```
+
+
+## Sélection d’une composition
+
+```bash
+ohana versions
+sudo ohana install --platform-version 1.0.20
+```
+
+Chaque entrée du catalogue pointe vers le manifeste immuable de sa propre release
+Platform. Un couple absent du catalogue n’est pas installable.

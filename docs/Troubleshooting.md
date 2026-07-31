@@ -1,3 +1,6 @@
+Pour Platform 1.0.22, les versions recommandées sont Agent 1.11.0, Vision 1.10.0 et
+Installer 1.5.0.
+
 # Dépannage Ohana
 
 ## Vérifier les services
@@ -22,9 +25,6 @@ sudo journalctl -u ohana-vision.service -n 100 --no-pager
 ohana --version
 ```
 
-Pour Platform 1.0.18, les versions attendues sont Agent 1.8.1, Vision 1.7.1 et
-Installer 1.0.10.
-
 ## Vision ne communique pas avec Agent
 
 1. vérifier que les deux services sont actifs ;
@@ -36,7 +36,7 @@ Installer 1.0.10.
 
 Les noms d’hôte DNS n’acceptent pas les espaces ni le caractère `_`. Utiliser
 un tiret, par exemple `esp-lave-vaiselle` à la place de
-`esp-lave_vaiselle`. Ohana-Vision 1.7.1 effectue ce contrôle directement dans
+`esp-lave_vaiselle`. Ohana-Vision 1.9.0 effectue ce contrôle directement dans
 le formulaire.
 
 ## Une configuration est refusée
@@ -53,3 +53,10 @@ sudo ohana update
 
 La commande conserve les configurations locales, réinstalle les composants qui
 ne correspondent pas au manifeste et réconcilie les unités systemd.
+
+
+## Couple introuvable
+
+Exécuter `ohana versions` et vérifier que la version Platform ou le couple
+Agent/Vision figure dans `release-catalog.yaml`. Installer refuse volontairement
+les combinaisons non publiées.

@@ -6,6 +6,63 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.22] - 2026-07-30
+
+### Ajouté
+
+* Catalogue `release-catalog.yaml` des couples Agent/Vision installables.
+* Statuts `recommended`, `supported` et `legacy` pour les compositions publiées.
+* Sélection par version Platform ou par couple Agent/Vision dans
+  Ohana-Installer 1.5.0.
+
+### Modifié
+
+* La composition recommandée reste Ohana-Agent 1.11.0 et Ohana-Vision 1.10.0.
+* Les releases Platform historiques deviennent sélectionnables sans nouvelle
+  version de l’Installer.
+
+### Validation
+
+* Concordance stricte entre le catalogue, le manifeste 1.0.22 et les copies
+  embarquées dans Ohana-Installer.
+
+## [1.0.21] - 2026-07-30
+
+### Ajouté
+
+* Administration réseau sécurisée d’INFRA-01 : lecture NetworkManager,
+  modification avec sauvegarde, confirmation et retour automatique.
+* Provisionnement IPv4 initial par Ohana-Installer.
+* Page Réseau Agent dans Ohana-Vision.
+
+### Modifié
+
+* Référencement d’Ohana-Agent 1.11.0, Ohana-Vision 1.10.0 et
+  Ohana-Installer 1.0.13.
+
+## [1.0.20] - 2026-07-30
+
+### Ajouté
+
+* Architecture Téléinformation directe : `teleinfo2mqtt` publie une trame HTTP
+  vers Ohana-Agent en parallèle de son flux MQTT vers Home Assistant.
+* Plages horaires de surveillance portées par les équipements et état
+  `suspended` neutre pour la santé globale.
+* Référence du fork `hassio-addons` Ohana permettant une installation propre de
+  l’add-on modifié dans Home Assistant.
+
+### Modifié
+
+* Référencement d’Ohana-Agent 1.10.0, Ohana-Vision 1.9.0 et
+  Ohana-Installer 1.0.12.
+
+## [1.0.19] - 2026-07-30
+
+### Changed
+
+* Référencement d’Ohana-Agent 1.9.0, Ohana-Vision 1.8.0 et Ohana-Installer 1.0.11.
+* Télémétrie Home Assistant générique, noms DNS et ports conditionnels.
+
 ## [1.0.18] - 2026-07-29
 
 ### Changed

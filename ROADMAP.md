@@ -90,3 +90,28 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * déploiements distribués ;
 * catalogue de plugins ;
 * SDK Ohana.
+
+## Version 1.0.20 — Lot B
+
+- [x] Ohana-Agent 1.10.0 ;
+- [x] Ohana-Vision 1.9.0 ;
+- [x] Ohana-Installer 1.0.12 ;
+- [x] Téléinformation HTTP directe depuis RPI-Linky ;
+- [x] plages horaires et état de surveillance suspendu ;
+- [x] fork Home Assistant installable et image multiarchitecture.
+
+
+## Version 1.0.22 — Catalogue de compositions
+
+- [x] Publier `release-catalog.yaml` dans la release Platform.
+- [x] Référencer les compositions validées de Platform 1.0.13 à 1.0.22.
+- [x] Définir une composition recommandée unique.
+- [x] Permettre à Ohana-Installer 1.5.0 de sélectionner une version historique.
+- [x] Maintenir le manifeste 1.0.22 sur Agent 1.11.0 et Vision 1.10.0.
+
+## Version 1.0.21 — Lot C
+
+- [x] Ohana-Agent 1.11.0 ;
+- [x] Ohana-Vision 1.10.0 ;
+- [x] Ohana-Installer 1.0.13 ;
+- [x] administration réseau sécurisée et provisionnement initial.

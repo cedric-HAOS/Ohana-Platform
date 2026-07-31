@@ -26,11 +26,24 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.10.0 | 1.11.0 | 1.5.0 | 1.0.22 |
+| 1.10.0 | 1.11.0 | 1.0.13 | 1.0.21 |
+| 1.9.0 | 1.10.0 | 1.0.12 | 1.0.20 |
+| 1.8.0 | 1.9.0 | 1.0.11 | 1.0.19 |
 | 1.7.1 | 1.8.1 | 1.0.10 | 1.0.18 |
 
 
 ## Téléinformation Linky
 
-Ohana-Vision 1.7.1 configure le service Téléinformation du RPI-Linky, les
+Ohana-Vision 1.8.0 configure le service Téléinformation du RPI-Linky, les
 entités SINSTS, NTARF et EASF01 à EASF06, puis affiche les observations
 produites par Agent.
+
+
+Ohana-Vision 1.9.0 configure le récepteur Téléinformation direct, le compteur et
+la source RPI-Linky. Il expose aussi les plages horaires des équipements et
+l’état visuel **Suspendu**.
+
+
+Ohana-Vision 1.10.0 ajoute la page Réseau Agent, la modification IPv4 avec
+retour automatique et les actions de confirmation ou restauration.

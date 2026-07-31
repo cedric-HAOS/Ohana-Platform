@@ -23,7 +23,7 @@ Infrastructure
 Ohana-Agent -- REST --> Ohana-Vision --> Web dashboard
       ^
       |
-Ohana-Installer reads the Ohana-Platform release manifest
+Ohana-Installer reads the Ohana-Platform release catalog
 ```
 
 ## Shared contracts
@@ -31,11 +31,12 @@ Ohana-Installer reads the Ohana-Platform release manifest
 - Agent publishes observations to `POST /api/observations`.
 - Agent synchronizes topology through `PUT /api/infrastructure`.
 - Vision listens on `127.0.0.1:8000` by default.
-- `release-manifest.yaml` is the platform release source of truth.
-- Each Platform release publishes `release-manifest.yaml` as a GitHub release asset.
+- `release-catalog.yaml` lists every officially installable Agent/Vision couple.
+- `release-manifest.yaml` is the immutable contract of one Platform release.
+- Each Platform release publishes both files as GitHub release assets.
 - Component releases publish every wheel and configuration file declared by the manifest.
-- `Ohana-Installer/config/release-manifest.yaml` is the synchronized validation
-  copy used by Installer tests and must remain identical to the platform manifest.
+- `Ohana-Installer/config/release-catalog.yaml` and
+  `Ohana-Installer/config/release-manifest.yaml` are synchronized validation copies.
 
 ## Documentation
 
@@ -63,6 +64,7 @@ Ohana-Platform/
 ├── LICENSE
 ├── README.md
 ├── ROADMAP.md
+├── release-catalog.yaml
 └── release-manifest.yaml
 ```
 
@@ -70,11 +72,16 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.22 | 1.11.0 | 1.10.0 | 3.13+ | Linux/systemd |
+| 1.0.21 | 1.11.0 | 1.10.0 | 3.13+ | Linux/systemd |
+| 1.0.20 | 1.10.0 | 1.9.0 | 3.13+ | Linux/systemd |
+| 1.0.19 | 1.9.0 | 1.8.0 | 3.13+ | Linux/systemd |
 | 1.0.18 | 1.8.1 | 1.7.1 | 3.13+ | Linux/systemd |
 | 1.0.17 | 1.8.1 | 1.7.0 | 3.13+ | Linux/systemd |
 | 1.0.16 | 1.8.0 | 1.7.0 | 3.13+ | Linux/systemd |
 | 1.0.15 | 1.7.5 | 1.6.3 | 3.13+ | Linux/systemd |
 | 1.0.14 | 1.7.4 | 1.6.3 | 3.13+ | Linux/systemd |
+| 1.0.13 | 1.7.3 | 1.6.2 | 3.13+ | Linux/systemd |
 | 1.0.12 | 1.7.2 | 1.6.1 | 3.13+ | Linux/systemd |
 | 1.0.11 | 1.7.1 | 1.6.0 | 3.13+ | Linux/systemd |
 | 1.0.10 | 1.5.1 | 1.4.4 | 3.13+ | Linux/systemd |
@@ -88,8 +95,10 @@ Ohana-Platform/
 | 1.0.2 | 1.1.1 | 1.1.2 | 3.13+ | Linux/systemd |
 | 1.0.1 | 1.1.1 | 1.1.1 | 3.13+ | Linux/systemd |
 
-The exact installable versions and artifact names are defined in
-`release-manifest.yaml`.
+The complete list of selectable compositions is defined in
+`release-catalog.yaml`. The exact artifact names and service contracts of each
+composition remain defined by the `release-manifest.yaml` published in its Platform
+release.
 
 ## Contributing
 
@@ -100,3 +109,24 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.22
+
+Cette composition introduit le catalogue officiel des couples Agent/Vision.
+Ohana-Installer 1.5.0 peut lister les compositions, sélectionner une version
+Platform ou retrouver une composition à partir des versions Agent et Vision.
+L’ajout d’un couple dans une future release Platform ne demande plus de modifier
+le code de l’Installer.
+
+## Composition 1.0.21
+
+Cette composition ajoute l’administration réseau sécurisée d’INFRA-01 :
+Ohana-Installer provisionne l’adresse initiale et prépare le helper limité,
+Ohana-Agent applique les changements avec rollback automatique, et
+Ohana-Vision fournit la page de consultation, confirmation et restauration.
+
+## Composition 1.0.20
+
+Cette composition ajoute la réception directe des trames Linky depuis le fork
+`teleinfo2mqtt Ohana` et les plages horaires de surveillance des équipements.
+Le flux MQTT vers Home Assistant reste indépendant du flux HTTP vers Agent.

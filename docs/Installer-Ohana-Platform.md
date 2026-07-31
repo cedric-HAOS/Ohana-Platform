@@ -1,15 +1,71 @@
 # Installer et mettre à jour Ohana-Platform
 
-La composition 1.0.18 installe Ohana-Agent 1.8.1 et Ohana-Vision 1.7.1.
+La composition recommandée 1.0.22 installe Ohana-Agent 1.11.0 et
+Ohana-Vision 1.10.0.
 
-Ohana-Installer 1.0.10 ou une version ultérieure est recommandé afin de
-bénéficier de l'auto-mise à jour de l'Installer, de la préparation de
-l'administration graphique et de la prise en charge des unités systemd
-`.service` et `.path`.
+Ohana-Installer 1.5.0 lit le catalogue publié par Platform et peut installer
+n’importe quel couple Agent/Vision qui y est déclaré.
 
-## Mise à jour d'une installation existante
+## Lister les compositions disponibles
 
-Lancer :
+```bash
+ohana versions
+```
+
+## Installation recommandée
+
+```bash
+sudo ohana install
+```
+
+## Installation d’une composition précise
+
+Par version Platform :
+
+```bash
+sudo ohana install --platform-version 1.0.20
+```
+
+Par couple Agent/Vision :
+
+```bash
+sudo ohana install \
+  --agent-version 1.10.0 \
+  --vision-version 1.9.0
+```
+
+Un couple absent de `release-catalog.yaml` est refusé.
+
+## Mise à jour d’une installation existante
 
 ```bash
 sudo ohana update --yes
+```
+
+Pour appliquer volontairement une composition plus ancienne :
+
+```bash
+sudo ohana update \
+  --platform-version 1.0.20 \
+  --allow-downgrade
+```
+
+La rétrogradation n’efface pas les fichiers de configuration locaux. Une sauvegarde
+est recommandée avant de revenir à une composition historique.
+
+## Provisionnement réseau d’INFRA-01
+
+Cette fonction est disponible avec les compositions intégrant Ohana-Agent
+1.11.0 ou une version ultérieure.
+
+```bash
+sudo ohana install --yes \
+  --network-interface eth0 \
+  --network-address 192.168.1.10/24 \
+  --network-gateway 192.168.1.1 \
+  --network-dns 192.168.1.11 \
+  --network-dns 192.168.1.12
+```
+
+Une fois installé, le réseau peut être consulté et modifié depuis Vision avec
+un retour automatique si la nouvelle configuration n’est pas confirmée.
