@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.10.1 | 1.11.2 | 1.6.1 | 1.0.24 |
 | 1.10.0 | 1.11.1 | 1.6.1 | 1.0.23 |
 | 1.10.0 | 1.11.0 | 1.5.0 | 1.0.22 |
 | 1.10.0 | 1.11.0 | 1.0.13 | 1.0.21 |
@@ -48,3 +49,7 @@ l’état visuel **Suspendu**.
 
 Ohana-Vision 1.10.0 ajoute la page Réseau Agent, la modification IPv4 avec
 retour automatique et les actions de confirmation ou restauration.
+
+Ohana-Vision 1.10.1 distingue le type Ethernet de sa capacité et anime les
+liaisons selon leur débit déclaré ou négocié. Aucune saturation ni mesure de
+trafic n’est estimée.

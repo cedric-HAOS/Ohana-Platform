@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.11.2 | 1.10.1 | 1.6.1 | 1.0.24 |
 | 1.11.1 | 1.10.0 | 1.6.1 | 1.0.23 |
 | 1.11.0 | 1.10.0 | 1.5.0 | 1.0.22 |
 | 1.11.0 | 1.10.0 | 1.0.13 | 1.0.21 |
@@ -52,3 +53,7 @@ confirmation et restauration automatique.
 Ohana-Agent 1.11.1 supprime uniquement les anciens baux dnsmasq qui contredisent
 une nouvelle réservation DHCP et normalise les listes DNS retournées par
 NetworkManager.
+
+Ohana-Agent 1.11.2 résout les noms d’hôte utilisés comme serveurs DNS explicites
+avant de les transmettre à `dnspython`, tout en conservant leur nom dans les
+observations.

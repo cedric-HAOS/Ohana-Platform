@@ -101,6 +101,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] fork Home Assistant installable et image multiarchitecture.
 
 
+## Version 1.0.24 — Lecture des capacités réseau
+
+- [x] Référencer Ohana-Agent 1.11.2 et Ohana-Vision 1.10.1.
+- [x] Distinguer le type Ethernet de sa capacité dans Vision.
+- [x] Représenter la capacité sans estimation de trafic ou de saturation.
+- [x] Conserver Platform 1.0.23 comme composition supportée.
+
+
 ## Version 1.0.23 — Fiabilité DHCP
 
 - [x] Référencer Ohana-Agent 1.11.1 et Ohana-Vision 1.10.0.

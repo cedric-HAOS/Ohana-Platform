@@ -6,6 +6,25 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.24] - 2026-07-31
+
+### Corrigé
+
+* Référencement d’Ohana-Agent 1.11.2, qui résout les noms d’hôte fournis comme
+  serveurs DNS explicites avant de les transmettre à `dnspython`.
+
+### Modifié
+
+* La composition recommandée devient Ohana-Agent 1.11.2 et Ohana-Vision 1.10.1.
+* Ohana-Vision distingue désormais le type Ethernet de sa capacité et anime les
+  liaisons selon leur débit déclaré ou négocié, sans estimation de saturation.
+* Platform 1.0.23 reste disponible avec le statut `supported`.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.24.
+* Noms des wheels alignés sur les artefacts Agent 1.11.2 et Vision 1.10.1.
+
 ## [1.0.23] - 2026-07-31
 
 ### Corrigé
