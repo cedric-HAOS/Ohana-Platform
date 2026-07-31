@@ -13,24 +13,6 @@ releases:
     vision_version: "1.10.0"
     status: recommended
 
-  - platform_version: "1.0.21"
-    release_tag: v1.0.21
-    agent_version: "1.11.0"
-    vision_version: "1.10.0"
-    status: supported
-
-  - platform_version: "1.0.20"
-    release_tag: v1.0.20
-    agent_version: "1.10.0"
-    vision_version: "1.9.0"
-    status: supported
-
-  - platform_version: "1.0.19"
-    release_tag: v1.0.19
-    agent_version: "1.9.0"
-    vision_version: "1.8.0"
-    status: supported
-
   - platform_version: "1.0.18"
     release_tag: v1.0.18
     agent_version: "1.8.1"
