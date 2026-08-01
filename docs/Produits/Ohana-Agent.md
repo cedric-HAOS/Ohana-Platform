@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.11.4 | 1.10.1 | 1.7.0 | 1.0.26 |
 | 1.11.3 | 1.10.1 | 1.6.1 | 1.0.25 |
 | 1.11.2 | 1.10.1 | 1.6.1 | 1.0.24 |
 | 1.11.1 | 1.10.0 | 1.6.1 | 1.0.23 |
@@ -62,3 +63,6 @@ observations.
 Ohana-Agent 1.11.3 conserve la connexion MQTT Home Assistant lorsque seule
 l’infrastructure change et publie un résumé de santé retenu. Les entités ne
 passent plus artificiellement à `Indisponible` pendant une reconfiguration.
+
+Ohana-Agent 1.11.4 exporte les suspensions planifiées avec l’état neutre
+`unknown` et conserve l’API d’administration disponible hors plage horaire.

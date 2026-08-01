@@ -101,6 +101,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] fork Home Assistant installable et image multiarchitecture.
 
 
+## Version 1.0.26 — Stabilité des surveillances planifiées
+
+- [x] Référencer Ohana-Agent 1.11.4 et Ohana-Vision 1.10.1.
+- [x] Exporter les suspensions planifiées sans interrompre Agent.
+- [x] Conserver leurs métadonnées explicatives dans Vision.
+- [x] Conserver Platform 1.0.25 comme composition supportée.
+
+
 ## Version 1.0.25 — Stabilité MQTT Home Assistant
 
 - [x] Référencer Ohana-Agent 1.11.3 et Ohana-Vision 1.10.1.

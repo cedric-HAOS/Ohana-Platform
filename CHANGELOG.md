@@ -6,6 +6,26 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.26] - 2026-08-01
+
+### Corrigé
+
+* Référencement d’Ohana-Agent 1.11.4, qui exporte les suspensions planifiées
+  sans interrompre le processus Agent ni son API d’administration.
+* Suppression de la boucle de redémarrage déclenchée hors de la plage horaire
+  d’un équipement surveillé.
+
+### Modifié
+
+* Les suspensions planifiées sont projetées vers l’état neutre `unknown` et
+  conservent leurs métadonnées explicatives.
+* Platform 1.0.25 reste disponible avec le statut `supported`.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.26.
+* Nom du wheel aligné sur l’artefact Agent 1.11.4.
+
 ## [1.0.25] - 2026-08-01
 
 ### Corrigé
