@@ -72,6 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.25 | 1.11.3 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.24 | 1.11.2 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.23 | 1.11.1 | 1.10.0 | 3.13+ | Linux/systemd |
 | 1.0.22 | 1.11.0 | 1.10.0 | 3.13+ | Linux/systemd |
@@ -112,12 +113,11 @@ repository; shared contracts and release coordination belong here.
 
 Distributed under the MIT license. See `LICENSE`.
 
-## Composition 1.0.24
+## Composition 1.0.25
 
-Cette composition résout les serveurs DNS nommés côté Agent et améliore la
-lecture des capacités Ethernet dans Vision. Les couleurs et les animations
-représentent uniquement le débit déclaré ou négocié, sans estimation de trafic
-ni de saturation.
+Cette composition stabilise l’export MQTT vers Home Assistant. Les mises à jour
+d’infrastructure ne provoquent plus de cycle `offline` / `online`, et le résumé
+de santé retenu restaure immédiatement les entités après une reconnexion.
 
 ## Composition 1.0.22
 

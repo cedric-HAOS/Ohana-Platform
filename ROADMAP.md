@@ -101,6 +101,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] fork Home Assistant installable et image multiarchitecture.
 
 
+## Version 1.0.25 — Stabilité MQTT Home Assistant
+
+- [x] Référencer Ohana-Agent 1.11.3 et Ohana-Vision 1.10.1.
+- [x] Supprimer les faux états `Indisponible` lors des reconfigurations.
+- [x] Publier le résumé de santé MQTT avec rétention.
+- [x] Conserver Platform 1.0.24 comme composition supportée.
+
+
 ## Version 1.0.24 — Lecture des capacités réseau
 
 - [x] Référencer Ohana-Agent 1.11.2 et Ohana-Vision 1.10.1.

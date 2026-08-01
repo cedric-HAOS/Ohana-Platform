@@ -6,6 +6,26 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.25] - 2026-08-01
+
+### Corrigé
+
+* Référencement d’Ohana-Agent 1.11.3, qui conserve la connexion MQTT Home
+  Assistant lors des seules mises à jour d’infrastructure.
+* Suppression des faux passages simultanés à `Indisponible` provoqués par les
+  publications transitoires `offline`.
+
+### Modifié
+
+* Le résumé de santé MQTT est retenu pour restaurer immédiatement les entités
+  Home Assistant après une reconnexion.
+* Platform 1.0.24 reste disponible avec le statut `supported`.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.25.
+* Nom du wheel aligné sur l’artefact Agent 1.11.3.
+
 ## [1.0.24] - 2026-07-31
 
 ### Corrigé

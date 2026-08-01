@@ -15,7 +15,7 @@ Pour une installation automatisée explicitement acceptée :
 sudo ohana install --yes
 ```
 
-La composition Platform 1.0.24 installe Ohana-Agent 1.11.2 sous
+La composition Platform 1.0.25 installe Ohana-Agent 1.11.3 sous
 `/opt/ohana-agent`, déploie ses configurations sous `/etc/ohana-agent` et crée
 `ohana-agent.service`.
 
@@ -27,7 +27,7 @@ sudo systemctl is-active ohana-agent.service
 sudo journalctl -u ohana-agent.service -n 100 --no-pager
 ```
 
-Résultats attendus : service `active` et version `ohana-agent 1.11.2`.
+Résultats attendus : service `active` et version `ohana-agent 1.11.3`.
 
 ## Configuration
 

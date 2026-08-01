@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.11.3 | 1.10.1 | 1.6.1 | 1.0.25 |
 | 1.11.2 | 1.10.1 | 1.6.1 | 1.0.24 |
 | 1.11.1 | 1.10.0 | 1.6.1 | 1.0.23 |
 | 1.11.0 | 1.10.0 | 1.5.0 | 1.0.22 |
@@ -57,3 +58,7 @@ NetworkManager.
 Ohana-Agent 1.11.2 résout les noms d’hôte utilisés comme serveurs DNS explicites
 avant de les transmettre à `dnspython`, tout en conservant leur nom dans les
 observations.
+
+Ohana-Agent 1.11.3 conserve la connexion MQTT Home Assistant lorsque seule
+l’infrastructure change et publie un résumé de santé retenu. Les entités ne
+passent plus artificiellement à `Indisponible` pendant une reconfiguration.
