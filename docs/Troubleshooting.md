@@ -1,4 +1,4 @@
-Pour Platform 1.0.26, les versions recommandées sont Agent 1.11.4, Vision 1.10.1 et
+Pour Platform 1.0.27, les versions recommandées sont Agent 1.11.5, Vision 1.10.1 et
 Installer 1.7.0.
 
 # Dépannage Ohana

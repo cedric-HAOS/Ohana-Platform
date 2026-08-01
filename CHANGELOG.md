@@ -6,6 +6,26 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.27] - 2026-08-01
+
+### Corrigé
+
+* Référencement d’Ohana-Agent 1.11.5, qui conserve le routage `device` des
+  observations suspendues lorsque le plugin réseau n’est pas exécuté.
+* La surveillance hors plage de `SUN-01` ne peut plus être interprétée comme
+  une mise à jour d’un service d’infrastructure inconnu.
+
+### Modifié
+
+* Platform 1.0.26 est retirée du catalogue sélectionnable car son correctif
+  partiel révélait encore un second crash dans le même chemin de suspension.
+
+### Validation
+
+* Reproduction du défaut observé en production après le déploiement 1.0.26.
+* Concordance du manifeste et du catalogue Platform 1.0.27.
+* Nom du wheel aligné sur l’artefact Agent 1.11.5.
+
 ## [1.0.26] - 2026-08-01
 
 ### Corrigé

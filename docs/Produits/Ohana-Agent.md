@@ -18,7 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
-| 1.11.4 | 1.10.1 | 1.7.0 | 1.0.26 |
+| 1.11.5 | 1.10.1 | 1.7.0 | 1.0.27 |
 | 1.11.3 | 1.10.1 | 1.6.1 | 1.0.25 |
 | 1.11.2 | 1.10.1 | 1.6.1 | 1.0.24 |
 | 1.11.1 | 1.10.0 | 1.6.1 | 1.0.23 |
@@ -66,3 +66,6 @@ passent plus artificiellement à `Indisponible` pendant une reconfiguration.
 
 Ohana-Agent 1.11.4 exporte les suspensions planifiées avec l’état neutre
 `unknown` et conserve l’API d’administration disponible hors plage horaire.
+
+Ohana-Agent 1.11.5 conserve également le ciblage équipement lorsque le plugin
+est suspendu, supprimant le second crash révélé en production par `SUN-01`.

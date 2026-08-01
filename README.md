@@ -72,7 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
-| 1.0.26 | 1.11.4 | 1.10.1 | 3.13+ | Linux/systemd |
+| 1.0.27 | 1.11.5 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.25 | 1.11.3 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.24 | 1.11.2 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.23 | 1.11.1 | 1.10.0 | 3.13+ | Linux/systemd |
@@ -114,11 +114,11 @@ repository; shared contracts and release coordination belong here.
 
 Distributed under the MIT license. See `LICENSE`.
 
-## Composition 1.0.26
+## Composition 1.0.27
 
-Cette composition stabilise les surveillances planifiées. Une observation
-suspendue hors plage horaire est exportée avec l’état neutre `unknown` sans
-interrompre Agent ni rendre son API d’administration indisponible.
+Cette composition stabilise complètement les surveillances planifiées. Une
+observation suspendue hors plage conserve son ciblage équipement et est exportée
+avec l’état neutre `unknown`, sans interrompre Agent ni son API d’administration.
 
 ## Composition 1.0.22
 

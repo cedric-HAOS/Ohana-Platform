@@ -101,6 +101,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] fork Home Assistant installable et image multiarchitecture.
 
 
+## Version 1.0.27 — Routage des suspensions d’équipements
+
+- [x] Référencer Ohana-Agent 1.11.5 et Ohana-Vision 1.10.1.
+- [x] Conserver le ciblage `device` lors des suspensions planifiées.
+- [x] Reproduire le second défaut observé sur Infra-01 après 1.0.26.
+- [x] Retirer Platform 1.0.26 du catalogue sélectionnable.
+
+
 ## Version 1.0.26 — Stabilité des surveillances planifiées
 
 - [x] Référencer Ohana-Agent 1.11.4 et Ohana-Vision 1.10.1.
