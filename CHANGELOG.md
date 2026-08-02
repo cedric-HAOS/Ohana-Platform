@@ -6,6 +6,20 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.28] - 2026-08-02
+
+### Corrigé
+
+* Référencement d'Ohana-Vision 1.10.2, qui aligne la santé et les capacités
+  de la carte des services sur la timeline utilisée par la fiche équipement.
+* Les services dont l'observation est absente des 100 dernières observations
+  globales conservent leur dernier état connu dans les deux vues.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.28.
+* Nom du wheel aligné sur l'artefact Vision 1.10.2.
+
 ## [1.0.27] - 2026-08-01
 
 ### Corrigé

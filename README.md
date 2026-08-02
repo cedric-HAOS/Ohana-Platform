@@ -72,6 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.28 | 1.11.5 | 1.10.2 | 3.13+ | Linux/systemd |
 | 1.0.27 | 1.11.5 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.25 | 1.11.3 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.24 | 1.11.2 | 1.10.1 | 3.13+ | Linux/systemd |
@@ -113,6 +114,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.28
+
+Cette composition aligne la carte des services sur la timeline déjà utilisée
+par les fiches équipement. Un service conserve ainsi le même dernier état
+connu dans les deux vues, même si son observation n'est plus dans les 100 plus
+récentes.
 
 ## Composition 1.0.27
 

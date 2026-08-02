@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.11.5 | 1.10.2 | 1.7.0 | 1.0.28 |
 | 1.11.5 | 1.10.1 | 1.7.0 | 1.0.27 |
 | 1.11.3 | 1.10.1 | 1.6.1 | 1.0.25 |
 | 1.11.2 | 1.10.1 | 1.6.1 | 1.0.24 |

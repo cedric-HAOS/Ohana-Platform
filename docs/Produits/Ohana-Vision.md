@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.10.2 | 1.11.5 | 1.7.0 | 1.0.28 |
 | 1.10.1 | 1.11.5 | 1.7.0 | 1.0.27 |
 | 1.10.1 | 1.11.3 | 1.6.1 | 1.0.25 |
 | 1.10.1 | 1.11.2 | 1.6.1 | 1.0.24 |
@@ -55,3 +56,6 @@ retour automatique et les actions de confirmation ou restauration.
 Ohana-Vision 1.10.1 distingue le type Ethernet de sa capacité et anime les
 liaisons selon leur débit déclaré ou négocié. Aucune saturation ni mesure de
 trafic n’est estimée.
+
+Ohana-Vision 1.10.2 utilise la même timeline pour la santé des services dans
+la carte logique et dans la fiche équipement.

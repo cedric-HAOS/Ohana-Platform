@@ -101,6 +101,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] fork Home Assistant installable et image multiarchitecture.
 
 
+## Version 1.0.28 — Cohérence de la santé des services
+
+- [x] Référencer Ohana-Agent 1.11.5 et Ohana-Vision 1.10.2.
+- [x] Utiliser la timeline dans la carte des services comme dans la fiche.
+- [x] Conserver les capacités absentes des 100 observations récentes.
+- [x] Conserver Platform 1.0.27 comme composition supportée.
+
+
 ## Version 1.0.27 — Routage des suspensions d’équipements
 
 - [x] Référencer Ohana-Agent 1.11.5 et Ohana-Vision 1.10.1.
