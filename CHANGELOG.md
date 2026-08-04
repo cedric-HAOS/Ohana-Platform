@@ -6,6 +6,21 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.29] - 2026-08-04
+
+### Corrigé
+
+* Référencement d'Ohana-Agent 1.11.6, qui publie les suspensions planifiées de
+  télémétrie Home Assistant avec le même identifiant de capacité que les
+  observations exécutées.
+* Référencement d'Ohana-Vision 1.10.3, qui resynchronise immédiatement la carte
+  avec les observations et reconstruit les timelines bornées par plage horaire.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.29.
+* Assets Agent et Vision complets et sommes SHA-256 vérifiées après publication.
+
 ## [1.0.28] - 2026-08-02
 
 ### Corrigé
