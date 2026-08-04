@@ -6,6 +6,21 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.32] - 2026-08-04
+
+### Ajouté
+
+* Référencement d'Ohana-Vision 1.10.6, qui indique les équipements Z-Wave
+  découverts restant à positionner et prépare leur placement uniquement sur
+  action explicite dans la page Architecture.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.32.
+* Simulation des 19 équipements d’INFRA-01 et validation du brouillon par le
+  modèle strict d’Ohana-Agent.
+* Assets Vision complets et sommes SHA-256 vérifiées après publication.
+
 ## [1.0.31] - 2026-08-04
 
 ### Corrigé

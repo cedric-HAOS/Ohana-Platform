@@ -72,6 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.32 | 1.11.7 | 1.10.6 | 3.13+ | Linux/systemd |
 | 1.0.31 | 1.11.7 | 1.10.5 | 3.13+ | Linux/systemd |
 | 1.0.30 | 1.11.7 | 1.10.4 | 3.13+ | Linux/systemd |
 | 1.0.29 | 1.11.6 | 1.10.3 | 3.13+ | Linux/systemd |
@@ -117,6 +118,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.32
+
+Cette composition signale dans Architecture les équipements Z-Wave découverts
+restant à positionner. Leur placement automatique est explicitement demandé,
+prévisualisé dans le brouillon puis persisté uniquement avec « Appliquer
+l’architecture ».
 
 ## Composition 1.0.31
 
