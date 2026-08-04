@@ -12,14 +12,18 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 * Référencement d'Ohana-Agent 1.11.8, qui publie les nœuds découverts avec le
   type dédié `zwave_module`.
-* Référencement d'Ohana-Vision 1.10.7, qui ajoute « Module Z-Wave », son icône
-  radio et harmonise les cartes compactes et leurs liaisons.
+* Référencement d'Ohana-Vision 1.10.7, qui ajoute « Module Z-Wave », une icône
+  inspirée de la marque et harmonise les cartes compactes et leurs liaisons.
+* Les équipements Z-Wave découverts contribuent désormais aux indicateurs de
+  supervision, le bandeau est réduit à quatre KPI complémentaires et les
+  liaisons Wi-Fi utilisent les mêmes troncs radio que Z-Wave.
 
 ### Validation
 
-* Validation visuelle Chromium du nom borné et des liaisons regroupées.
-* Suites complètes Agent, Vision et Installer, manifeste, catalogue, assets et
-  sommes SHA-256 vérifiés avant publication.
+* Validation visuelle du bandeau à quatre KPI et des cartes radio compactes.
+* Suites complètes Agent (`1220 passed, 1 skipped`), Vision (`813 passed`) et
+  Installer (`247 passed`), Ruff, manifeste, catalogue, assets et sommes
+  SHA-256 vérifiés avant publication.
 
 ## [1.0.32] - 2026-08-04
 
