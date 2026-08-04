@@ -72,6 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.33 | 1.11.8 | 1.10.7 | 3.13+ | Linux/systemd |
 | 1.0.32 | 1.11.7 | 1.10.6 | 3.13+ | Linux/systemd |
 | 1.0.31 | 1.11.7 | 1.10.5 | 3.13+ | Linux/systemd |
 | 1.0.30 | 1.11.7 | 1.10.4 | 3.13+ | Linux/systemd |
@@ -118,6 +119,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.33
+
+Cette composition distingue les nœuds découverts avec le type « Module
+Z-Wave » et une icône radio dédiée. Les cartes compactes contiennent leurs
+libellés et les liaisons d’une même passerelle partagent des troncs plus
+discrets pour réduire l’enchevêtrement visuel.
 
 ## Composition 1.0.32
 
