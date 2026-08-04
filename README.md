@@ -72,6 +72,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.31 | 1.11.7 | 1.10.5 | 3.13+ | Linux/systemd |
 | 1.0.30 | 1.11.7 | 1.10.4 | 3.13+ | Linux/systemd |
 | 1.0.29 | 1.11.6 | 1.10.3 | 3.13+ | Linux/systemd |
 | 1.0.28 | 1.11.5 | 1.10.2 | 3.13+ | Linux/systemd |
@@ -116,6 +117,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.31
+
+Cette composition corrige le rendu de la topologie lorsqu’un même équipement,
+notamment la passerelle Z-Wave, porte plusieurs liaisons. Elle conserve la
+découverte automatique et l’état vivant des nœuds fournis par Agent 1.11.7.
 
 ## Composition 1.0.30
 

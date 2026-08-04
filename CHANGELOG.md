@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.31] - 2026-08-04
+
+### Corrigé
+
+* Référencement d'Ohana-Vision 1.10.5, qui restaure le rendu de la topologie
+  lorsque plusieurs liaisons partagent le même équipement, notamment la
+  passerelle Z-Wave.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.31.
+* Assets Vision complets et sommes SHA-256 vérifiées après publication.
+
 ## [1.0.30] - 2026-08-04
 
 ### Ajouté
