@@ -6,6 +6,21 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.30] - 2026-08-04
+
+### Ajouté
+
+* Référencement d'Ohana-Agent 1.11.7, qui découvre automatiquement les nœuds
+  Z-Wave JS et publie leur état vivant sans reproduire le maillage radio.
+* Référencement d'Ohana-Vision 1.10.4, qui affiche les équipements radio sous
+  forme compacte et permet de replier indépendamment les groupes Wi-Fi et
+  Z-Wave.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.30.
+* Assets Agent et Vision complets et sommes SHA-256 vérifiées après publication.
+
 ## [1.0.29] - 2026-08-04
 
 ### Corrigé

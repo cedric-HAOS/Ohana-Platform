@@ -72,6 +72,8 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.30 | 1.11.7 | 1.10.4 | 3.13+ | Linux/systemd |
+| 1.0.29 | 1.11.6 | 1.10.3 | 3.13+ | Linux/systemd |
 | 1.0.28 | 1.11.5 | 1.10.2 | 3.13+ | Linux/systemd |
 | 1.0.27 | 1.11.5 | 1.10.1 | 3.13+ | Linux/systemd |
 | 1.0.25 | 1.11.3 | 1.10.1 | 3.13+ | Linux/systemd |
@@ -114,6 +116,19 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.30
+
+Cette composition ajoute la découverte automatique des nœuds Z-Wave JS et
+leur état vivant dans la carte d’infrastructure. Les équipements radio sont
+compacts, les groupes Wi-Fi et Z-Wave peuvent être repliés indépendamment et
+le maillage Z-Wave entre équipements n’est pas reproduit.
+
+## Composition 1.0.29
+
+Cette composition resynchronise immédiatement la carte avec les observations,
+reconstruit correctement les timelines bornées par plage horaire et unifie
+l’identifiant des capacités de télémétrie Home Assistant suspendues.
 
 ## Composition 1.0.28
 
