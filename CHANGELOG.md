@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.34] - 2026-08-04
+
+### Corrigé
+
+* Référencement d'Ohana-Vision 1.10.8, qui corrige le routage des liaisons
+  Wi-Fi et Z-Wave : troncs pointillés, indicateurs radio lisibles et absence de
+  troncs intermédiaires pour une ou deux branches.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.34.
+* Assets et sommes SHA-256 de Vision 1.10.8 vérifiés après publication.
+
 ## [1.0.33] - 2026-08-04
 
 ### Ajouté
