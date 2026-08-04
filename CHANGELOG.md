@@ -6,6 +6,20 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.35] - 2026-08-04
+
+### Corrigé
+
+* Référencement d'Ohana-Vision 1.10.9, qui supprime les troncs radio
+  synthétiques : chaque chemin Wi-Fi ou Z-Wave affiché correspond désormais à
+  une liaison déclarée dans la topologie.
+
+### Validation
+
+* Validation visuelle de 18 liaisons radio déclarées et rendues sans segment
+  synthétique.
+* Concordance du manifeste et du catalogue Platform 1.0.35.
+
 ## [1.0.34] - 2026-08-04
 
 ### Corrigé
