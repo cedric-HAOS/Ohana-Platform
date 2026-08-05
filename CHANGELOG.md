@@ -6,6 +6,16 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.36] - 2026-08-05
+
+### Corrigé
+
+* Référencement d'Ohana-Agent 1.11.9. Une réponse ICMP Windows n’est désormais valide que si elle contient un TTL.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.36.
+
 ## [1.0.35] - 2026-08-04
 
 ### Corrigé
