@@ -6,6 +6,26 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.39] - 2026-08-10
+
+### Ajouté
+
+* Référencement d'Ohana-Agent 1.12.0, qui garantit sur disque les observations
+  en attente et les rejoue de manière ordonnée et idempotente.
+* Référencement d'Ohana-Vision 1.11.0, qui persiste les observations et ajoute
+  le Centre d'incidents avec acquittement, silence temporaire et résolution.
+
+### Déploiement
+
+* Ohana-Installer 1.7.1 crée les répertoires d'état systemd nécessaires sous
+  `/var/lib/ohana-agent` et `/var/lib/ohana-vision`.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.39.
+* Tags, assets et sommes SHA-256 d'Agent 1.12.0, Vision 1.11.0 et Installer
+  1.7.1 vérifiés après publication.
+
 ## [1.0.38] - 2026-08-10
 
 ### Amélioré
