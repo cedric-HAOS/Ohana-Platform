@@ -6,6 +6,22 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.41] - 2026-08-10
+
+### Corrigé
+
+* Référencement d'Ohana-Agent 1.12.2, qui corrige les modèles MQTT Discovery
+  des métriques hôte optionnelles.
+* Le helper DHCP privilégié ne dépend plus du chargement de Pydantic lorsqu'il
+  est déclenché pendant le remplacement de l'environnement Agent.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.41 validée avec le
+  parseur Ohana-Installer.
+* Les quinze artefacts Agent 1.12.2 et leurs empreintes GitHub ont été
+  contrôlés avant publication de Platform.
+
 ## [1.0.40] - 2026-08-10
 
 ### Amélioré
