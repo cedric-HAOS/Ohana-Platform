@@ -6,6 +6,25 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.43] - 2026-08-10
+
+### Amélioré
+
+* Référencement d'Ohana-Vision 1.11.2, qui transforme la page
+  **Supervision / Hôte** en cockpit de santé avec de grands pictogrammes sain,
+  dégradé et critique, des jauges de ressources et un diagnostic synthétique.
+* La composition recommandée conserve Ohana-Agent 1.12.3 et adopte
+  Ohana-Vision 1.11.2.
+
+### Validation
+
+* Vision : 845 tests réussis, Ruff et format validés, installation isolée du
+  wheel 1.11.2 et présence des trois pictogrammes contrôlée dans le paquet.
+* Rendu Vision contrôlé aux largeurs 1920, 1024 et 600 pixels sans erreur
+  JavaScript.
+* Concordance du manifeste et du catalogue Platform 1.0.43 validée avec le
+  parseur Ohana-Installer.
+
 ## [1.0.42] - 2026-08-10
 
 ### Amélioré
