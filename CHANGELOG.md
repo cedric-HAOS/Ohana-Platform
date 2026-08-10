@@ -6,6 +6,28 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.42] - 2026-08-10
+
+### Amélioré
+
+* Référencement d'Ohana-Agent 1.12.3, qui partage la santé de l'hôte avec
+  Vision, affiche les uptimes sous forme lisible et calcule l'état global ainsi
+  que les incidents critiques au niveau des services logiques redondants.
+* Référencement d'Ohana-Vision 1.11.1, qui ajoute la page
+  **Supervision / Hôte** et le groupe de disponibilité dans l'éditeur de
+  services.
+* Les anciennes configurations possédant plusieurs DNS activés sont reconnues
+  automatiquement comme un groupe redondant.
+
+### Validation
+
+* Agent : 1247 tests réussis, 1 test ignoré, installation propre et quinze
+  assets vérifiés avec leurs empreintes GitHub.
+* Vision : 842 tests réussis, installation du wheel 1.11.1 et quatre assets
+  vérifiés avec leurs empreintes GitHub.
+* Concordance du manifeste et du catalogue Platform 1.0.42 validée avec le
+  parseur Ohana-Installer.
+
 ## [1.0.41] - 2026-08-10
 
 ### Corrigé
