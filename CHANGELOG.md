@@ -6,6 +6,24 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.40] - 2026-08-10
+
+### Amélioré
+
+* Référencement d'Ohana-Agent 1.12.1, qui publie la santé de la machine hôte
+  dans Home Assistant et agrège les instances redondantes en services
+  logiques.
+* La perte d'une seule instance DNS produit désormais un service dégradé tant
+  qu'une autre instance du groupe reste saine, sans masquer les alertes
+  techniques individuelles.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.40 validée avec le
+  parseur Ohana-Installer.
+* Les fichiers de configuration attendus par le manifeste sont inclus dans la
+  release Agent 1.12.1 et couverts par `SHA256SUMS`.
+
 ## [1.0.39] - 2026-08-10
 
 ### Ajouté
