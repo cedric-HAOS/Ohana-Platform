@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.38] - 2026-08-10
+
+### Amélioré
+
+* Référencement d'Ohana-Agent 1.11.11, qui contextualise les alertes Home
+  Assistant avec les équipements, services et capacités affectés, et retire
+  l'ancienne entité « Dernière évaluation » devenue redondante.
+
+### Validation
+
+* Concordance du manifeste et du catalogue Platform 1.0.38.
+* Assets et sommes SHA-256 d'Agent 1.11.11 vérifiés après publication.
+
 ## [1.0.36] - 2026-08-05
 
 ### Corrigé
