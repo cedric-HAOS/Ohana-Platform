@@ -1,7 +1,7 @@
 # Sauvegarder les HAOS vers iCloud
 
-La composition Platform 1.0.47 associe Ohana-Agent 1.12.5 et Ohana-Vision
-1.11.6 pour protéger HA-01, LINKY-01 et ZWAVE-01.
+La composition Platform 1.0.48 associe Ohana-Agent 1.12.6 et Ohana-Vision
+1.11.7 pour protéger HA-01, LINKY-01 et ZWAVE-01.
 
 Agent demande une sauvegarde complète et chiffrée à chaque HAOS, la transmet
 directement à iCloud avec rclone et publie une somme SHA-256. L'archive ne doit
@@ -64,6 +64,23 @@ L'ancien fichier `backup.env` reste accepté uniquement pour migration.
 Les champs Apple ne sont pas requis pour appliquer les réglages HAOS. Après
 toute modification, cliquer sur **Appliquer** avant **Tester maintenant** ;
 Vision signale explicitement une configuration non encore appliquée.
+
+## Déclencher une sauvegarde immédiatement
+
+Dans la vue d'ensemble, ouvrir la fiche de l'équipement HAOS puis utiliser le
+bouton **Sauvegarder** placé en haut de la carte. Il n'apparaît que lorsque le
+plugin et la cible correspondante sont activés. La correspondance utilise
+l'identifiant technique exact : la fiche HA-01 (`ha-01`) lance exclusivement
+la cible `ha-01`, et il en va de même pour LINKY-01 et ZWAVE-01.
+
+Après confirmation, Vision indique que la sauvegarde a démarré en arrière-plan.
+Le bouton est alors remplacé par **Backup in progress** jusqu'à la fin réelle
+de la tâche Agent, ce qui interdit les clics multiples même après avoir fermé
+et rouvert la fiche.
+Agent poursuit alors le même flux que pour la planification quotidienne :
+création complète et chiffrée, envoi iCloud, validation distante, puis rotation
+locale. Une demande ne contourne aucune garantie de conservation et une cible
+déjà en cours ne peut pas être relancée simultanément.
 
 ## Activer progressivement
 

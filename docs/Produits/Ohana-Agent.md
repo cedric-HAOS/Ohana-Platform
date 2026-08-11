@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.12.6 | 1.11.7 | 1.7.3 | 1.0.48 |
 | 1.12.5 | 1.11.6 | 1.7.3 | 1.0.47 |
 | 1.11.5 | 1.10.2 | 1.7.0 | 1.0.28 |
 | 1.11.5 | 1.10.1 | 1.7.0 | 1.0.27 |
@@ -81,3 +82,7 @@ Ohana-Agent 1.12.5 remplace le proxy interne `/api/hassio/*` par l'API
 WebSocket publique de Home Assistant, accepte la saisie masquée des secrets via
 Vision et pilote la configuration rclone/iCloud sans exposer les identifiants
 enregistrés.
+
+Ohana-Agent 1.12.6 lance une cible HAOS précise en arrière-plan depuis l'API
+d'administration, publie son état d'exécution et interdit une seconde
+sauvegarde simultanée de la même cible.

@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.48 | 1.12.6 | 1.11.7 | 3.13+ | Linux/systemd |
 | 1.0.47 | 1.12.5 | 1.11.6 | 3.13+ | Linux/systemd |
 | 1.0.46 | 1.12.5 | 1.11.5 | 3.13+ | Linux/systemd |
 | 1.0.45 | 1.12.5 | 1.11.4 | 3.13+ | Linux/systemd |
@@ -130,6 +131,14 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.48
+
+Cette composition permet de lancer immédiatement la sauvegarde HAOS d'un
+équipement depuis sa fiche. Le bouton correspond strictement à la cible du
+plugin portant le même identifiant et devient **Backup in progress** jusqu'à la
+fin réelle de la tâche. Vision tolère aussi le démarrage à froid de rclone lors
+de la connexion iCloud et du test.
 
 ## Composition 1.0.47
 

@@ -4,6 +4,24 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.48] - 2026-08-11
+
+### Ajouté
+
+* La prochaine composition Agent/Vision permet de déclencher une sauvegarde
+  HAOS immédiate depuis la fiche de l'équipement, avec une correspondance
+  stricte entre l'identifiant de l'équipement et celui de la cible du plugin.
+
+### Corrigé
+
+* Vision accorde un délai dédié au démarrage à froid de la connexion iCloud et
+  du test de sauvegarde, sans modifier les autres délais d'administration.
+
+### Validation
+
+* Agent 1.12.6 : 1272 tests réussis, 1 ignoré et Ruff validé.
+* Vision 1.11.7 : 848 tests réussis, Ruff et syntaxe JavaScript validés.
+
 ## [1.0.47] - 2026-08-11
 
 ### Corrigé

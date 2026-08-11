@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.11.7 | 1.12.6 | 1.7.3 | 1.0.48 |
 | 1.11.6 | 1.12.5 | 1.7.3 | 1.0.47 |
 | 1.10.2 | 1.11.5 | 1.7.0 | 1.0.28 |
 | 1.10.1 | 1.11.5 | 1.7.0 | 1.0.27 |
@@ -70,3 +71,7 @@ Ohana-Vision 1.11.6 distingue explicitement la clé de chiffrement du jeton
 Home Assistant, préserve les saisies HAOS pendant la connexion iCloud/2FA,
 permet d'appliquer ces réglages sans ressaisir les identifiants Apple et signale
 les modifications non appliquées avant un test.
+
+Ohana-Vision 1.11.7 ajoute le déclenchement immédiat depuis la fiche de chaque
+équipement HAOS, affiche **Backup in progress** pendant l'exécution et accorde
+un délai dédié au démarrage à froid des opérations iCloud.

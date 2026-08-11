@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.48 — Sauvegarde HAOS immédiate par équipement
+
+**Statut : publiée.**
+
+- [x] Déclencher la cible HAOS correspondant exactement à l'équipement.
+- [x] Exécuter la sauvegarde en arrière-plan sans bloquer Vision.
+- [x] Remplacer l'action par **Backup in progress** pendant l'exécution.
+- [x] Tolérer le démarrage à froid de rclone pour iCloud et le test.
+
 ## Version 1.0.47 — Application fiable des sauvegardes HAOS
 
 **Statut : publiée.**
