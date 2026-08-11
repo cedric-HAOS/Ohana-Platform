@@ -18,7 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
-| 1.12.4 | 1.11.3 | 1.7.1 | 1.0.44 |
+| 1.12.5 | 1.11.4 | 1.7.2 | 1.0.45 |
 | 1.11.5 | 1.10.2 | 1.7.0 | 1.0.28 |
 | 1.11.5 | 1.10.1 | 1.7.0 | 1.0.27 |
 | 1.11.3 | 1.10.1 | 1.6.1 | 1.0.25 |
@@ -76,3 +76,8 @@ est suspendu, supprimant le second crash révélé en production par `SUN-01`.
 Ohana-Agent 1.12.4 ajoute les sauvegardes HAOS chiffrées vers iCloud, sans
 archive persistante sur INFRA-01, avec validation distante avant rotation et
 diagnostic non destructif depuis Vision.
+
+Ohana-Agent 1.12.5 remplace le proxy interne `/api/hassio/*` par l'API
+WebSocket publique de Home Assistant, accepte la saisie masquée des secrets via
+Vision et pilote la configuration rclone/iCloud sans exposer les identifiants
+enregistrés.

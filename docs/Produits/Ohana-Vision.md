@@ -26,7 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
-| 1.11.3 | 1.12.4 | 1.7.1 | 1.0.44 |
+| 1.11.4 | 1.12.5 | 1.7.2 | 1.0.45 |
 | 1.10.2 | 1.11.5 | 1.7.0 | 1.0.28 |
 | 1.10.1 | 1.11.5 | 1.7.0 | 1.0.27 |
 | 1.10.1 | 1.11.3 | 1.6.1 | 1.0.25 |
@@ -61,6 +61,7 @@ trafic n’est estimée.
 Ohana-Vision 1.10.2 utilise la même timeline pour la santé des services dans
 la carte logique et dans la fiche équipement.
 
-Ohana-Vision 1.11.3 configure les sauvegardes HAOS depuis la page Plugins :
-activation globale et par cible, adresses, heures quotidiennes, TLS, destination
-iCloud et préparation NVM, sans exposer les secrets conservés par Agent.
+La page Plugins de Vision configure les sauvegardes HAOS : activation globale
+et par cible, adresses, heures quotidiennes, TLS, jetons et mots de passe
+masqués, connexion iCloud avec 2FA, dossier distant et préparation NVM. Les
+valeurs enregistrées ne sont jamais renvoyées par Agent.

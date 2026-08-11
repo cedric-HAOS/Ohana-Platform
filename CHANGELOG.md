@@ -4,7 +4,17 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
-## [Unreleased]
+## [1.0.45] - 2026-08-11
+
+### Modifié
+
+* Vision recueille désormais directement les jetons HAOS et mots de passe de
+  chiffrement dans des champs masqués, sans exposer leur valeur après
+  enregistrement.
+* La connexion iCloud et son renouvellement 2FA sont pilotés depuis Vision ;
+  Installer fournit automatiquement la version vérifiée de rclone.
+* Agent s'appuie sur les API publiques de sauvegarde Home Assistant et conserve
+  `backup.env` uniquement pour la migration des installations existantes.
 
 ## [1.0.44] - 2026-08-11
 

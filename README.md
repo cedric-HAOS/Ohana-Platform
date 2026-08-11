@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.45 | 1.12.5 | 1.11.4 | 3.13+ | Linux/systemd |
 | 1.0.44 | 1.12.4 | 1.11.3 | 3.13+ | Linux/systemd |
 | 1.0.43 | 1.12.3 | 1.11.2 | 3.13+ | Linux/systemd |
 | 1.0.42 | 1.12.3 | 1.11.1 | 3.13+ | Linux/systemd |
@@ -127,6 +128,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.45
+
+Cette composition permet la saisie sécurisée des secrets HAOS et la connexion
+iCloud avec 2FA depuis Vision. Agent utilise les API publiques de sauvegarde
+Home Assistant et Installer 1.7.2 fournit automatiquement la version vérifiée
+de rclone.
 
 ## Composition 1.0.44
 

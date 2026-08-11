@@ -15,7 +15,7 @@ Pour une installation automatisée explicitement acceptée :
 sudo ohana install --yes
 ```
 
-La composition Platform 1.0.44 installe Ohana-Agent 1.12.4 sous
+La composition Platform 1.0.45 installe Ohana-Agent 1.12.5 sous
 `/opt/ohana-agent`, déploie ses configurations sous `/etc/ohana-agent` et crée
 `ohana-agent.service`.
 
@@ -27,7 +27,7 @@ sudo systemctl is-active ohana-agent.service
 sudo journalctl -u ohana-agent.service -n 100 --no-pager
 ```
 
-Résultats attendus : service `active` et version `ohana-agent 1.12.4`.
+Résultats attendus : service `active` et version `ohana-agent 1.12.5`.
 
 ## Configuration
 
@@ -40,9 +40,10 @@ Les fichiers principaux sont :
 /etc/ohana-agent/plugins/
 ```
 
-La configuration `plugins/backup.yaml` est installée désactivée. Avant son
-activation depuis Vision, préparer `/etc/ohana-agent/backup.env`, rclone et le
-script NVM selon le guide
+La configuration `plugins/backup.yaml` est installée désactivée. Installer
+prépare automatiquement rclone ; les jetons HAOS, les mots de passe de
+chiffrement et la connexion iCloud sont ensuite saisis dans Vision. Avant
+l'activation, préparer uniquement le script NVM de ZWAVE-01 selon le guide
 [Sauvegarder les HAOS vers iCloud](Sauvegarder-HAOS-vers-iCloud.md).
 
 Les modifications graphiques réalisées dans Vision passent par l'API

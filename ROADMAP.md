@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.45 — Secrets HAOS et connexion iCloud
+
+**Statut : publiée.**
+
+- [x] Saisir les secrets HAOS dans Vision sans les relire depuis Agent.
+- [x] Connecter et renouveler iCloud avec le flux 2FA rclone.
+- [x] Installer automatiquement une version vérifiée de rclone.
+- [x] Utiliser les API publiques de sauvegarde Home Assistant.
+
 ## Version 1.0.44 — Sauvegardes HAOS vers iCloud
 
 - [x] Référencer Ohana-Agent 1.12.4 et Ohana-Vision 1.11.3.

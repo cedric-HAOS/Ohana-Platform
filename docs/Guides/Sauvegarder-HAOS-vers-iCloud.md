@@ -1,7 +1,7 @@
 # Sauvegarder les HAOS vers iCloud
 
-La composition Platform 1.0.44 associe Ohana-Agent 1.12.4 et Ohana-Vision
-1.11.3 pour protéger HA-01, LINKY-01 et ZWAVE-01.
+La composition Platform 1.0.45 associe Ohana-Agent 1.12.5 et Ohana-Vision
+1.11.4 pour protéger HA-01, LINKY-01 et ZWAVE-01.
 
 Agent demande une sauvegarde complète et chiffrée à chaque HAOS, la transmet
 directement à iCloud avec rclone et publie une somme SHA-256. L'archive ne doit
@@ -19,48 +19,46 @@ sur `/run`, qui doit être monté en `tmpfs`.
 
 ## Préparer INFRA-01
 
-Installer et configurer rclone avec un remote nommé `icloud`, puis placer sa
-configuration dans `/etc/ohana-agent/rclone.conf` avec le propriétaire
-`root:ohana-agent` et le mode `0640`.
+Ohana-Installer installe automatiquement une version de rclone dont l'archive
+officielle et la somme SHA-256 sont épinglées. Cette version contient le backend
+`iclouddrive`. Aucune commande rclone manuelle ni création préalable de
+`rclone.conf` n'est nécessaire.
 
-Créer `/etc/ohana-agent/backup.env` avec les six secrets :
-
-```text
-OHANA_BACKUP_HA_01_TOKEN=...
-OHANA_BACKUP_HA_01_PASSWORD=...
-OHANA_BACKUP_LINKY_01_TOKEN=...
-OHANA_BACKUP_LINKY_01_PASSWORD=...
-OHANA_BACKUP_ZWAVE_01_TOKEN=...
-OHANA_BACKUP_ZWAVE_01_PASSWORD=...
-```
-
-Les jetons sont des jetons d'accès longue durée d'administrateurs Home
-Assistant. Les mots de passe chiffrent les sauvegardes et doivent également
-être conservés hors d'INFRA-01 dans la procédure de reconstruction.
-
-```bash
-sudo chown root:ohana-agent /etc/ohana-agent/backup.env \
-  /etc/ohana-agent/rclone.conf
-sudo chmod 0640 /etc/ohana-agent/backup.env \
-  /etc/ohana-agent/rclone.conf
-sudo -u ohana-agent rclone lsd \
-  --config /etc/ohana-agent/rclone.conf icloud:
-```
+Les jetons sont des jetons d'accès longue durée créés par des administrateurs
+Home Assistant. Les mots de passe de chiffrement des sauvegardes doivent aussi
+être conservés hors d'INFRA-01 dans le gestionnaire de mots de passe et la
+procédure de reconstruction.
 
 ## Configurer depuis Vision
 
-Ouvrir **Configuration → Plugins → Sauvegardes HAOS**. Pour chaque cible :
+Ouvrir **Configuration → Plugins → Sauvegardes HAOS**.
+
+Dans **Connexion iCloud** :
+
+1. saisir l'identifiant Apple et le mot de passe Apple normal ;
+2. approuver la demande sur un appareil de confiance ;
+3. saisir le code 2FA dans Vision ;
+4. choisir le dossier, par défaut `Ohana/Backups`.
+
+Les mots de passe spécifiques aux applications Apple ne sont pas acceptés par
+rclone. Le jeton de confiance doit être renouvelé périodiquement avec le bouton
+**Reconnecter iCloud**.
+
+Pour chaque cible HAOS :
 
 1. renseigner une URL complète, par exemple
    `http://ha-01.ohana.lan:8123` ;
 2. choisir l'heure quotidienne et le délai maximal ;
 3. conserver la vérification TLS pour les URL HTTPS ;
-4. vérifier que Vision indique le jeton et le mot de passe comme présents ;
+4. saisir directement le jeton Home Assistant et le mot de passe de
+   chiffrement dans les champs masqués ; laisser un champ vide conserve la
+   valeur déjà enregistrée ;
 5. pour ZWAVE-01, valider le script `script.ohana_backup_zwave_nvm`, qui doit
    attendre la fin réelle de l'export NVM.
 
-La destination par défaut est `icloud:Ohana/Backups`. Agent reste propriétaire
-du YAML et applique la nouvelle planification dès la confirmation du formulaire.
+Agent protège les secrets enregistrés, ne renvoie jamais leur valeur à Vision
+et applique la nouvelle planification dès la confirmation du formulaire.
+L'ancien fichier `backup.env` reste accepté uniquement pour migration.
 
 ## Activer progressivement
 

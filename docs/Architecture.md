@@ -16,11 +16,13 @@ et son contrat complet sont définis par
 
 ## Flux des sauvegardes HAOS
 
-Vision administre la politique de sauvegarde à travers l'API locale d'Agent,
-sans lire les secrets. Agent appelle le proxy Supervisor de chaque HAOS, puis
-transmet le flux chiffré directement à rclone. Seuls les tampons rclone placés
-sur `tmpfs` résident sur INFRA-01. La rotation locale intervient après
-validation de la taille distante et du SHA-256.
+Vision administre la politique, la saisie masquée des secrets et le flux 2FA
+iCloud à travers l'API locale d'Agent, sans jamais relire les valeurs
+enregistrées. Agent utilise l'API WebSocket publique de Home Assistant et la
+route publique de téléchargement, puis transmet le flux chiffré directement à
+rclone. Seuls les tampons rclone placés sur `tmpfs` résident sur INFRA-01. La
+rotation locale intervient après validation de la taille distante et du
+SHA-256.
 
 Voir le guide [Sauvegarder les HAOS vers iCloud](Guides/Sauvegarder-HAOS-vers-iCloud.md).
 
