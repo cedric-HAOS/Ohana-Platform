@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.47 — Application fiable des sauvegardes HAOS
+
+**Statut : publiée.**
+
+- [x] Ne pas soumettre les champs Apple à la validation du formulaire HAOS.
+- [x] Valider les identifiants Apple uniquement pendant la connexion iCloud.
+- [x] Signaler les modifications non appliquées avant un test.
+- [x] Conserver Agent 1.12.5 et Installer 1.7.3.
+
 ## Version 1.0.46 — Ergonomie des sauvegardes HAOS
 
 **Statut : publiée.**

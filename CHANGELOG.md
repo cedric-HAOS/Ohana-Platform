@@ -4,6 +4,24 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.47] - 2026-08-11
+
+### Corrigé
+
+* Référencement d'Ohana-Vision 1.11.6 : les champs Apple masqués ne
+  bloquent plus silencieusement l'application de la configuration HAOS.
+* Les identifiants Apple et le code 2FA sont exigés uniquement pendant la
+  connexion ou le renouvellement iCloud.
+* Le test signale les modifications non appliquées au lieu d'utiliser sans
+  avertissement l'ancienne configuration enregistrée par Agent.
+
+### Validation
+
+* Vision : 846 tests réussis, Ruff, format, syntaxe JavaScript, import isolé
+  du wheel et artefacts distants validés par SHA-256.
+* Concordance du manifeste et du catalogue Platform 1.0.47 validée avec le
+  parseur Ohana-Installer.
+
 ## [1.0.46] - 2026-08-11
 
 ### Amélioré

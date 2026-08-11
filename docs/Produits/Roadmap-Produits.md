@@ -4,9 +4,9 @@
 
 | Produit | Version | État |
 |---|---:|---|
-| Ohana-Platform | 1.0.46 | publiée |
+| Ohana-Platform | 1.0.47 | publiée |
 | Ohana-Agent | 1.12.5 | publié |
-| Ohana-Vision | 1.11.5 | publiée |
+| Ohana-Vision | 1.11.6 | publiée |
 | Ohana-Installer | 1.7.3 | publié |
 | Ohana-House | 2.0 Hashirama | référentiel d'infrastructure |
 

@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.47 | 1.12.5 | 1.11.6 | 3.13+ | Linux/systemd |
 | 1.0.46 | 1.12.5 | 1.11.5 | 3.13+ | Linux/systemd |
 | 1.0.45 | 1.12.5 | 1.11.4 | 3.13+ | Linux/systemd |
 | 1.0.44 | 1.12.4 | 1.11.3 | 3.13+ | Linux/systemd |
@@ -129,6 +130,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.47
+
+Cette composition permet d'appliquer les réglages HAOS sans ressaisir les
+identifiants Apple d'une connexion iCloud déjà configurée. Vision avertit aussi
+l'opérateur lorsqu'un test porterait sur une configuration non encore
+appliquée.
 
 ## Composition 1.0.46
 
