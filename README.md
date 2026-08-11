@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.49 | 1.12.7 | 1.11.7 | 3.13+ | Linux/systemd |
 | 1.0.48 | 1.12.6 | 1.11.7 | 3.13+ | Linux/systemd |
 | 1.0.47 | 1.12.5 | 1.11.6 | 3.13+ | Linux/systemd |
 | 1.0.46 | 1.12.5 | 1.11.5 | 3.13+ | Linux/systemd |
@@ -131,6 +132,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.49
+
+Cette composition accepte les téléchargements HAOS segmentés sans
+`Content-Length` en utilisant la taille exacte publiée par `backup/info`.
+L'envoi iCloud reste refusé si aucune source ne permet de borner le flux.
 
 ## Composition 1.0.48
 

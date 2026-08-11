@@ -4,6 +4,23 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.49] - 2026-08-11
+
+### Corrigé
+
+* Référencement d'Ohana-Agent 1.12.7, qui récupère la taille exacte de
+  `backup/info` lorsque Home Assistant diffuse une sauvegarde sans
+  `Content-Length`.
+* Le streaming reste borné et refuse toujours un téléchargement dont la taille
+  est absente à la fois des métadonnées HAOS et de la réponse HTTP.
+* La protection de la carte microSD d'INFRA-01 et la validation distante avant
+  rotation restent inchangées.
+
+### Validation
+
+* Agent : 1274 tests réussis, 1 ignoré, Ruff, paquet et installation isolée.
+* Manifeste et catalogue validés avec le parseur Ohana-Installer.
+
 ## [1.0.48] - 2026-08-11
 
 ### Ajouté

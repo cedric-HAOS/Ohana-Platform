@@ -1,12 +1,17 @@
 # Sauvegarder les HAOS vers iCloud
 
-La composition Platform 1.0.48 associe Ohana-Agent 1.12.6 et Ohana-Vision
+La composition Platform 1.0.49 associe Ohana-Agent 1.12.7 et Ohana-Vision
 1.11.7 pour protéger HA-01, LINKY-01 et ZWAVE-01.
 
 Agent demande une sauvegarde complète et chiffrée à chaque HAOS, la transmet
 directement à iCloud avec rclone et publie une somme SHA-256. L'archive ne doit
 jamais être stockée sur la carte microSD d'INFRA-01 : les tampons rclone restent
 sur `/run`, qui doit être monté en `tmpfs`.
+
+Home Assistant peut diffuser l'archive en HTTP segmenté sans
+`Content-Length`. Agent utilise dans ce cas la taille exacte annoncée dans
+`backup/info`. Si aucune taille positive n'est disponible dans les métadonnées
+ou la réponse HTTP, l'envoi est refusé avant le démarrage de rclone.
 
 ## Garanties de conservation
 

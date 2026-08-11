@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.49 — Streaming HAOS segmenté
+
+**Statut : publiée.**
+
+- [x] Accepter l'absence de `Content-Length` pour le téléchargement HAOS.
+- [x] Utiliser la taille exacte publiée par `backup/info`.
+- [x] Refuser tout flux qui reste réellement non borné.
+- [x] Conserver le streaming sans archive persistante sur INFRA-01.
+
 ## Version 1.0.48 — Sauvegarde HAOS immédiate par équipement
 
 **Statut : publiée.**

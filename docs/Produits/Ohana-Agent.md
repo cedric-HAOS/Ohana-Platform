@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.12.7 | 1.11.7 | 1.7.3 | 1.0.49 |
 | 1.12.6 | 1.11.7 | 1.7.3 | 1.0.48 |
 | 1.12.5 | 1.11.6 | 1.7.3 | 1.0.47 |
 | 1.11.5 | 1.10.2 | 1.7.0 | 1.0.28 |
@@ -86,3 +87,7 @@ enregistrés.
 Ohana-Agent 1.12.6 lance une cible HAOS précise en arrière-plan depuis l'API
 d'administration, publie son état d'exécution et interdit une seconde
 sauvegarde simultanée de la même cible.
+
+Ohana-Agent 1.12.7 utilise la taille exacte de l'inventaire HAOS pour les
+téléchargements segmentés sans `Content-Length`, sans relâcher le contrôle qui
+interdit un flux réellement non borné.
