@@ -9,7 +9,7 @@ Le déploiement de production d'Ohana-Vision est réalisé par
 sudo ohana install
 ```
 
-La composition Platform 1.0.45 installe Ohana-Vision 1.11.4 sous
+La composition Platform 1.0.46 installe Ohana-Vision 1.11.5 sous
 `/opt/ohana-vision`, déploie sa configuration sous `/etc/ohana-vision` et crée
 `ohana-vision.service`.
 
@@ -21,7 +21,7 @@ sudo systemctl is-active ohana-vision.service
 sudo journalctl -u ohana-vision.service -n 100 --no-pager
 ```
 
-Résultats attendus : service `active` et version `ohana-vision 1.11.4`.
+Résultats attendus : service `active` et version `ohana-vision 1.11.5`.
 L'interface est disponible par défaut sur :
 
 ```text

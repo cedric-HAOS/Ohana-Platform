@@ -4,6 +4,24 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.46] - 2026-08-11
+
+### Amélioré
+
+* Référencement d'Ohana-Vision 1.11.5, qui nomme explicitement la clé de
+  chiffrement des sauvegardes et indique son emplacement dans Home Assistant.
+* Les valeurs HAOS non encore appliquées restent préservées pendant la
+  connexion iCloud et la validation 2FA.
+* Le formulaire de connexion Apple est replié après configuration et précise
+  que les identifiants ne sont pas conservés.
+
+### Validation
+
+* Vision : 846 tests réussis, Ruff, format, syntaxe JavaScript et artefacts
+  distants validés par SHA-256.
+* Concordance du manifeste et du catalogue Platform 1.0.46 validée avec le
+  parseur Ohana-Installer.
+
 ## [1.0.45] - 2026-08-11
 
 ### Modifié

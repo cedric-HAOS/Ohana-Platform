@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.46 | 1.12.5 | 1.11.5 | 3.13+ | Linux/systemd |
 | 1.0.45 | 1.12.5 | 1.11.4 | 3.13+ | Linux/systemd |
 | 1.0.44 | 1.12.4 | 1.11.3 | 3.13+ | Linux/systemd |
 | 1.0.43 | 1.12.3 | 1.11.2 | 3.13+ | Linux/systemd |
@@ -128,6 +129,14 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.46
+
+Cette composition clarifie la clé de chiffrement des sauvegardes dans Vision,
+conserve les valeurs HAOS non appliquées pendant le parcours iCloud/2FA et
+replie les identifiants Apple après la configuration. Installer 1.7.3 conserve
+l'installation fiable de rclone, y compris lorsque `/tmp` et `/usr` se trouvent
+sur des systèmes de fichiers distincts.
 
 ## Composition 1.0.45
 

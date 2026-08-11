@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.46 — Ergonomie des sauvegardes HAOS
+
+**Statut : publiée.**
+
+- [x] Distinguer clairement la clé de chiffrement du jeton Home Assistant.
+- [x] Indiquer l'emplacement de la clé dans l'interface Home Assistant.
+- [x] Préserver le formulaire HAOS pendant la connexion iCloud et le 2FA.
+- [x] Replier les identifiants Apple après configuration.
+
 ## Version 1.0.45 — Secrets HAOS et connexion iCloud
 
 **Statut : publiée.**
