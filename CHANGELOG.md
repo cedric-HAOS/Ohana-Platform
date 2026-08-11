@@ -4,6 +4,23 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.50] - 2026-08-11
+
+### Corrigé
+
+* Référencement d'Ohana-Vision 1.11.8, qui actualise en place les états de
+  santé et de présence sans reconstruire la topologie ni rejouer ses animations.
+* Les libellés, indicateurs, liaisons et attributs d'accessibilité de la carte
+  restent synchronisés avec les observations reçues en temps réel.
+* Une action Home Assistant absente pour ZWAVE-01 reste vide après application.
+  La planification NVM native de Z-Wave JS UI devient le parcours recommandé.
+
+### Validation
+
+* Vision 1.11.8 : 850 tests réussis, Ruff, syntaxe JavaScript, paquet et
+  installation isolée validés.
+* Manifeste et catalogue validés avec le parseur Ohana-Installer.
+
 ## [1.0.49] - 2026-08-11
 
 ### Corrigé

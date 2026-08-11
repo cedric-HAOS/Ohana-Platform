@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.50 — Topologie stable et préparation Z-Wave fiable
+
+**Statut : publiée.**
+
+- [x] Actualiser santé et présence sans reconstruire la carte.
+- [x] Synchroniser libellés, indicateurs, liaisons et accessibilité.
+- [x] Conserver vide l'action préparatoire ZWAVE-01 lorsqu'elle est supprimée.
+- [x] Recommander la planification NVM native de Z-Wave JS UI.
+
 ## Version 1.0.49 — Streaming HAOS segmenté
 
 **Statut : publiée.**

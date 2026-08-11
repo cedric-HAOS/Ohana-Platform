@@ -1,7 +1,7 @@
 # Sauvegarder les HAOS vers iCloud
 
-La composition Platform 1.0.49 associe Ohana-Agent 1.12.7 et Ohana-Vision
-1.11.7 pour protéger HA-01, LINKY-01 et ZWAVE-01.
+La composition Platform 1.0.50 associe Ohana-Agent 1.12.7 et Ohana-Vision
+1.11.8 pour protéger HA-01, LINKY-01 et ZWAVE-01.
 
 Agent demande une sauvegarde complète et chiffrée à chaque HAOS, la transmet
 directement à iCloud avec rclone et publie une somme SHA-256. L'archive ne doit
@@ -59,8 +59,9 @@ Pour chaque cible HAOS :
    sauvegardes dans les champs masqués ; cette clé est disponible dans
    **Home Assistant → Paramètres → Système → Sauvegardes** ; laisser un
    champ vide conserve la valeur déjà enregistrée ;
-5. pour ZWAVE-01, valider le script `script.ohana_backup_zwave_nvm`, qui doit
-   attendre la fin réelle de l'export NVM.
+5. pour ZWAVE-01, activer dans Z-Wave JS UI la sauvegarde NVM planifiée avant
+   l'heure HAOS, ainsi que la sauvegarde avant ajout, suppression ou
+   remplacement d'un nœud ; laisser vide l'action Home Assistant optionnelle.
 
 Agent protège les secrets enregistrés, ne renvoie jamais leur valeur à Vision
 et applique la nouvelle planification dès la confirmation du formulaire.
@@ -93,7 +94,7 @@ déjà en cours ne peut pas être relancée simultanément.
 2. utiliser **Tester maintenant** pour vérifier les accès sans écriture ;
 3. activer HA-01 seul et contrôler l'archive, le SHA-256 et une restauration ;
 4. activer LINKY-01 et répéter la validation ;
-5. valider l'export NVM puis activer ZWAVE-01 ;
+5. vérifier qu'un export NVM planifié est présent, puis activer ZWAVE-01 ;
 6. vérifier qu'une seule sauvegarde Ohana récente reste sur chaque HAOS.
 
 Le déploiement de Platform n'active aucune sauvegarde automatiquement. Il

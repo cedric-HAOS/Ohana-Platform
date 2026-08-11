@@ -15,7 +15,7 @@ Pour une installation automatisée explicitement acceptée :
 sudo ohana install --yes
 ```
 
-La composition Platform 1.0.49 installe Ohana-Agent 1.12.7 sous
+La composition Platform 1.0.50 installe Ohana-Agent 1.12.7 sous
 `/opt/ohana-agent`, déploie ses configurations sous `/etc/ohana-agent` et crée
 `ohana-agent.service`.
 

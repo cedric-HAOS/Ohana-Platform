@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.11.8 | 1.12.7 | 1.7.3 | 1.0.50 |
 | 1.11.7 | 1.12.7 | 1.7.3 | 1.0.49 |
 | 1.11.7 | 1.12.6 | 1.7.3 | 1.0.48 |
 | 1.11.6 | 1.12.5 | 1.7.3 | 1.0.47 |
@@ -76,3 +77,7 @@ les modifications non appliquées avant un test.
 Ohana-Vision 1.11.7 ajoute le déclenchement immédiat depuis la fiche de chaque
 équipement HAOS, affiche **Backup in progress** pendant l'exécution et accorde
 un délai dédié au démarrage à froid des opérations iCloud.
+
+Ohana-Vision 1.11.8 actualise les états de la topologie sans reconstruire la
+carte. Pour ZWAVE-01, une action Home Assistant supprimée reste vide ; la
+sauvegarde NVM planifiée dans Z-Wave JS UI avant l'heure HAOS est recommandée.

@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.50 | 1.12.7 | 1.11.8 | 3.13+ | Linux/systemd |
 | 1.0.49 | 1.12.7 | 1.11.7 | 3.13+ | Linux/systemd |
 | 1.0.48 | 1.12.6 | 1.11.7 | 3.13+ | Linux/systemd |
 | 1.0.47 | 1.12.5 | 1.11.6 | 3.13+ | Linux/systemd |
@@ -132,6 +133,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.50
+
+Cette composition actualise les états de santé et de présence directement sur
+la topologie existante, sans reconstruire la carte ni rejouer ses animations.
+Elle permet aussi de laisser vide l'action préparatoire de ZWAVE-01 et documente
+la planification NVM native de Z-Wave JS UI avant la sauvegarde HAOS.
 
 ## Composition 1.0.49
 
