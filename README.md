@@ -45,6 +45,7 @@ Ohana-Installer reads the Ohana-Platform release catalog
 | [Architecture](docs/Architecture/Architecture.md) | Global platform architecture |
 | [Development installation](docs/getting-started/Installer-Ohana-Platform.md) | Local Agent + Vision setup |
 | [Operations](docs/Architecture/Déploiement.md) | Deployment architecture |
+| [Sauvegardes HAOS vers iCloud](docs/Guides/Sauvegarder-HAOS-vers-iCloud.md) | Configuration, sécurité et validation des sauvegardes |
 | [Design system](docs/Design/Brand.md) | Shared visual identity |
 
 ## Getting started
@@ -72,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.44 | 1.12.4 | 1.11.3 | 3.13+ | Linux/systemd |
 | 1.0.43 | 1.12.3 | 1.11.2 | 3.13+ | Linux/systemd |
 | 1.0.42 | 1.12.3 | 1.11.1 | 3.13+ | Linux/systemd |
 | 1.0.41 | 1.12.2 | 1.11.0 | 3.13+ | Linux/systemd |
@@ -125,6 +127,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.44
+
+Cette composition ajoute les sauvegardes complètes et chiffrées de HA-01,
+LINKY-01 et ZWAVE-01 vers iCloud. Agent diffuse les archives sans stockage
+persistant sur INFRA-01 et Vision configure les cibles, leurs adresses et leurs
+heures quotidiennes sans recevoir les secrets.
 
 ## Composition 1.0.33
 

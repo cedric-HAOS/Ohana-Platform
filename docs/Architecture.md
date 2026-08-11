@@ -14,6 +14,16 @@ Les compositions installables sont listées dans
 et son contrat complet sont définis par
 [`../release-manifest.yaml`](../release-manifest.yaml).
 
+## Flux des sauvegardes HAOS
+
+Vision administre la politique de sauvegarde à travers l'API locale d'Agent,
+sans lire les secrets. Agent appelle le proxy Supervisor de chaque HAOS, puis
+transmet le flux chiffré directement à rclone. Seuls les tampons rclone placés
+sur `tmpfs` résident sur INFRA-01. La rotation locale intervient après
+validation de la taille distante et du SHA-256.
+
+Voir le guide [Sauvegarder les HAOS vers iCloud](Guides/Sauvegarder-HAOS-vers-iCloud.md).
+
 
 ## Flux Téléinformation direct
 

@@ -6,6 +6,37 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## [Unreleased]
 
+## [1.0.44] - 2026-08-11
+
+### Ajouté
+
+* Référencement d'Ohana-Agent 1.12.4, qui chiffre et transmet directement les
+  sauvegardes HAOS vers iCloud sans écrire les archives sur la carte microSD
+  d'INFRA-01.
+* Référencement d'Ohana-Vision 1.11.3, qui administre l'activation, les adresses
+  et les heures quotidiennes de HA-01, LINKY-01 et ZWAVE-01.
+* Le manifeste installe `backup.example.yaml`, transmet `--backup-config` à
+  Agent et conserve la configuration désactivée jusqu'à sa préparation par
+  l'opérateur.
+* Guide transversal de préparation de rclone, des secrets, de l'export NVM et
+  de la validation progressive des restaurations.
+
+### Sécurité
+
+* Les secrets restent dans `/etc/ohana-agent/backup.env`, lisible par Agent et
+  jamais renvoyé à Vision.
+* Une sauvegarde Ohana reste disponible sur chaque HAOS ; la précédente n'est
+  supprimée qu'après validation distante de l'archive et du SHA-256.
+* Le diagnostic Vision est en lecture seule et les fichiers temporaires rclone
+  sont refusés hors `tmpfs` par défaut.
+
+### Validation
+
+* Agent : 1269 tests réussis, 1 test ignoré, Ruff et format validés.
+* Vision : 846 tests réussis, Ruff, format et syntaxe JavaScript validés.
+* Concordance du manifeste et du catalogue Platform 1.0.44 validée avec le
+  parseur Ohana-Installer.
+
 ## [1.0.43] - 2026-08-10
 
 ### Amélioré

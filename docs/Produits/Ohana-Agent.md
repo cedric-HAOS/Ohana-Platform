@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.12.4 | 1.11.3 | 1.7.1 | 1.0.44 |
 | 1.11.5 | 1.10.2 | 1.7.0 | 1.0.28 |
 | 1.11.5 | 1.10.1 | 1.7.0 | 1.0.27 |
 | 1.11.3 | 1.10.1 | 1.6.1 | 1.0.25 |
@@ -31,7 +32,8 @@ Agent ne contient aucune interface de visualisation.
 
 ## Plugins de la composition courante
 
-DHCP, DNS, NTP, MQTT, présence réseau, Z-Wave, WireGuard, Télémétrie Home Assistant et Téléinformation.
+Sauvegardes HAOS, DHCP, DNS, NTP, MQTT, présence réseau, Z-Wave, WireGuard,
+Télémétrie Home Assistant et Téléinformation.
 
 Voir également [le guide de déploiement](../Guides/Déployer-Ohana-Agent.md).
 
@@ -70,3 +72,7 @@ Ohana-Agent 1.11.4 exporte les suspensions planifiées avec l’état neutre
 
 Ohana-Agent 1.11.5 conserve également le ciblage équipement lorsque le plugin
 est suspendu, supprimant le second crash révélé en production par `SUN-01`.
+
+Ohana-Agent 1.12.4 ajoute les sauvegardes HAOS chiffrées vers iCloud, sans
+archive persistante sur INFRA-01, avec validation distante avant rotation et
+diagnostic non destructif depuis Vision.

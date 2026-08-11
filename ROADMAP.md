@@ -29,7 +29,7 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * [ ] Rédiger `docs/Troubleshooting.md`.
 * [x] Ajouter une matrice de compatibilité Agent/Vision.
 * [ ] Documenter les ports et flux réseau.
-* [ ] Documenter les stratégies de sauvegarde et de restauration.
+* [x] Documenter la stratégie de sauvegarde HAOS et sa validation de restauration.
 
 ---
 
@@ -59,7 +59,7 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 
 ## Phase 4 — Exploitation
 
-* [ ] Ajouter une procédure de sauvegarde automatisée.
+* [x] Ajouter une procédure de sauvegarde HAOS automatisée vers iCloud.
 * [ ] Ajouter une procédure de restauration complète.
 * [ ] Ajouter la rotation des journaux.
 * [ ] Ajouter la supervision d’Ohana par Ohana.
@@ -90,6 +90,13 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * déploiements distribués ;
 * catalogue de plugins ;
 * SDK Ohana.
+
+## Version 1.0.44 — Sauvegardes HAOS vers iCloud
+
+- [x] Référencer Ohana-Agent 1.12.4 et Ohana-Vision 1.11.3.
+- [x] Distribuer `backup.example.yaml` et l'argument `--backup-config`.
+- [x] Conserver les secrets hors YAML et hors de Vision.
+- [x] Documenter la validation progressive et la restauration.
 
 ## Version 1.0.20 — Lot B
 

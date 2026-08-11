@@ -53,6 +53,16 @@ sudo ohana install --yes \
 ```
 
 
+## Sauvegardes HAOS
+
+La page **Configuration → Plugins → Sauvegardes HAOS** règle l'activation, les
+adresses et les heures quotidiennes des trois HAOS. Les secrets restent dans
+`/etc/ohana-agent/backup.env` et le diagnostic immédiat est en lecture seule.
+
+La préparation de rclone, la protection de la carte microSD et la validation
+progressive sont décrites dans
+[Sauvegarder les HAOS vers iCloud](Guides/Sauvegarder-HAOS-vers-iCloud.md).
+
 ## Sélection d’une composition
 
 ```bash
