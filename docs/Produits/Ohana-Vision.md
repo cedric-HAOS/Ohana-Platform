@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.13.0 | 1.14.0 | 1.9.0 | 1.0.53 |
 | 1.12.1 | 1.13.1 | 1.8.1 | 1.0.52 |
 | 1.12.0 | 1.13.0 | 1.8.0 | 1.0.51 |
 | 1.11.8 | 1.12.7 | 1.7.3 | 1.0.50 |
@@ -91,3 +92,7 @@ fiche de l'équipement.
 Ohana-Vision 1.12.1 renomme le plugin **Sauvegardes** et guide la création sous
 Windows de la clé publique `age1…`, sans jamais placer l'identité privée sur
 INFRA-01.
+
+Ohana-Vision 1.13.0 retire la saisie du destinataire public : Installer gère
+l'identité `age` d'INFRA-01 et Agent conserve sa copie de récupération dans
+iCloud.

@@ -1,10 +1,15 @@
 # Installer et mettre à jour Ohana-Platform
 
-La composition recommandée 1.0.52 installe Ohana-Agent 1.13.1 et
-Ohana-Vision 1.12.1.
+La composition recommandée 1.0.53 installe Ohana-Agent 1.14.0 et
+Ohana-Vision 1.13.0.
 
-Ohana-Installer 1.8.1 lit le catalogue publié par Platform et peut installer
+Ohana-Installer 1.9.0 lit le catalogue publié par Platform et peut installer
 n’importe quel couple Agent/Vision qui y est déclaré.
+
+Le menu interactif présente la composition recommandée et les neuf compositions
+antérieures encore supportées. Les compositions historiques restent déclarées
+dans le catalogue pour permettre à `ohana restore` de réinstaller exactement
+la version enregistrée dans une ancienne sauvegarde.
 
 ## Lister les compositions disponibles
 

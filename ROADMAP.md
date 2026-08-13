@@ -91,6 +91,16 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.53 — Identité age gérée et restauration autonome
+
+**Statut : publiée.**
+
+- [x] Créer et valider automatiquement l'identité `age` d'INFRA-01.
+- [x] Conserver sa copie de récupération dans iCloud.
+- [x] Migrer `backup.yaml` sans perdre les réglages existants.
+- [x] Récupérer l'identité avant le déchiffrement d'une restauration iCloud.
+- [x] Limiter le menu aux neuf compositions antérieures supportées.
+
 ## Version 1.0.52 — Sauvegardes et clé age explicites
 
 **Statut : publiée.**

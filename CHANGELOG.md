@@ -4,6 +4,34 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.53] - 2026-08-13
+
+### Ajouté
+
+* Composition d'Ohana-Agent 1.14.0 et Ohana-Vision 1.13.0 : l'identité `age`
+  d'INFRA-01 est créée localement et sa copie de récupération est validée dans
+  iCloud avant chaque sauvegarde.
+* Ohana-Installer 1.9.0 récupère cette identité lors d'une restauration iCloud
+  avant tout déchiffrement, puis la réinstalle sur la nouvelle machine.
+* Le passage à Installer 1.9.0 migre atomiquement `backup.yaml` sans remplacer
+  les cibles, secrets, horaires ni réglages locaux.
+
+### Modifié
+
+* La fenêtre de support du catalogue est limitée à la composition recommandée
+  et aux neuf compositions antérieures.
+* Les compositions 1.0.42 et antérieures passent au statut `legacy` : elles
+  restent déclarées pour permettre la restauration exacte d'une ancienne
+  sauvegarde, mais ne sont plus proposées dans le menu interactif.
+
+### Validation
+
+* Agent 1.14.0 : 1279 tests réussis, 1 ignoré, installation isolée et
+  15 artefacts vérifiés.
+* Vision 1.13.0 : 852 tests, syntaxe JavaScript, installation isolée et
+  4 artefacts vérifiés.
+* Installer 1.9.0 : 279 tests, installation isolée et 3 artefacts vérifiés.
+
 ## [1.0.52] - 2026-08-13
 
 ### Corrigé

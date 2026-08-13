@@ -1,7 +1,7 @@
 # Sauvegarder les HAOS vers iCloud
 
-La composition Platform 1.0.52 associe Ohana-Agent 1.13.1 et Ohana-Vision
-1.12.1 pour protéger HA-01, LINKY-01, ZWAVE-01 et la configuration d'INFRA-01.
+La composition Platform 1.0.53 associe Ohana-Agent 1.14.0 et Ohana-Vision
+1.13.0 pour protéger HA-01, LINKY-01, ZWAVE-01 et la configuration d'INFRA-01.
 
 Agent demande une sauvegarde complète et chiffrée à chaque HAOS, la transmet
 directement à iCloud avec rclone et publie une somme SHA-256. L'archive ne doit
@@ -28,6 +28,16 @@ Ohana-Installer installe automatiquement une version de rclone dont l'archive
 officielle et la somme SHA-256 sont épinglées. Cette version contient le backend
 `iclouddrive`. Aucune commande rclone manuelle ni création préalable de
 `rclone.conf` n'est nécessaire.
+
+Installer 1.9.0 crée automatiquement l'identité `age` d'INFRA-01 et conserve
+sa copie de récupération dans `icloud:Ohana/Recovery/infra-01.agekey`. Une
+mise à jour migre uniquement la section `infra_01` de `backup.yaml` et préserve
+les cibles, secrets, horaires et réglages existants. Vision ne demande plus de
+destinataire public.
+
+Lors d'une restauration iCloud, Installer récupère cette identité avant le
+déchiffrement. Il ne crée jamais une nouvelle identité pour ouvrir une archive
+existante.
 
 Les jetons sont des jetons d'accès longue durée créés par des administrateurs
 Home Assistant. Les mots de passe de chiffrement des sauvegardes doivent aussi

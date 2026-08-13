@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.14.0 | 1.13.0 | 1.9.0 | 1.0.53 |
 | 1.13.1 | 1.12.1 | 1.8.1 | 1.0.52 |
 | 1.13.0 | 1.12.0 | 1.8.0 | 1.0.51 |
 | 1.12.7 | 1.11.8 | 1.7.3 | 1.0.50 |
@@ -101,3 +102,7 @@ manifeste vérifié et une rétention distante désactivée par défaut.
 
 Ohana-Agent 1.13.1 présente ce plugin commun sous le nom **Sauvegardes**, pour
 refléter la protection des systèmes HAOS comme d'INFRA-01.
+
+Ohana-Agent 1.14.0 utilise le destinataire public géré localement et envoie la
+copie de récupération de l'identité `age` dans iCloud avant chaque sauvegarde
+INFRA-01.

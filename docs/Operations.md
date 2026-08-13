@@ -74,3 +74,8 @@ sudo ohana install --platform-version 1.0.20
 
 Chaque entrée du catalogue pointe vers le manifeste immuable de sa propre release
 Platform. Un couple absent du catalogue n’est pas installable.
+
+La fenêtre visible dans le menu interactif est limitée aux neuf compositions
+antérieures portant le statut `supported`. Les entrées `legacy` restent
+résolubles par version exacte afin de préserver la restauration des sauvegardes
+anciennes.
