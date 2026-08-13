@@ -45,7 +45,7 @@ Ohana-Installer reads the Ohana-Platform release catalog
 | [Architecture](docs/Architecture/Architecture.md) | Global platform architecture |
 | [Development installation](docs/getting-started/Installer-Ohana-Platform.md) | Local Agent + Vision setup |
 | [Operations](docs/Architecture/Déploiement.md) | Deployment architecture |
-| [Sauvegardes HAOS vers iCloud](docs/Guides/Sauvegarder-HAOS-vers-iCloud.md) | Configuration, sécurité et validation des sauvegardes |
+| [Sauvegardes vers iCloud](docs/Guides/Sauvegarder-HAOS-vers-iCloud.md) | Configuration, sécurité et validation des sauvegardes |
 | [Design system](docs/Design/Brand.md) | Shared visual identity |
 
 ## Getting started
@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.52 | 1.13.1 | 1.12.1 | 3.13+ | Linux/systemd |
 | 1.0.51 | 1.13.0 | 1.12.0 | 3.13+ | Linux/systemd |
 | 1.0.50 | 1.12.7 | 1.11.8 | 3.13+ | Linux/systemd |
 | 1.0.49 | 1.12.7 | 1.11.7 | 3.13+ | Linux/systemd |
@@ -134,6 +135,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.52
+
+Cette composition présente le plugin commun comme **Sauvegardes**, guide la
+création sous Windows du destinataire public `age` et rend visible
+l'installation de cet utilitaire par Ohana-Installer 1.8.1.
 
 ## Composition 1.0.51
 

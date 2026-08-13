@@ -91,6 +91,15 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.52 — Sauvegardes et clé age explicites
+
+**Statut : publiée.**
+
+- [x] Présenter le plugin commun sous le nom **Sauvegardes**.
+- [x] Documenter la génération Windows du destinataire public `age`.
+- [x] Rappeler que l'identité privée reste hors d'INFRA-01.
+- [x] Afficher l'installation ou la présence de `age` dans Ohana-Installer.
+
 ## Version 1.0.51 — Sauvegarde et restauration d'INFRA-01
 
 **Statut : publiée.**

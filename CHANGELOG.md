@@ -4,6 +4,26 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.52] - 2026-08-13
+
+### Corrigé
+
+* Composition d'Ohana-Agent 1.13.1 et Ohana-Vision 1.12.1 : le plugin commun
+  aux sauvegardes HAOS et INFRA-01 est désormais présenté comme
+  **Sauvegardes**.
+* Vision guide la génération sous Windows du destinataire public `age` et
+  distingue explicitement la clé publique de l'identité privée.
+* Ohana-Installer 1.8.1 affiche l'utilitaire `age` dans le manifeste et indique
+  s'il a été installé ou s'il était déjà présent.
+
+### Validation
+
+* Agent 1.13.1 : 1279 tests réussis, 1 ignoré, installation propre et
+  15 artefacts vérifiés.
+* Vision 1.12.1 : 852 tests, syntaxe JavaScript, installation propre et
+  3 artefacts vérifiés.
+* Installer 1.8.1 : 271 tests, installation propre et 2 artefacts vérifiés.
+
 ## [1.0.51] - 2026-08-13
 
 ### Ajouté

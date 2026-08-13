@@ -53,9 +53,9 @@ sudo ohana install --yes \
 ```
 
 
-## Sauvegardes HAOS
+## Sauvegardes
 
-La page **Configuration → Plugins → Sauvegardes HAOS** règle l'activation, les
+La page **Configuration → Plugins → Sauvegardes** règle l'activation, les
 adresses et les heures quotidiennes des trois HAOS, saisit les secrets dans des
 champs masqués et pilote la connexion ou reconnexion iCloud avec 2FA. Agent ne
 renvoie jamais les valeurs enregistrées et le diagnostic immédiat reste en

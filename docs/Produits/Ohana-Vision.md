@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.12.1 | 1.13.1 | 1.8.1 | 1.0.52 |
 | 1.12.0 | 1.13.0 | 1.8.0 | 1.0.51 |
 | 1.11.8 | 1.12.7 | 1.7.3 | 1.0.50 |
 | 1.11.7 | 1.12.7 | 1.7.3 | 1.0.49 |
@@ -86,3 +87,7 @@ sauvegarde NVM planifiée dans Z-Wave JS UI avant l'heure HAOS est recommandée.
 Ohana-Vision 1.12.0 configure la cible INFRA-01, son destinataire public `age`,
 son horaire et sa rétention iCloud, puis permet son déclenchement depuis la
 fiche de l'équipement.
+
+Ohana-Vision 1.12.1 renomme le plugin **Sauvegardes** et guide la création sous
+Windows de la clé publique `age1…`, sans jamais placer l'identité privée sur
+INFRA-01.
