@@ -60,7 +60,7 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 ## Phase 4 — Exploitation
 
 * [x] Ajouter une procédure de sauvegarde HAOS automatisée vers iCloud.
-* [ ] Ajouter une procédure de restauration complète.
+* [x] Ajouter une procédure de restauration complète.
 * [ ] Ajouter la rotation des journaux.
 * [ ] Ajouter la supervision d’Ohana par Ohana.
 * [ ] Ajouter les diagnostics automatisés.
@@ -90,6 +90,16 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * déploiements distribués ;
 * catalogue de plugins ;
 * SDK Ohana.
+
+## Version 1.0.51 — Sauvegarde et restauration d'INFRA-01
+
+**Statut : publiée.**
+
+- [x] Déclarer dnsmasq, Chrony et age dans le profil INFRA-01.
+- [x] Sauvegarder les configurations et la base Vision vers iCloud.
+- [x] Restaurer depuis iCloud ou une copie locale en `tmpfs`.
+- [x] Lier le manifeste public au descripteur inclus dans l'archive chiffrée.
+- [x] Conserver le DHCP inactif jusqu'à sa mise en production explicite.
 
 ## Version 1.0.50 — Topologie stable et préparation Z-Wave fiable
 

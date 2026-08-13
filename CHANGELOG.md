@@ -4,6 +4,30 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.51] - 2026-08-13
+
+### Ajouté
+
+* Composition d'Ohana-Agent 1.13.0 et Ohana-Vision 1.12.0 pour sauvegarder
+  logiquement INFRA-01 vers iCloud, sans staging persistant sur sa microSD.
+* Profil `infra-01` déclarant dnsmasq, Chrony et l'utilitaire `age` pour un
+  provisionnement reproductible par Ohana-Installer 1.8.0.
+* Contrat de restauration associant le manifeste public au descripteur inclus
+  dans l'archive chiffrée.
+
+### Sécurité
+
+* Le DHCP reste inactif après installation ou restauration jusqu'à une
+  activation explicite confirmant l'arrêt de l'ancien serveur DHCP.
+* La rotation iCloud est désactivée par défaut et n'opère qu'après validation
+  complète d'une nouvelle sauvegarde.
+
+### Validation
+
+* Agent 1.13.0 : 1278 tests réussis, 1 ignoré et Ruff validé.
+* Vision 1.12.0 : 852 tests, Ruff et syntaxe JavaScript validés.
+* Installer 1.8.0 : 269 tests, Ruff et contrats de manifeste validés.
+
 ## [1.0.50] - 2026-08-11
 
 ### Corrigé

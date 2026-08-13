@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.12.0 | 1.13.0 | 1.8.0 | 1.0.51 |
 | 1.11.8 | 1.12.7 | 1.7.3 | 1.0.50 |
 | 1.11.7 | 1.12.7 | 1.7.3 | 1.0.49 |
 | 1.11.7 | 1.12.6 | 1.7.3 | 1.0.48 |
@@ -81,3 +82,7 @@ un délai dédié au démarrage à froid des opérations iCloud.
 Ohana-Vision 1.11.8 actualise les états de la topologie sans reconstruire la
 carte. Pour ZWAVE-01, une action Home Assistant supprimée reste vide ; la
 sauvegarde NVM planifiée dans Z-Wave JS UI avant l'heure HAOS est recommandée.
+
+Ohana-Vision 1.12.0 configure la cible INFRA-01, son destinataire public `age`,
+son horaire et sa rétention iCloud, puis permet son déclenchement depuis la
+fiche de l'équipement.

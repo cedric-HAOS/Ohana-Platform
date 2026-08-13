@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.13.0 | 1.12.0 | 1.8.0 | 1.0.51 |
 | 1.12.7 | 1.11.8 | 1.7.3 | 1.0.50 |
 | 1.12.7 | 1.11.7 | 1.7.3 | 1.0.49 |
 | 1.12.6 | 1.11.7 | 1.7.3 | 1.0.48 |
@@ -92,3 +93,7 @@ sauvegarde simultanée de la même cible.
 Ohana-Agent 1.12.7 utilise la taille exacte de l'inventaire HAOS pour les
 téléchargements segmentés sans `Content-Length`, sans relâcher le contrôle qui
 interdit un flux réellement non borné.
+
+Ohana-Agent 1.13.0 sauvegarde les configurations et un instantané cohérent de
+la base Vision dans une archive `age` créée en RAM, publiée vers iCloud avec un
+manifeste vérifié et une rétention distante désactivée par défaut.

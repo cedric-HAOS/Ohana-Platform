@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.51 | 1.13.0 | 1.12.0 | 3.13+ | Linux/systemd |
 | 1.0.50 | 1.12.7 | 1.11.8 | 3.13+ | Linux/systemd |
 | 1.0.49 | 1.12.7 | 1.11.7 | 3.13+ | Linux/systemd |
 | 1.0.48 | 1.12.6 | 1.11.7 | 3.13+ | Linux/systemd |
@@ -133,6 +134,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.51
+
+Cette composition sauvegarde les configurations et la base Vision d'INFRA-01
+dans une archive `age` envoyée à iCloud via un `tmpfs`. Ohana-Installer 1.8.0
+provisionne dnsmasq et Chrony, restaure la composition sauvegardée et maintient
+le DHCP inactif jusqu'à sa mise en production explicite.
 
 ## Composition 1.0.50
 
