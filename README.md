@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.56 | 1.14.3 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.55 | 1.14.2 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.54 | 1.14.1 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.53 | 1.14.0 | 1.13.0 | 3.13+ | Linux/systemd |
@@ -138,6 +139,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.56
+
+Cette composition compresse les archives INFRA-01 avant leur chiffrement pour
+réduire l'occupation du tmpfs et restitue le diagnostic réel d'`age` en cas
+d'échec du pipeline.
 
 ## Composition 1.0.55
 

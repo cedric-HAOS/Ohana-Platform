@@ -4,6 +4,29 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.56] - 2026-08-13
+
+### Corrigé
+
+* Composition d'Ohana-Agent 1.14.3 et Ohana-Vision 1.13.0 : les archives
+  INFRA-01 sont compressées avant chiffrement afin que l'instantané SQLite et
+  l'archive puissent coexister dans le tmpfs limité de `/run`.
+* Les erreurs d'`age` ne sont plus masquées par le message générique
+  `[Errno 32] Broken pipe`.
+
+### Modifié
+
+* La composition 1.0.46 passe au statut `legacy` afin de conserver la
+  recommandée et neuf compositions antérieures dans le menu Installer.
+
+### Validation
+
+* Agent 1.14.3 : 1285 tests réussis, 1 ignoré, installation propre et
+  15 payloads vérifiés par SHA-256.
+* Installer 1.9.7 : 294 tests réussis et restauration des tar compressés
+  validée tout en conservant la compatibilité antérieure.
+* Catalogue et manifeste 1.0.56 validés avec Ohana-Installer.
+
 ## [1.0.55] - 2026-08-13
 
 ### Corrigé

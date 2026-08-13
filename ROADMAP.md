@@ -91,6 +91,16 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.56 — Archive INFRA-01 adaptée au tmpfs
+
+**Statut : publiée.**
+
+- [x] Compresser le tar avant son chiffrement avec `age`.
+- [x] Vérifier la capacité minimale du tmpfs avant l'instantané Vision.
+- [x] Remonter le diagnostic réel d'`age` au lieu de `Broken pipe`.
+- [x] Restaurer les tar compressés et non compressés.
+- [x] Publier la composition Agent 1.14.3 / Vision 1.13.0.
+
 ## Version 1.0.55 — Inventaire Vision par API locale
 
 **Statut : publiée.**
