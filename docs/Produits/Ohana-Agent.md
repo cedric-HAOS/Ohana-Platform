@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.14.4 | 1.13.1 | 1.9.7 | 1.0.57 |
 | 1.14.3 | 1.13.0 | 1.9.7 | 1.0.56 |
 | 1.14.2 | 1.13.0 | 1.9.4 | 1.0.55 |
 | 1.14.1 | 1.13.0 | 1.9.4 | 1.0.54 |
@@ -119,3 +120,7 @@ préserve ainsi les permissions privées de l'environnement Vision.
 Ohana-Agent 1.14.3 compresse l'archive INFRA-01 avant son chiffrement, vérifie
 la capacité minimale du tmpfs et remonte le diagnostic réel d'`age` lorsqu'un
 pipe se ferme prématurément.
+
+Ohana-Agent 1.14.4 ferme explicitement l'entrée standard d'`age` après la
+création du tar compressé. Le chiffrement peut ainsi se terminer et l'état de
+sauvegarde n'est plus bloqué indéfiniment.

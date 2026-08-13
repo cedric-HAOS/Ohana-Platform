@@ -91,6 +91,16 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.57 — Sauvegarde INFRA-01 terminable et carte stable
+
+**Statut : publiée.**
+
+- [x] Fermer le flux envoyé à `age` avant d'attendre la fin du processus.
+- [x] Libérer l'état **Backup in progress** après le chiffrement.
+- [x] Stabiliser l'action de sauvegarde pendant les rafraîchissements temps réel.
+- [x] Éviter le décalage de la fiche équipement sur mobile.
+- [x] Publier la composition Agent 1.14.4 / Vision 1.13.1.
+
 ## Version 1.0.56 — Archive INFRA-01 adaptée au tmpfs
 
 **Statut : publiée.**

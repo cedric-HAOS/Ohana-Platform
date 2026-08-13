@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.57 | 1.14.4 | 1.13.1 | 3.13+ | Linux/systemd |
 | 1.0.56 | 1.14.3 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.55 | 1.14.2 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.54 | 1.14.1 | 1.13.0 | 3.13+ | Linux/systemd |
@@ -139,6 +140,11 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.57
+
+Cette composition termine correctement le chiffrement INFRA-01 et stabilise
+l'action de sauvegarde dans la fiche équipement, y compris sur mobile.
 
 ## Composition 1.0.56
 

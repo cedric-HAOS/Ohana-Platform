@@ -4,6 +4,29 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.57] - 2026-08-13
+
+### Corrigé
+
+* Composition d'Ohana-Agent 1.14.4 et Ohana-Vision 1.13.1 : le chiffrement
+  INFRA-01 ferme correctement son flux vers `age` et ne reste plus bloqué
+  indéfiniment sur **Backup in progress**.
+* La fiche équipement conserve une action de sauvegarde stable pendant les
+  rafraîchissements temps réel et ne décale plus son contenu sur mobile.
+
+### Modifié
+
+* La composition 1.0.47 passe au statut `legacy` afin de conserver la
+  recommandée et neuf compositions antérieures dans le menu Installer.
+
+### Validation
+
+* Agent 1.14.4 : 1285 tests réussis, 1 ignoré, installation propre et
+  15 payloads vérifiés par SHA-256.
+* Vision 1.13.1 : 854 tests réussis, syntaxe JavaScript, installation isolée et
+  4 actifs vérifiés par SHA-256.
+* Catalogue et manifeste 1.0.57 validés avec Ohana-Installer 1.9.7.
+
 ## [1.0.56] - 2026-08-13
 
 ### Corrigé
