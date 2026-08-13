@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.14.1 | 1.13.0 | 1.9.4 | 1.0.54 |
 | 1.14.0 | 1.13.0 | 1.9.0 | 1.0.53 |
 | 1.13.1 | 1.12.1 | 1.8.1 | 1.0.52 |
 | 1.13.0 | 1.12.0 | 1.8.0 | 1.0.51 |
@@ -106,3 +107,6 @@ refléter la protection des systèmes HAOS comme d'INFRA-01.
 Ohana-Agent 1.14.0 utilise le destinataire public géré localement et envoie la
 copie de récupération de l'identité `age` dans iCloud avant chaque sauvegarde
 INFRA-01.
+
+Ohana-Agent 1.14.1 lit la version de Vision depuis l'environnement Python dédié
+de Vision afin que l'inventaire des sauvegardes INFRA-01 reste fiable.

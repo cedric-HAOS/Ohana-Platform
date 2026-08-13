@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.54 | 1.14.1 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.53 | 1.14.0 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.52 | 1.13.1 | 1.12.1 | 3.13+ | Linux/systemd |
 | 1.0.51 | 1.13.0 | 1.12.0 | 3.13+ | Linux/systemd |
@@ -136,6 +137,11 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.54
+
+Cette composition corrige l'inventaire de sauvegarde INFRA-01 en lisant la
+version de Vision dans son environnement Python dédié.
 
 ## Composition 1.0.53
 

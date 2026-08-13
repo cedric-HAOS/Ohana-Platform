@@ -1,6 +1,6 @@
 # Sauvegarder les HAOS vers iCloud
 
-La composition Platform 1.0.53 associe Ohana-Agent 1.14.0 et Ohana-Vision
+La composition Platform 1.0.54 associe Ohana-Agent 1.14.1 et Ohana-Vision
 1.13.0 pour protéger HA-01, LINKY-01, ZWAVE-01 et la configuration d'INFRA-01.
 
 Agent demande une sauvegarde complète et chiffrée à chaque HAOS, la transmet

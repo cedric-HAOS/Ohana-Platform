@@ -91,6 +91,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.54 — Inventaire Vision fiable pour les sauvegardes
+
+**Statut : publiée.**
+
+- [x] Lire la version de Vision depuis son environnement Python dédié.
+- [x] Empêcher l'échec d'inventaire des sauvegardes INFRA-01.
+- [x] Publier la composition Agent 1.14.1 / Vision 1.13.0.
+
 ## Version 1.0.53 — Identité age gérée et restauration autonome
 
 **Statut : publiée.**
