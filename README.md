@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.55 | 1.14.2 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.54 | 1.14.1 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.53 | 1.14.0 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.52 | 1.13.1 | 1.12.1 | 3.13+ | Linux/systemd |
@@ -137,6 +138,11 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.55
+
+Cette composition lit la version de Vision via son API locale publique afin de
+préserver l'isolation des environnements système pendant la sauvegarde.
 
 ## Composition 1.0.54
 

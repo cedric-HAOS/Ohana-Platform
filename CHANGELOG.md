@@ -4,6 +4,25 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.55] - 2026-08-13
+
+### Corrigé
+
+* Composition d'Ohana-Agent 1.14.2 et Ohana-Vision 1.13.0 : la sauvegarde
+  INFRA-01 obtient la version de Vision via l'API locale `/api/version`, sans
+  accéder à l'environnement privé du compte `ohana-vision`.
+
+### Modifié
+
+* La composition 1.0.45 passe au statut `legacy` afin de conserver la
+  recommandée et neuf compositions antérieures dans le menu Installer.
+
+### Validation
+
+* Agent 1.14.2 : 1283 tests réussis, 1 ignoré, installation isolée et
+  15 payloads vérifiés par SHA-256.
+* Catalogue et manifeste 1.0.55 validés avec Ohana-Installer.
+
 ## [1.0.54] - 2026-08-13
 
 ### Corrigé

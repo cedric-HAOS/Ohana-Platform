@@ -91,6 +91,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.55 — Inventaire Vision par API locale
+
+**Statut : publiée.**
+
+- [x] Lire la version de Vision via son API locale publique.
+- [x] Préserver les permissions privées de l'environnement Vision.
+- [x] Publier la composition Agent 1.14.2 / Vision 1.13.0.
+
 ## Version 1.0.54 — Inventaire Vision fiable pour les sauvegardes
 
 **Statut : publiée.**

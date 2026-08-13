@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.14.2 | 1.13.0 | 1.9.4 | 1.0.55 |
 | 1.14.1 | 1.13.0 | 1.9.4 | 1.0.54 |
 | 1.14.0 | 1.13.0 | 1.9.0 | 1.0.53 |
 | 1.13.1 | 1.12.1 | 1.8.1 | 1.0.52 |
@@ -110,3 +111,6 @@ INFRA-01.
 
 Ohana-Agent 1.14.1 lit la version de Vision depuis l'environnement Python dédié
 de Vision afin que l'inventaire des sauvegardes INFRA-01 reste fiable.
+
+Ohana-Agent 1.14.2 utilise l'API locale de Vision pour cet inventaire et
+préserve ainsi les permissions privées de l'environnement Vision.

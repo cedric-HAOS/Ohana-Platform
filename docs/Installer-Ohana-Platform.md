@@ -1,6 +1,6 @@
 # Installer et mettre à jour Ohana-Platform
 
-La composition recommandée 1.0.54 installe Ohana-Agent 1.14.1 et
+La composition recommandée 1.0.55 installe Ohana-Agent 1.14.2 et
 Ohana-Vision 1.13.0.
 
 Ohana-Installer 1.9.4 lit le catalogue publié par Platform et peut installer
