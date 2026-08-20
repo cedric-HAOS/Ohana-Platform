@@ -4,9 +4,9 @@
 
 | Produit | Version | État |
 |---|---:|---|
-| Ohana-Platform | 1.0.58 | publiée |
-| Ohana-Agent | 1.15.0 | publié |
-| Ohana-Vision | 1.14.0 | publiée |
+| Ohana-Platform | 1.0.59 | publiée |
+| Ohana-Agent | 1.15.1 | publié |
+| Ohana-Vision | 1.14.1 | publiée |
 | Ohana-Installer | 1.9.7 | publié |
 | Ohana-House | 2.1.0 | publié |
 

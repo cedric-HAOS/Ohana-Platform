@@ -4,6 +4,29 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.59] - 2026-08-20
+
+### Ajouté
+
+* Agent 1.15.1 fournit le premier exécutable Katsuyu dans le dépôt Agent, avec
+  `system.health` comme unique handler déclaré et le protocole/jeton worker
+  existants.
+
+### Corrigé
+
+* L'export durable Agent vers Vision ne bloque plus les nouveaux cycles de
+  supervision pendant le rattrapage d'une file.
+* Vision 1.14.1 conserve un processeur d'observations unique et utilise des
+  index dédiés pour l'état courant et la dernière santé Hôte.
+
+### Validation
+
+* Agent 1.15.1 : 1 308 tests réussis, 1 ignoré, installation propre et
+  commande `ohana-katsuyu` vérifiée.
+* Vision 1.14.1 : 862 tests réussis, installation isolée et 3 actifs vérifiés
+  par SHA-256.
+* Catalogue et manifeste 1.0.59 validés avec Ohana-Installer 1.9.7.
+
 ## [1.0.58] - 2026-08-20
 
 ### Ajouté

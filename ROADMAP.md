@@ -91,6 +91,16 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.59 — Supervision fraîche et premier worker Katsuyu
+
+**Statut : publiée.**
+
+- [x] Rendre le rattrapage de la file Vision non bloquant pour Agent.
+- [x] Réutiliser un processeur Vision persistant et indexer `host.health`.
+- [x] Ajouter le worker Katsuyu `system.health` dans le dépôt Agent.
+- [x] Publier la composition Agent 1.15.1 / Vision 1.14.1.
+- [x] Ne pas lancer de sauvegarde réelle avant son orchestration par Katsuyu.
+
 ## Version 1.0.58 — Protection INFRA-01 et jobs distribués
 
 **Statut : publiée.**

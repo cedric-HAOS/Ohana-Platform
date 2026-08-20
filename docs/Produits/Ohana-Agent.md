@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.15.1 | 1.14.1 | 1.9.7 | 1.0.59 |
 | 1.15.0 | 1.14.0 | 1.9.7 | 1.0.58 |
 | 1.14.4 | 1.13.1 | 1.9.7 | 1.0.57 |
 | 1.14.3 | 1.13.0 | 1.9.7 | 1.0.56 |
@@ -129,3 +130,7 @@ sauvegarde n'est plus bloqué indéfiniment.
 Ohana-Agent 1.15.0 borne la file d'observations, enrichit les mesures de
 ressources d'INFRA-01 et introduit le protocole optionnel de jobs Tsunade vers
 Katsuyu avec `system.health` comme premier contrat strict et déterministe.
+
+Ohana-Agent 1.15.1 rend la livraison durable vers Vision asynchrone afin que le
+rattrapage ne bloque plus la supervision. Il fournit aussi `ohana-katsuyu`,
+premier worker `system.health` destiné à Bubule et inactif sur INFRA-01.

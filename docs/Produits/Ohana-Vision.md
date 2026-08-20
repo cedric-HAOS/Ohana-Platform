@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.14.1 | 1.15.1 | 1.9.7 | 1.0.59 |
 | 1.14.0 | 1.15.0 | 1.9.7 | 1.0.58 |
 | 1.13.1 | 1.14.4 | 1.9.7 | 1.0.57 |
 | 1.13.0 | 1.14.3 | 1.9.7 | 1.0.56 |
@@ -110,3 +111,7 @@ Ohana-Vision 1.14.0 reconstruit l'état courant par requêtes SQLite indexées e
 bornées, ajoute la pagination, la rétention et la purge configurables, et
 instrumente les temps de traitement sans dupliquer chaque observation dans la
 timeline en mémoire.
+
+Ohana-Vision 1.14.1 réutilise un processeur d'observations unique et ajoute les
+index dédiés à l'état courant et à `host.health`, supprimant la relecture
+SQLite par POST et le retard artificiel de la page Hôte.

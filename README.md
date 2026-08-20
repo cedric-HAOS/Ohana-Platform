@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.59 | 1.15.1 | 1.14.1 | 3.13+ | Linux/systemd |
 | 1.0.58 | 1.15.0 | 1.14.0 | 3.13+ | Linux/systemd |
 | 1.0.57 | 1.14.4 | 1.13.1 | 3.13+ | Linux/systemd |
 | 1.0.56 | 1.14.3 | 1.13.0 | 3.13+ | Linux/systemd |
@@ -141,6 +142,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.59
+
+Cette composition rend l'export Agent non bloquant, accélère l'ingestion et
+la page Hôte de Vision, et fournit le premier worker Katsuyu `system.health`
+dans le dépôt Agent sans l'activer sur INFRA-01.
 
 ## Composition 1.0.58
 
