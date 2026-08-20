@@ -4,6 +4,30 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.65] - 2026-08-20
+
+### Ajouté
+
+* Agent 1.17.0 sert Katsuyu sur un listener HTTPS dédié et restreint aux routes
+  worker nécessaires.
+* Vision 1.16.0 présente le code d'appairage avec l'empreinte SHA-256 complète
+  de l'autorité locale.
+* Installer 1.10.0 provisionne la PKI locale, le jeton worker et les permissions
+  nécessaires sur INFRA-01.
+* Katsuyu 0.2.0 épingle cette autorité et refuse les connexions Agent en HTTP.
+
+### Sécurité
+
+* L'administration Agent reste locale ; aucun nouveau proxy, bus ou mécanisme
+  d'authentification n'est introduit.
+* Les clés privées et les jetons conservent des ACL minimales et l'appairage
+  reste soumis à l'autorisation explicite de Tsunade/Vision.
+
+### Validation
+
+* Agent : 1 312 tests réussis, 1 ignoré ; Vision : 864 tests réussis ;
+  Installer : 297 tests réussis ; Katsuyu : 31 tests réussis ; Ruff validé.
+
 ## [1.0.64] - 2026-08-20
 
 ### Ajouté

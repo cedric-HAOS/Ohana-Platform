@@ -26,6 +26,21 @@ SHA-256.
 
 Voir le guide [Sauvegarder les HAOS vers iCloud](Guides/Sauvegarder-HAOS-vers-iCloud.md).
 
+## Flux Katsuyu sur le LAN
+
+L'administration Agent/Vision reste confinée à `127.0.0.1:8765`. Agent expose
+séparément un listener HTTPS limité aux routes worker Katsuyu. L'Installer
+provisionne une autorité locale, conserve sa clé privée sous `root`, donne à
+Agent uniquement le certificat serveur et sa clé de service, puis active les
+jobs distribués. Lors de l'appairage, Vision et Katsuyu affichent le même code
+court et la même empreinte SHA-256 complète. Après cette validation humaine,
+Katsuyu épingle l'autorité publique et le jeton worker circule uniquement dans
+le canal HTTPS vérifié.
+
+Ce flux étend les contrats Agent existants. Il n'ajoute ni reverse proxy, ni
+bus, ni système d'authentification parallèle. Le listener worker ne doit pas
+être publié directement sur Internet.
+
 
 ## Flux Téléinformation direct
 

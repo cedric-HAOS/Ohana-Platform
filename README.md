@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.65 | 1.17.0 | 1.16.0 | 3.13+ | Linux/systemd |
 | 1.0.64 | 1.16.0 | 1.15.0 | 3.13+ | Linux/systemd |
 | 1.0.63 | 1.15.2 | 1.14.4 | 3.13+ | Linux/systemd |
 | 1.0.62 | 1.15.1 | 1.14.3 | 3.13+ | Linux/systemd |
@@ -147,6 +148,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.65
+
+Cette composition isole le protocole Katsuyu sur un listener HTTPS dédié,
+provisionné par Installer 1.10.0, et expose dans Vision le code ainsi que
+l'empreinte de confiance nécessaires à un appairage explicite. Katsuyu 0.2.0
+utilise exclusivement ce canal épinglé.
 
 ## Composition 1.0.64
 
