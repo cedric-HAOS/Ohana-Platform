@@ -4,6 +4,20 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.63] - 2026-08-20
+
+### Corrigé
+
+* Vision 1.14.4 sert la page Hôte depuis la boucle ASGI sans attendre le pool
+  de threads utilisé par les vagues d'ingestion.
+* Agent 1.15.2 ne laisse plus l'unité DHCP en échec lorsque son répertoire
+  d'exécution disparaît pendant un arrêt normal.
+
+### Validation
+
+* Agent 1.15.2 : Ruff, 1 309 tests réussis, 1 ignoré, wheel et Katsuyu vérifiés.
+* Vision 1.14.4 : Ruff, 863 tests réussis et installation isolée du wheel.
+
 ## [1.0.62] - 2026-08-20
 
 ### Corrigé

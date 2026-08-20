@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.63 | 1.15.2 | 1.14.4 | 3.13+ | Linux/systemd |
 | 1.0.62 | 1.15.1 | 1.14.3 | 3.13+ | Linux/systemd |
 | 1.0.61 | 1.15.1 | 1.14.3 | 3.13+ | Linux/systemd |
 | 1.0.60 | 1.15.1 | 1.14.2 | 3.13+ | Linux/systemd |
@@ -145,6 +146,11 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.63
+
+Cette composition stabilise le rafraîchissement Hôte pendant l'ingestion et
+supprime le faux incident DHCP lors des arrêts normaux de l'Agent.
 
 ## Composition 1.0.62
 

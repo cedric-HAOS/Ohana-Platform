@@ -91,6 +91,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.63 — Supervision Hôte stable en charge
+
+**Statut : publiée.**
+
+- [x] Servir la santé Hôte sans attendre le pool de threads d'ingestion.
+- [x] Éviter le faux incident DHCP à l'arrêt de l'Agent.
+- [x] Publier la composition Agent 1.15.2 / Vision 1.14.4.
+
 ## Version 1.0.62 — Catalogue stable après validation production
 
 **Statut : publiée.**
