@@ -91,6 +91,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.60 — Santé Hôte sans contention
+
+**Statut : publiée.**
+
+- [x] Lire `host.health` depuis l'état compact du processeur Vision.
+- [x] Éviter le verrou SQLite lors du rafraîchissement de la page Hôte.
+- [x] Publier la composition Agent 1.15.1 / Vision 1.14.2.
+
 ## Version 1.0.59 — Supervision fraîche et premier worker Katsuyu
 
 **Statut : publiée.**

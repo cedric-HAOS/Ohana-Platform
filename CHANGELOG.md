@@ -4,6 +4,19 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.60] - 2026-08-20
+
+### Corrigé
+
+* Vision 1.14.2 sert la dernière santé Hôte depuis l'état compact du
+  processeur persistant, sans attendre le verrou SQLite pendant les vagues
+  périodiques d'observations.
+
+### Validation
+
+* Vision 1.14.2 : Ruff, 863 tests réussis et installation isolée du wheel.
+* Composition Agent 1.15.1 / Vision 1.14.2 validée avec Ohana-Installer 1.9.7.
+
 ## [1.0.59] - 2026-08-20
 
 ### Ajouté
