@@ -91,6 +91,16 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.64 — Appairage Katsuyu et jobs déterministes
+
+**Statut : publiée.**
+
+- [x] Publier les contrats Agent pour l'enregistrement et l'appairage Katsuyu.
+- [x] Publier les handlers déterministes `system.health`, `backup.compress`,
+  `backup.encrypt` et `backup.verify`.
+- [x] Exposer dans Vision la validation des demandes d'appairage.
+- [x] Publier la composition Agent 1.16.0 / Vision 1.15.0.
+
 ## Version 1.0.63 — Supervision Hôte stable en charge
 
 **Statut : publiée.**

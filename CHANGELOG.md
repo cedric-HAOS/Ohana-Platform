@@ -4,6 +4,28 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.64] - 2026-08-20
+
+### Ajouté
+
+* Agent 1.16.0 expose l'appairage temporaire approuvé des workers Katsuyu,
+  leurs capacités et les contrats de jobs déterministes.
+* Vision 1.15.0 ajoute la page **Workers Katsuyu** pour autoriser ou refuser
+  une demande après comparaison du code affiché sur Bubule.
+
+### Sécurité
+
+* Vision ne reçoit ni le secret d'appairage ni le jeton worker.
+* Agent lie chaque jeton individuel à l'identité du worker et ne le conserve
+  que sous forme de SHA-256.
+
+### Validation
+
+* Agent 1.16.0 : Ruff, 1 311 tests réussis, 1 ignoré, packaging et installation
+  propre vérifiés.
+* Vision 1.15.0 : Ruff, 863 tests réussis, packaging et installation isolée du
+  wheel vérifiés.
+
 ## [1.0.63] - 2026-08-20
 
 ### Corrigé

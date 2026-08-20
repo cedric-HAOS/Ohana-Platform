@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.64 | 1.16.0 | 1.15.0 | 3.13+ | Linux/systemd |
 | 1.0.63 | 1.15.2 | 1.14.4 | 3.13+ | Linux/systemd |
 | 1.0.62 | 1.15.1 | 1.14.3 | 3.13+ | Linux/systemd |
 | 1.0.61 | 1.15.1 | 1.14.3 | 3.13+ | Linux/systemd |
@@ -146,6 +147,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.64
+
+Cette composition introduit l'appairage approuvé des workers Katsuyu et les
+contrats de jobs déterministes dans Agent, avec leur interface d'autorisation
+dans Vision. Le worker Windows Katsuyu reste distribué séparément.
 
 ## Composition 1.0.63
 

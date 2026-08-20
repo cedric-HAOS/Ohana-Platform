@@ -2,16 +2,22 @@ schema_version: 1
 
 platform:
   name: Ohana
-  version: "1.0.63"
+  version: "1.0.64"
 
-default_platform_version: "1.0.63"
+default_platform_version: "1.0.64"
 
 releases:
+  - platform_version: "1.0.64"
+    release_tag: v1.0.64
+    agent_version: "1.16.0"
+    vision_version: "1.15.0"
+    status: recommended
+
   - platform_version: "1.0.63"
     release_tag: v1.0.63
     agent_version: "1.15.2"
     vision_version: "1.14.4"
-    status: recommended
+    status: supported
 
   - platform_version: "1.0.62"
     release_tag: v1.0.62
