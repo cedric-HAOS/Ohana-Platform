@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.66 | 1.18.0 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.65 | 1.17.0 | 1.16.0 | 3.13+ | Linux/systemd |
 | 1.0.64 | 1.16.0 | 1.15.0 | 3.13+ | Linux/systemd |
 | 1.0.63 | 1.15.2 | 1.14.4 | 3.13+ | Linux/systemd |
@@ -148,6 +149,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.66
+
+Cette composition déporte la sauvegarde propre d'INFRA-01 vers Katsuyu 0.3.0,
+conserve le flux distant rclone sur Agent et introduit Wake-on-LAN sans aucune
+extinction automatique. Vision affiche la disponibilité et la provenance du
+réveil détenues par Tsunade/Agent.
 
 ## Composition 1.0.65
 

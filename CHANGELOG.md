@@ -4,6 +4,31 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.66] - 2026-08-20
+
+### Ajouté
+
+* Agent 1.18.0 déporte compression et chiffrement de la sauvegarde INFRA-01
+  vers le job déterministe `backup.infra` exécuté par Katsuyu 0.3.0.
+* Agent expose `AVAILABLE`, `UNAVAILABLE`, `WAKING` et `woken_by_ohana`, puis
+  peut émettre un Wake-on-LAN strictement configuré.
+* Vision 1.17.0 affiche ces états et la provenance du réveil sans dupliquer
+  l'état détenu par Agent.
+
+### Sécurité et ressources
+
+* Le canal HTTPS, le jeton individuel, le propriétaire et la tentative du job
+  protègent les flux ; aucun shell, chemin arbitraire ou secret rclone n'est
+  confié au worker.
+* INFRA-01 ne conserve que l'instantané SQLite cohérent en tmpfs et relaie
+  l'artefact chiffré directement vers rclone.
+* Aucune extinction automatique de Bubule n'est livrée dans cette composition.
+
+### Validation
+
+* Agent : 1 317 tests réussis, 1 ignoré ; Vision : 864 tests réussis ;
+  Katsuyu : 34 tests réussis ; Ruff et syntaxes JavaScript validés.
+
 ## [1.0.65] - 2026-08-20
 
 ### Ajouté
