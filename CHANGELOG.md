@@ -4,6 +4,14 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.62] - 2026-08-20
+
+### Corrigé
+
+* La composition 1.0.60 contenant Vision 1.14.2 est classée historique après
+  la détection de la régression `host.health`.
+* La composition stable reste Agent 1.15.1 / Vision 1.14.3.
+
 ## [1.0.61] - 2026-08-20
 
 ### Corrigé

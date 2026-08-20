@@ -91,6 +91,13 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.62 — Catalogue stable après validation production
+
+**Statut : publiée.**
+
+- [x] Classer la composition régressive 1.0.60 comme historique.
+- [x] Conserver Agent 1.15.1 / Vision 1.14.3 comme composition recommandée.
+
 ## Version 1.0.61 — Santé Hôte compacte complète
 
 **Statut : publiée.**
