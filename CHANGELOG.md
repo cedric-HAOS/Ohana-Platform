@@ -4,6 +4,34 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.58] - 2026-08-20
+
+### Ajouté
+
+* Composition d'Ohana-Agent 1.15.0 et Ohana-Vision 1.14.0 : protocole de jobs
+  distribués Tsunade vers Katsuyu avec `system.health` comme premier contrat
+  déterministe, désactivé par défaut et sans shell arbitraire.
+* Mesures de RAM, swap et température de l'hôte, ainsi que l'instrumentation
+  des temps de traitement et d'accès au stockage.
+
+### Modifié
+
+* Vision reconstruit l'état courant par requêtes SQLite indexées et bornées,
+  sans charger tout l'historique en mémoire ; rétention, purge et pagination
+  sont configurables.
+* Les files d'observations, requêtes historiques et opérations de sauvegarde
+  disposent de limites destinées à protéger INFRA-01.
+* La composition 1.0.48 passe au statut `legacy` afin de conserver la
+  recommandée et neuf compositions antérieures dans le menu Installer.
+
+### Validation
+
+* Agent 1.15.0 : 1302 tests réussis, 1 ignoré, installation propre et
+  15 payloads vérifiés par SHA-256.
+* Vision 1.14.0 : 858 tests réussis, installation isolée et 3 actifs vérifiés
+  par SHA-256.
+* Catalogue et manifeste 1.0.58 validés avec Ohana-Installer 1.9.7.
+
 ## [1.0.57] - 2026-08-13
 
 ### Corrigé

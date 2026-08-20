@@ -18,6 +18,7 @@ Agent ne contient aucune interface de visualisation.
 
 | Agent | Vision | Installer | Platform |
 |---|---|---|---|
+| 1.15.0 | 1.14.0 | 1.9.7 | 1.0.58 |
 | 1.14.4 | 1.13.1 | 1.9.7 | 1.0.57 |
 | 1.14.3 | 1.13.0 | 1.9.7 | 1.0.56 |
 | 1.14.2 | 1.13.0 | 1.9.4 | 1.0.55 |
@@ -124,3 +125,7 @@ pipe se ferme prématurément.
 Ohana-Agent 1.14.4 ferme explicitement l'entrée standard d'`age` après la
 création du tar compressé. Le chiffrement peut ainsi se terminer et l'état de
 sauvegarde n'est plus bloqué indéfiniment.
+
+Ohana-Agent 1.15.0 borne la file d'observations, enrichit les mesures de
+ressources d'INFRA-01 et introduit le protocole optionnel de jobs Tsunade vers
+Katsuyu avec `system.health` comme premier contrat strict et déterministe.

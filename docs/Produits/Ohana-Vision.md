@@ -26,6 +26,7 @@ atomiques.
 
 | Vision | Agent minimal | Installer recommandé | Platform |
 |---|---|---|---|
+| 1.14.0 | 1.15.0 | 1.9.7 | 1.0.58 |
 | 1.13.1 | 1.14.4 | 1.9.7 | 1.0.57 |
 | 1.13.0 | 1.14.3 | 1.9.7 | 1.0.56 |
 | 1.13.0 | 1.14.2 | 1.9.4 | 1.0.55 |
@@ -104,3 +105,8 @@ iCloud.
 Ohana-Vision 1.13.1 conserve le bouton **Sauvegarder** ou l'état
 **Backup in progress** pendant les rafraîchissements temps réel et stabilise la
 mise en page mobile de la fiche équipement.
+
+Ohana-Vision 1.14.0 reconstruit l'état courant par requêtes SQLite indexées et
+bornées, ajoute la pagination, la rétention et la purge configurables, et
+instrumente les temps de traitement sans dupliquer chaque observation dans la
+timeline en mémoire.

@@ -91,6 +91,17 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.58 — Protection INFRA-01 et jobs distribués
+
+**Statut : publiée.**
+
+- [x] Supprimer le chargement intégral de SQLite dans Vision.
+- [x] Borner, indexer et paginer les requêtes historiques.
+- [x] Ajouter la rétention, la purge et l'instrumentation runtime.
+- [x] Protéger les files d'observations et la sauvegarde INFRA-01.
+- [x] Introduire le protocole de jobs et le contrat `system.health`.
+- [x] Publier la composition Agent 1.15.0 / Vision 1.14.0.
+
 ## Version 1.0.57 — Sauvegarde INFRA-01 terminable et carte stable
 
 **Statut : publiée.**

@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.58 | 1.15.0 | 1.14.0 | 3.13+ | Linux/systemd |
 | 1.0.57 | 1.14.4 | 1.13.1 | 3.13+ | Linux/systemd |
 | 1.0.56 | 1.14.3 | 1.13.0 | 3.13+ | Linux/systemd |
 | 1.0.55 | 1.14.2 | 1.13.0 | 3.13+ | Linux/systemd |
@@ -140,6 +141,12 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.58
+
+Cette composition protège les ressources d'INFRA-01, borne l'historique
+Vision et introduit le protocole de jobs Tsunade vers Katsuyu avec
+`system.health` comme premier contrat déterministe.
 
 ## Composition 1.0.57
 
