@@ -91,6 +91,14 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.61 — Santé Hôte compacte complète
+
+**Statut : publiée.**
+
+- [x] Conserver les dernières capacités équipement dans l'état compact Vision.
+- [x] Maintenir leur exclusion de la timeline de santé des services.
+- [x] Publier la composition Agent 1.15.1 / Vision 1.14.3.
+
 ## Version 1.0.60 — Santé Hôte sans contention
 
 **Statut : publiée.**

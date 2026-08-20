@@ -4,6 +4,19 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.61] - 2026-08-20
+
+### Corrigé
+
+* Vision 1.14.3 conserve aussi les derniers états de type `device` dans son
+  état compact, ce qui restaure `host.health` sans réintroduire de lecture
+  SQLite ni polluer la timeline de santé.
+
+### Validation
+
+* Vision 1.14.3 : Ruff, 863 tests réussis et installation isolée du wheel.
+* Régression 1.14.2 détectée puis remplacée avant validation finale.
+
 ## [1.0.60] - 2026-08-20
 
 ### Corrigé

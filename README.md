@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.61 | 1.15.1 | 1.14.3 | 3.13+ | Linux/systemd |
 | 1.0.60 | 1.15.1 | 1.14.2 | 3.13+ | Linux/systemd |
 | 1.0.59 | 1.15.1 | 1.14.1 | 3.13+ | Linux/systemd |
 | 1.0.58 | 1.15.0 | 1.14.0 | 3.13+ | Linux/systemd |
@@ -143,6 +144,11 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.61
+
+Cette composition conserve les capacités équipement dans l'état compact de
+Vision 1.14.3 et restaure la santé Hôte sans contention SQLite.
 
 ## Composition 1.0.60
 
