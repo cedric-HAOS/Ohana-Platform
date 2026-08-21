@@ -4,6 +4,21 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.67] - 2026-08-21
+
+### Corrigé
+
+* Agent 1.18.1 produit un instantané Vision compact avec `VACUUM INTO`, sans
+  modifier la base source ni recopier ses pages SQLite libres dans le tmpfs.
+* La préparation de l'instantané précède désormais la réponse HTTP ; un manque
+  d'espace est retourné à Katsuyu sous forme d'erreur structurée.
+
+### Validation
+
+* Agent : 1 319 tests réussis, 1 ignoré ; Ruff et installation isolée du wheel
+  validés.
+* Vision 1.17.0 et Katsuyu 0.3.1 restent inchangés et compatibles.
+
 ## [1.0.66] - 2026-08-20
 
 ### Ajouté

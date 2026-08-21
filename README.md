@@ -73,6 +73,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.67 | 1.18.1 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.66 | 1.18.0 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.65 | 1.17.0 | 1.16.0 | 3.13+ | Linux/systemd |
 | 1.0.64 | 1.16.0 | 1.15.0 | 3.13+ | Linux/systemd |
@@ -149,6 +150,13 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.67
+
+Cette composition corrige la sauvegarde distribuée d'INFRA-01 : Agent crée un
+instantané SQLite compact sans recopier les pages libres de Vision dans le
+tmpfs, et retourne une erreur structurée avant le flux si sa préparation
+échoue. Vision 1.17.0 et Katsuyu 0.3.1 restent compatibles sans modification.
 
 ## Composition 1.0.66
 
