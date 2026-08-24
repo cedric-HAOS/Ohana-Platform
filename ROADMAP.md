@@ -91,6 +91,17 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 * catalogue de plugins ;
 * SDK Ohana.
 
+## Version 1.0.69 — Expertise Tsunade et analyse IA avancée
+
+**Statut : publiée.**
+
+- [x] Exécuter les procédures et investigations déterministes avant tout LLM.
+- [x] Limiter le contexte IA aux preuves utiles et bornées de l'incident.
+- [x] Conserver les causes LLM comme hypothèses soumises à Tsunade.
+- [x] Afficher diagnostics, hypothèses, confiance et preuves dans Vision.
+- [x] Publier la composition Agent 1.22.0 / Vision 1.19.0, compatible avec
+  Katsuyu 0.6.0.
+
 ## Version 1.0.64 — Appairage Katsuyu et jobs déterministes
 
 **Statut : publiée.**

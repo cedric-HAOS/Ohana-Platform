@@ -4,6 +4,34 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.69] - 2026-08-24
+
+### Ajouté
+
+* Agent 1.22.0 livre le cycle d'expertise Tsunade : procédures connues,
+  investigations déterministes bornées et recours facultatif à Katsuyu AI
+  uniquement lorsque les preuves restent insuffisantes.
+* Katsuyu 0.6.0 retourne des hypothèses structurées avec causes possibles,
+  éléments concordants et contradictoires, confiance et investigations
+  proposées ; le LLM ne décide ni n'exécute aucune action.
+* Vision 1.19.0 déclenche ce cycle via Agent et expose séparément faits,
+  hypothèses et propositions non autorisées dans la chronologie des incidents.
+
+### Sécurité et compatibilité
+
+* Le contexte IA exclut les journaux bruts, la topologie complète et
+  l'historique global ; Agent conserve les résultats IA comme hypothèses en
+  attente de décision Tsunade.
+* Le contrat avancé version 2 reste compatible avec les anciens résultats IA
+  version 1, et tout fonctionne sans worker IA.
+
+### Validation
+
+* Agent : 1 333 tests réussis, 1 ignoré, Ruff, format, construction et
+  installation isolée validés.
+* Vision : 864 tests réussis, Ruff, rendu bureau et artefacts validés.
+* Katsuyu : 57 tests réussis, Ruff et installateur Windows 0.6.0 validés.
+
 ## [1.0.68] - 2026-08-24
 
 ### Validation

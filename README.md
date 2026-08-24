@@ -13,6 +13,7 @@ components connected by explicit contracts.
 | [Ohana-Agent](https://github.com/cedric-HAOS/Ohana-Agent) | Collects observations and owns the declarative infrastructure topology. |
 | [Ohana-Vision](https://github.com/cedric-HAOS/Ohana-Vision) | Ingests observations and displays health, history and topology. |
 | [Ohana-Installer](https://github.com/cedric-HAOS/Ohana-Installer) | Installs, updates and removes the released platform on Linux/systemd. |
+| [Ohana-Katsuyu](https://github.com/cedric-HAOS/Ohana-Katsuyu) | Executes allowlisted jobs and optional local AI inference on Bubule. |
 | [Ohana-House](https://github.com/cedric-HAOS/Ohana-House) | Documents the reference home deployment. |
 | **Ohana-Platform** | Defines the shared architecture, documentation, design system and release manifest. |
 
@@ -73,6 +74,8 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.69 | 1.22.0 | 1.19.0 | 3.13+ | Linux/systemd |
+| 1.0.68 | 1.19.0 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.67 | 1.18.1 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.66 | 1.18.0 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.65 | 1.17.0 | 1.16.0 | 3.13+ | Linux/systemd |
