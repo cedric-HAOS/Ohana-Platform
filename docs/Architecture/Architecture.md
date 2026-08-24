@@ -18,15 +18,46 @@ La plateforme Ohana est organisée autour de plusieurs produits complémentaires
 
 * **Ohana Platform** constitue le référentiel officiel de la plateforme. Il regroupe l'architecture, la documentation, les guides de déploiement, les ressources communes et les décisions d'architecture.
 
-* **Ohana Agent** est le moteur d'observation. Il exécute les capacités, collecte les observations, pilote les plugins et publie les événements produits par l'infrastructure.
+* **Ohana Agent** est le runtime technique et la frontière de sécurité. Il
+  héberge Shikamaru pour l'observation et Tsunade pour la coordination des
+  incidents et de l'expertise.
 
-* **Ohana Vision** est l'interface de visualisation et d'administration. Il présente l'état de l'infrastructure en temps réel, conserve l'historique des observations et offre une représentation graphique des capacités supervisées.
+* **Ohana Vision** est le cockpit technique de Konoha. Il présente l'état de
+  l'infrastructure en temps réel, conserve l'historique des observations et
+  offre une représentation graphique des capacités supervisées.
 
 * **Ohana Installer** applique le manifeste de composition publié par Platform. Il installe, met à jour et désinstalle Agent et Vision sur Linux/systemd.
 
-* **Ohana House** est le déploiement de référence de la plateforme. Il constitue une implémentation réelle permettant de valider les choix d'architecture, les guides de déploiement et les évolutions de la plateforme.
+* **Ohana House** documente le déploiement domestique de référence, qui est une
+  instance concrète de Konoha.
 
 Ces produits forment ensemble l'écosystème Ohana.
+
+## 2.1. Vocabulaire technique et fonctionnel
+
+Les noms techniques restent stables pour préserver les installations, les
+sauvegardes et les contrats existants. Les noms fonctionnels décrivent les
+rôles visibles sans imposer un découpage en processus ou en dépôts.
+
+| Nom | Nature | Définition |
+|---|---|---|
+| Ohana | Fonctionnelle | Écosystème global. |
+| Konoha | Fonctionnelle | Infrastructure ou maison administrée par Ohana. |
+| Ohana-Agent | Technique | Runtime, contrats et frontière de sécurité hébergeant Shikamaru et Tsunade. |
+| Shikamaru | Fonctionnelle | Observation, évaluation de l'état et vérification après action. |
+| Tsunade | Fonctionnelle | Incidents, investigations, expertise, décisions et coordination. |
+| Ohana-Vision | Technique | Cockpit technique qui projette et historise l'état de Konoha. |
+| Katsuyu | Technique et fonctionnelle | Worker chargé des traitements lourds et de l'inférence locale optionnelle. |
+| Shizune | Fonctionnelle | Interface personnelle synthétique pour les notifications et validations. |
+| Ohana-Installer | Technique | Installation, mise à jour, restauration et désinstallation. |
+| Ohana-Platform | Technique | Architecture, contrats et composition des releases. |
+| Ohana-House | Technique | Dépôt documentaire du déploiement domestique de référence. |
+
+Cette nomenclature n'entraîne aucun renommage de dépôt, package Python,
+commande CLI, unité systemd, utilisateur Linux, chemin, fichier de
+configuration, route API ou identifiant de sauvegarde. En particulier,
+Shikamaru n'est pas synonyme d'Ohana-Agent et Konoha n'est pas synonyme
+d'Ohana-Vision.
 
 ---
 
@@ -64,7 +95,9 @@ Il constitue la source de vérité de l'écosystème Ohana.
 
 Ohana Agent est le moteur d'exécution de la plateforme.
 
-Il orchestre les capacités, exécute les plugins, collecte les observations, publie les événements et expose les données nécessaires aux autres composants.
+Il héberge Shikamaru et Tsunade, orchestre les capacités, exécute les plugins,
+collecte les observations, publie les événements et expose les données
+nécessaires aux autres composants.
 
 L'agent ne possède aucune logique de présentation.
 
@@ -72,7 +105,8 @@ L'agent ne possède aucune logique de présentation.
 
 ## Ohana Vision
 
-Ohana Vision fournit une représentation graphique de l'état de l'infrastructure.
+Ohana Vision fournit le cockpit technique de Konoha et une représentation
+graphique de l'état de l'infrastructure.
 
 Il exploite les observations produites par l'agent afin de présenter :
 
@@ -94,7 +128,9 @@ Ohana Installer gère le cycle de vie des composants publiés. Il lit le manifes
 
 ## Ohana House
 
-Ohana House représente une infrastructure réelle utilisant l'ensemble des composants de la plateforme.
+Ohana House documente une infrastructure réelle utilisant l'ensemble des
+composants de la plateforme. Cette infrastructure est fonctionnellement
+appelée Konoha.
 
 Il sert de référence pour les procédures d'installation, les scénarios de validation et les démonstrations.
 
@@ -128,7 +164,8 @@ Le runtime constitue le cœur d'Ohana Agent.
 
 Il orchestre les plugins, le planificateur, le bus d'événements, les moteurs internes et les exportateurs.
 
-Le runtime représente l'unique point de coordination des traitements.
+Le runtime reste le point de contrôle et d'autorisation. Il peut déléguer des
+traitements explicitement déclarés à Katsuyu sans lui transférer la décision.
 
 ---
 

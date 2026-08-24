@@ -4,6 +4,31 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.70] - 2026-08-24
+
+### Ajouté
+
+* Agent 1.23.0 étend la collection d’incidents existante avec une synthèse
+  bornée du dernier contrôle des journaux, des interventions, des réparations
+  apprises et de leur taux de réussite.
+* Vision 1.20.0 complète le cockpit Tsunade : santé des journaux HA-01,
+  LINKY-01 et ZWAVE-01, références et évolutions, causes possibles,
+  conséquences et résultats des réparations.
+* Katsuyu 0.6.1 expose le nombre d’occurrences de référence utilisé par son
+  analyse déterministe et renforce les réponses françaises du moteur local.
+
+### Nomenclature
+
+* Les noms techniques Agent, Vision, Installer, Platform et House restent
+  inchangés. Konoha désigne l’infrastructure, Shikamaru la supervision et
+  Tsunade la coordination et l’expertise.
+
+### Validation
+
+* Agent : 1 336 tests réussis, 1 ignoré.
+* Vision : 864 tests réussis.
+* Katsuyu : 57 tests réussis.
+
 ## [1.0.69] - 2026-08-24
 
 ### Ajouté

@@ -10,11 +10,11 @@ components connected by explicit contracts.
 
 | Repository | Responsibility |
 | --- | --- |
-| [Ohana-Agent](https://github.com/cedric-HAOS/Ohana-Agent) | Collects observations and owns the declarative infrastructure topology. |
-| [Ohana-Vision](https://github.com/cedric-HAOS/Ohana-Vision) | Ingests observations and displays health, history and topology. |
+| [Ohana-Agent](https://github.com/cedric-HAOS/Ohana-Agent) | Technical runtime hosting Shikamaru observation and Tsunade coordination. |
+| [Ohana-Vision](https://github.com/cedric-HAOS/Ohana-Vision) | Technical cockpit for Konoha health, history and topology. |
 | [Ohana-Installer](https://github.com/cedric-HAOS/Ohana-Installer) | Installs, updates and removes the released platform on Linux/systemd. |
 | [Ohana-Katsuyu](https://github.com/cedric-HAOS/Ohana-Katsuyu) | Executes allowlisted jobs and optional local AI inference on Bubule. |
-| [Ohana-House](https://github.com/cedric-HAOS/Ohana-House) | Documents the reference home deployment. |
+| [Ohana-House](https://github.com/cedric-HAOS/Ohana-House) | Documents the reference Konoha home deployment. |
 | **Ohana-Platform** | Defines the shared architecture, documentation, design system and release manifest. |
 
 ```text
@@ -26,6 +26,12 @@ Ohana-Agent -- REST --> Ohana-Vision --> Web dashboard
       |
 Ohana-Installer reads the Ohana-Platform release catalog
 ```
+
+The repository and package names are stable technical identifiers. Konoha,
+Shikamaru, Tsunade and Shizune describe functional domains and roles; they do
+not replace Agent, Vision, Installer, Platform or House. The normative mapping
+is maintained in
+[the architecture reference](docs/Architecture/Architecture.md#21-vocabulaire-technique-et-fonctionnel).
 
 ## Shared contracts
 
@@ -74,6 +80,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Target |
 | --- | --- | --- | --- | --- |
+| 1.0.70 | 1.23.0 | 1.20.0 | 3.13+ | Linux/systemd |
 | 1.0.69 | 1.22.0 | 1.19.0 | 3.13+ | Linux/systemd |
 | 1.0.68 | 1.19.0 | 1.17.0 | 3.13+ | Linux/systemd |
 | 1.0.67 | 1.18.1 | 1.17.0 | 3.13+ | Linux/systemd |
@@ -153,6 +160,14 @@ repository; shared contracts and release coordination belong here.
 ## License
 
 Distributed under the MIT license. See `LICENSE`.
+
+## Composition 1.0.70
+
+Cette composition livre le cockpit Tsunade complet : synthèse quotidienne des
+journaux, anomalies comparées à leur référence, expertise structurée,
+réparations supervisées avec conséquences et historique de réussite. Agent
+1.23.0 et Vision 1.20.0 conservent leurs contrats techniques ; Katsuyu 0.6.1
+ajoute la référence d’occurrences au résultat déterministe compatible.
 
 ## Composition 1.0.67
 

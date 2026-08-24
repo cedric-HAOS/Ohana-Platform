@@ -102,6 +102,18 @@ Le dépôt rassemble la documentation globale, les procédures de déploiement, 
 - [x] Publier la composition Agent 1.22.0 / Vision 1.19.0, compatible avec
   Katsuyu 0.6.0.
 
+## Version 1.0.70 — Cockpit Tsunade complet
+
+**Statut : publiée.**
+
+- [x] Formaliser la distinction entre noms techniques et rôles fonctionnels.
+- [x] Afficher la synthèse quotidienne des journaux sans lignes brutes.
+- [x] Comparer les anomalies à leur référence et qualifier leur évolution.
+- [x] Afficher les risques, conséquences et résultats des réparations.
+- [x] Présenter les réparations apprises et leur taux de réussite.
+- [x] Publier Agent 1.23.0, Vision 1.20.0 et Katsuyu 0.6.1 dans la composition
+  Platform 1.0.70.
+
 ## Version 1.0.64 — Appairage Katsuyu et jobs déterministes
 
 **Statut : publiée.**
