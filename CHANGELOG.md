@@ -4,6 +4,13 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.68] - 2026-08-24
+
+### Validation
+
+* Agent 1.19.0 
+* Vision 1.17.0 et Katsuyu 0.3.1 restent inchangés et compatibles.
+
 ## [1.0.67] - 2026-08-21
 
 ### Corrigé
