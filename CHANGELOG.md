@@ -4,6 +4,28 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.71] - 2026-08-24
+
+### Ajouté
+
+* Agent 1.24.0 héberge le contrat compagnon Shizune borné et les notifications
+  APNs facultatives, sans voie d’exécution contournant Tsunade ou Agent.
+* Vision 1.21.0 administre l’association et la révocation des iPhone Shizune.
+* Installer 1.11.0 migre les configurations locales vers le listener TLS
+  Shizune sans remplacer les valeurs existantes.
+
+### Corrigé
+
+* Les sauvegardes distribuées tolèrent les verrous SQLite transitoires, bornent
+  le WAL Vision et conservent jusqu’à Katsuyu le détail français d’un refus.
+
+### Validation
+
+* Agent : 1 341 tests réussis, 1 ignoré, installation isolée validée.
+* Vision : 865 tests réussis.
+* Katsuyu : 58 tests réussis et `KatsuyuSetup.exe` 0.6.2 construit.
+* Installer : 299 tests réussis et migration idempotente vérifiée.
+
 ## [1.0.70] - 2026-08-24
 
 ### Ajouté

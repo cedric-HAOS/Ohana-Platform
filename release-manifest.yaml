@@ -2,7 +2,7 @@ schema_version: 1
 
 platform:
   name: Ohana
-  version: "1.0.70"
+  version: "1.0.71"
 
 runtime:
   python:
@@ -32,12 +32,12 @@ components:
   agent:
     name: Ohana-Agent
     repository: cedric-HAOS/Ohana-Agent
-    version: "1.23.0"
-    release_tag: v1.23.0
+    version: "1.24.0"
+    release_tag: v1.24.0
 
     package:
       type: wheel
-      filename: ohana_agent-1.23.0-py3-none-any.whl
+      filename: ohana_agent-1.24.0-py3-none-any.whl
 
     configuration:
       directory: /etc/ohana-agent
@@ -114,12 +114,12 @@ components:
   vision:
     name: Ohana-Vision
     repository: cedric-HAOS/Ohana-Vision
-    version: "1.20.0"
-    release_tag: v1.20.0
+    version: "1.21.0"
+    release_tag: v1.21.0
 
     package:
       type: wheel
-      filename: ohana_vision-1.20.0-py3-none-any.whl
+      filename: ohana_vision-1.21.0-py3-none-any.whl
 
     configuration:
       directory: /etc/ohana-vision
