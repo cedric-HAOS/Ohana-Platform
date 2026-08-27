@@ -4,6 +4,22 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.85] - 2026-08-27
+
+### Ajouté
+
+* Agent 1.26.6 conserve les commandes d'investigation en lecture seule issues de
+  Katsuyu AI et les expose au contrat compagnon Shizune sans hypothèses brutes.
+* Vision 1.22.6 refond la page incident Tsunade pour rendre l'analyse exploitable
+  et relaie les suggestions copiables vers Shizune.
+* Shizune 0.2.1 affiche les suggestions Tsunade et permet uniquement leur copie
+  manuelle, sans exécution directe.
+
+### Sécurité
+
+* Agent/Tsunade restent le point de validation et d'exécution ; Vision et
+  Shizune ne fournissent qu'une aide opérateur en lecture seule.
+
 ## [1.0.84] - 2026-08-27
 
 ### Ajouté
