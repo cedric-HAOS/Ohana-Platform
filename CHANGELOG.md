@@ -4,6 +4,14 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.88] - 2026-08-27
+
+### Corrigé
+
+* Agent 1.26.9 distingue l’évaluation automatique du clic opérateur : « Lancer
+  le diagnostic » demande toujours une analyse Katsuyu sur un incident actif.
+* Vision reste en 1.22.8, Katsuyu en 0.8.3 et Shizune en 0.2.2.
+
 ## [1.0.87] - 2026-08-27
 
 ### Corrigé

@@ -2,17 +2,24 @@ schema_version: 1
 
 platform:
   name: Ohana
-  version: "1.0.87"
+  version: "1.0.88"
 
-default_platform_version: "1.0.87"
+default_platform_version: "1.0.88"
 
 releases:
+  - platform_version: "1.0.88"
+    release_tag: v1.0.88
+    agent_version: "1.26.9"
+    vision_version: "1.22.8"
+    shizune_version: "0.2.2"
+    status: recommended
+
   - platform_version: "1.0.87"
     release_tag: v1.0.87
     agent_version: "1.26.8"
     vision_version: "1.22.8"
     shizune_version: "0.2.2"
-    status: recommended
+    status: supported
 
   - platform_version: "1.0.86"
     release_tag: v1.0.86
@@ -100,7 +107,7 @@ releases:
     release_tag: v1.0.72
     agent_version: "1.24.1"
     vision_version: "1.21.1"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.71"
     release_tag: v1.0.71
@@ -112,49 +119,49 @@ releases:
     release_tag: v1.0.70
     agent_version: "1.23.0"
     vision_version: "1.20.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.69"
     release_tag: v1.0.69
     agent_version: "1.22.0"
     vision_version: "1.19.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.68"
     release_tag: v1.0.68
     agent_version: "1.19.0"
     vision_version: "1.17.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.67"
     release_tag: v1.0.67
     agent_version: "1.18.1"
     vision_version: "1.17.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.66"
     release_tag: v1.0.66
     agent_version: "1.18.0"
     vision_version: "1.17.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.65"
     release_tag: v1.0.65
     agent_version: "1.17.0"
     vision_version: "1.16.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.64"
     release_tag: v1.0.64
     agent_version: "1.16.0"
     vision_version: "1.15.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.63"
     release_tag: v1.0.63
     agent_version: "1.15.2"
     vision_version: "1.14.4"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.62"
     release_tag: v1.0.62
@@ -178,49 +185,49 @@ releases:
     release_tag: v1.0.59
     agent_version: "1.15.1"
     vision_version: "1.14.1"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.58"
     release_tag: v1.0.58
     agent_version: "1.15.0"
     vision_version: "1.14.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.57"
     release_tag: v1.0.57
     agent_version: "1.14.4"
     vision_version: "1.13.1"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.56"
     release_tag: v1.0.56
     agent_version: "1.14.3"
     vision_version: "1.13.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.55"
     release_tag: v1.0.55
     agent_version: "1.14.2"
     vision_version: "1.13.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.54"
     release_tag: v1.0.54
     agent_version: "1.14.1"
     vision_version: "1.13.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.53"
     release_tag: v1.0.53
     agent_version: "1.14.0"
     vision_version: "1.13.0"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.52"
     release_tag: v1.0.52
     agent_version: "1.13.1"
     vision_version: "1.12.1"
-    status: supported
+    status: legacy
 
   - platform_version: "1.0.51"
     release_tag: v1.0.51
