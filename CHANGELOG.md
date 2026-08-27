@@ -4,6 +4,16 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.86] - 2026-08-27
+
+### Corrigé
+
+* Agent 1.26.7 produit des modèles Home Assistant ciblés à partir des entités
+  explicitement citées dans les journaux.
+* Katsuyu 0.8.2 conserve ces références structurées dans son analyse bornée.
+* Vision 1.22.7 garde les commandes dans Tsunade et Shizune 0.2.2 reste centré
+  sur les décisions mobiles.
+
 ## [1.0.85] - 2026-08-27
 
 ### Ajouté
