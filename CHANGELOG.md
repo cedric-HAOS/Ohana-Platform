@@ -4,6 +4,23 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.84] - 2026-08-27
+
+### Ajouté
+
+* Shizune 0.2.0 se connecte au contrat compagnon borné de Tsunade par la
+  passerelle de même origine de Vision.
+* Vision 1.22.5 expose la PWA sous `/shizune/`, relaie uniquement les routes
+  compagnon autorisées et affiche la version installée de Shizune.
+* Installer 1.14.0 installe la PWA et configure de façon idempotente la CA et
+  la passerelle compagnon de Vision.
+
+### Sécurité
+
+* Agent 1.26.5 reste le seul point de validation et d’exécution ; Vision ne
+  conserve aucun jeton compagnon et exclut les réponses privées des caches.
+* Le mode HTTP de Shizune est réservé au Wi-Fi de confiance ou à WireGuard.
+
 ## [1.0.71] - 2026-08-24
 
 ### Ajouté
