@@ -4,6 +4,17 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.87] - 2026-08-27
+
+### Corrigé
+
+* Agent 1.26.8 accorde jusqu’à 8 192 jetons aux diagnostics Katsuyu et accepte
+  un plafond contractuel de 16 384 jetons.
+* Katsuyu 0.8.3 utilise une fenêtre de 32 768 jetons, réserve la génération au
+  JSON structuré et migre l’installation existante sans retélécharger le modèle.
+* Vision 1.22.8 affiche l’erreur technique exacte lorsque l’analyse échoue.
+* Shizune reste en 0.2.2 et ne reçoit toujours aucune voie d’exécution directe.
+
 ## [1.0.86] - 2026-08-27
 
 ### Corrigé
