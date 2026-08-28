@@ -4,6 +4,18 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.89] - 2026-08-28
+
+### Corrigé
+
+* Agent 1.26.10 prolonge les jobs automatiques créés pendant la fenêtre de
+  regroupement Wake-on-LAN afin qu'ils attendent le réveil planifié de Katsuyu.
+* Agent 1.26.10 classe les incidents de santé des journaux en état dégradé
+  lorsqu'une investigation est nécessaire sans criticité immédiate.
+* Vision 1.22.9 met en avant la décision Tsunade et ajoute le repli/dépli des
+  anomalies de journaux dans la page incident.
+* Katsuyu reste en 0.8.3 et Shizune en 0.2.2.
+
 ## [1.0.88] - 2026-08-27
 
 ### Corrigé
