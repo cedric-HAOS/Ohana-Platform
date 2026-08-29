@@ -4,6 +4,16 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.90] - 2026-08-29
+
+### Corrigé
+
+* Agent 1.26.11 aligne l'attente de la sauvegarde INFRA-01 sur le timeout
+  prolongé du job distribué pendant la fenêtre de regroupement.
+* Agent 1.26.11 conserve la dernière MAC Wake-on-LAN valide et utilise la
+  configuration statique de Bubule lorsque son auto-détection est indisponible.
+* Vision reste en 1.22.9, Katsuyu en 0.8.3 et Shizune en 0.2.2.
+
 ## [1.0.89] - 2026-08-28
 
 ### Corrigé
