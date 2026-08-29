@@ -4,6 +4,17 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.91] - 2026-08-29
+
+### Ajouté
+
+* Agent 1.26.12 expose à Katsuyu les journaux bornés d’INFRA-01 pour les jobs
+  Tsunade explicitement autorisés.
+* Katsuyu 0.8.4 analyse les cycles d’arrêt/démarrage et les refus de connexion.
+* Vision 1.22.10 affiche et configure la source `infra-01`.
+* Installer 1.14.1 migre la configuration locale sans écraser ses valeurs et
+  accorde à Agent l’accès au groupe `systemd-journal`.
+
 ## [1.0.90] - 2026-08-29
 
 ### Corrigé
