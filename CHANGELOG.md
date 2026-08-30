@@ -4,6 +4,15 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.92] - 2026-08-30
+
+### Corrigé
+
+* Agent 1.26.13 exécute les sauvegardes planifiées en arrière-plan afin que
+  l’attente de Katsuyu ne bloque plus le dispatcher Wake-on-LAN.
+* Le réveil regroupé peut ainsi intervenir à la fin de la fenêtre planifiée ;
+  Vision reste en 1.22.10 et Shizune en 0.2.2.
+
 ## [1.0.91] - 2026-08-29
 
 ### Ajouté
