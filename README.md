@@ -388,3 +388,15 @@ Ohana-Vision fournit la page de consultation, confirmation et restauration.
 Cette composition ajoute la réception directe des trames Linky depuis le fork
 `teleinfo2mqtt Ohana` et les plages horaires de surveillance des équipements.
 Le flux MQTT vers Home Assistant reste indépendant du flux HTTP vers Agent.
+
+## Composition 1.0.97
+
+Agent 1.26.16, Vision 1.22.13 et Shizune PWA 0.2.3 composent cette version.
+Installer 1.14.3 embarque les mêmes manifestes. Katsuyu 0.8.6 se met à jour
+séparément sur son hôte Windows, après Agent, pour attendre les diagnostics
+complémentaires avant l’arrêt. Aucune modification YAML n’est requise.
+
+La reprise des incidents des équipements retirés est automatique au démarrage
+d’Agent et à l’enregistrement de l’architecture. Vision conserve leur historique
+et les exclut uniquement de l’état courant. Les contrôles locaux ne constituent
+pas une validation du prochain cycle nocturne sur INFRA-01.

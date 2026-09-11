@@ -4,6 +4,18 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.97] - 2026-09-11
+
+- Agent 1.26.16 reprend les incidents réseau persistés au démarrage et à
+  l’enregistrement de l’architecture ; les équipements retirés sont clôturés.
+- Tsunade réévalue les journaux avant de libérer Katsuyu, avec résultats repris
+  après interruption et synthèse commune aux interfaces.
+- Vision 1.22.13 présente les priorités et leurs dossiers. L’« État courant »
+  exclut les équipements supprimés tout en conservant leur historique.
+- Shizune 0.2.3 présente l’essentiel, le détail et une demande de diagnostic réelle.
+- Installer 1.14.3 embarque cette composition. Katsuyu 0.8.6 est distribué
+  séparément ; mettre Agent à jour avant le worker. Aucun changement YAML requis.
+
 ## [1.0.92] - 2026-08-30
 
 ### Corrigé
