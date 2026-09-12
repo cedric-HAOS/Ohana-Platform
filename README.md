@@ -389,12 +389,13 @@ Cette composition ajoute la réception directe des trames Linky depuis le fork
 `teleinfo2mqtt Ohana` et les plages horaires de surveillance des équipements.
 Le flux MQTT vers Home Assistant reste indépendant du flux HTTP vers Agent.
 
-## Composition 1.0.97
+## Composition 1.0.98
 
-Agent 1.26.16, Vision 1.22.13 et Shizune PWA 0.2.3 composent cette version.
-Installer 1.14.3 embarque les mêmes manifestes. Katsuyu 0.8.6 se met à jour
-séparément sur son hôte Windows, après Agent, pour attendre les diagnostics
-complémentaires avant l’arrêt. Aucune modification YAML n’est requise.
+Agent 1.27.0, Vision 1.22.13 et Shizune PWA 0.3.0 composent cette version.
+Installer 1.14.3 charge cette composition depuis le catalogue distant.
+Katsuyu 0.8.6 prend déjà en charge les collectes complémentaires : Tsunade
+prépare un plan borné, Shizune recueille l’autorisation et Katsuyu collecte les
+journaux avant une réévaluation. Aucune modification YAML n’est requise.
 
 La reprise des incidents des équipements retirés est automatique au démarrage
 d’Agent et à l’enregistrement de l’architecture. Vision conserve leur historique

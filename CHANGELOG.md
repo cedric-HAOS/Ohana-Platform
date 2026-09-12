@@ -4,6 +4,13 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.98] - 2026-09-12
+
+- Agent 1.27.0 regroupe son code sous `src/ohana_agent` et conserve ses commandes publiques.
+- Tsunade propose une collecte de journaux bornée, autorisée via Shizune puis exécutée par Katsuyu avant une réévaluation unique.
+- Shizune PWA 0.3.0 affiche les autorisations et le suivi des investigations complémentaires.
+- Vision 1.22.13 et Katsuyu 0.8.6 restent compatibles. Installer 1.14.3 charge cette composition depuis le catalogue distant ; aucune modification YAML requise.
+
 ## [1.0.97] - 2026-09-11
 
 - Agent 1.26.16 reprend les incidents réseau persistés au démarrage et à
