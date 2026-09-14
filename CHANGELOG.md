@@ -4,6 +4,12 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.99] - 2026-09-14
+
+- Agent 1.28.0 et Vision 1.22.14 rendent explicite la fin d’une collecte
+  complémentaire et empêchent les relances sans nouvel élément.
+- Shizune 0.3.0 et Katsuyu 0.8.6 restent compatibles ; aucune migration YAML.
+
 ## [1.0.98] - 2026-09-12
 
 - Agent 1.27.0 regroupe son code sous `src/ohana_agent` et conserve ses commandes publiques.
