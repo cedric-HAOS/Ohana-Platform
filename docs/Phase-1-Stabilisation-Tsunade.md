@@ -12,6 +12,80 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Conclusions IA et constats — correction locale
+
+Les verdicts IA OK/KO utilisaient directement l'interprétation libre du modèle
+comme conclusion Tsunade. Les nouveaux résultats emploient désormais une
+conclusion explicite : pistes à vérifier pour KO ; absence de proposition
+d'investigation pour OK, sans présumer un retour à l'état sain.
+
+La synthèse commune applique également cette distinction aux anciens diagnostics
+identifiés comme issus de Katsuyu. L'interprétation reste disponible dans le
+champ `hypothesis` et dans l'historique. Les paramètres de session caméra sont
+masqués dans ce nouveau champ de synthèse. Aucun événement historique n'est
+réécrit et aucun incident n'est résolu sur la seule foi d'un verdict IA.
+
+Validation : **64 tests ciblés réussis**, couvrant les verdicts OK/KO nouveaux
+et hérités, les incidents, leurs cycles et le compagnon. Ruff et diff propres.
+Les synthèses structurées sont testées ; le rendu visuel Vision/Shizune n'a
+pas été contrôlé dans cette passe. Aucun déploiement ni publication.
+
+### Attribution INFRA-01 et répétition des corrélations — corrections locales
+
+Le code attribuait tous les incidents de journaux à `home-assistant`, y compris
+le journal système INFRA-01. Il utilise désormais `system-journal` pour cette
+source. Au prochain contrôle, l'incident actif hérité conserve son identifiant,
+sa date d'ouverture et ses événements ; les anciens textes IA ne sont pas réécrits.
+
+La politique déclenchait aussi une investigation dès qu'une corrélation était
+présente, sans mémoire des corrélations déjà examinées. Chaque contrôle terminé
+conserve désormais leurs empreintes dans son événement de réévaluation. Une
+corrélation identique, même avec les sources dans un autre ordre, ne suffit plus
+à relancer l'IA. Une nouvelle date reste une information nouvelle. Les preuves
+conservent toutes les corrélations ; seul le critère de déclenchement est filtré.
+Les changements significatifs et anomalies critiques gardent leurs règles.
+
+Les événements hérités sans empreinte ne sont pas reconstruits : une première
+réévaluation peut donc encore examiner une ancienne corrélation après mise à jour.
+La qualité des conclusions KO reste un sujet distinct, non résolu par ce changement.
+
+Validation locale : **55 tests ciblés réussis**. Tests de migration d'un incident
+persisté après réouverture, réception répétée et résolution ; tests d'escalade
+avec corrélation initiale, répétée et nouvelle. Ruff et contrôle de diff propres.
+Aucune release publiée, aucun déploiement effectué.
+
+### Contrôle Agent 1.29.4 / Katsuyu 0.8.8 — 15 septembre, 20:24–20:26
+
+Versions confirmées en SSH. Contrôle manuel
+`11dcefd0-d7cc-45db-8b64-f8013c66c75a`, démarré à 20:24:13 Europe/Paris ;
+dernier résultat à 20:26:17. Les sept jobs du cycle sont réussis et traités,
+aucun job en attente lors du relevé.
+
+**Masquage des segments de session confirmé sur ce cycle :** deux segments
+dans les paramètres du contrôle, tous masqués ; quatre dans son résultat,
+tous masqués. Aucun segment non masqué dans les paramètres ou résultats des
+sept jobs examinés, y compris la baseline. Cela valide le défaut ciblé,
+pas l'absence de toutes les formes possibles de secrets ni le nettoyage historique.
+
+- HA-01 : surveillance déterministe, sans nouvelle IA.
+- LINKY-01 : stable, sans nouvelle IA.
+- ZWAVE-01 : suivi IA terminé en surveillance ; 239 lignes correspondantes,
+  zéro anomalie, collecte non tronquée correctement restituée.
+- INFRA-01 : suivi IA terminé en `investigate`, malgré une recherche ciblée
+  sans correspondance. Cette recherche ne prouve pas la résolution globale,
+  mais la conclusion continue de parler de Home Assistant sur INFRA-01 et
+  de dégradation sans distinguer suffisamment l'historique de l'état actuel.
+
+Le contrôle général compte trois anomalies nouvelles et une aggravation ;
+INFRA-01 porte deux nouveautés et une aggravation. ZWAVE-01 ne présente ni
+nouveauté ni aggravation dans ses groupes : le motif précis de sa nouvelle
+escalade reste à examiner (corrélations et politique), sans déduire une boucle
+du seul nombre de jobs. Le cycle est bien borné lors du relevé.
+
+Prochaine priorité : attribution des journaux INFRA-01, justification des
+escalades et fidélité des conclusions KO à la fraîcheur des preuves.
+Aucun changement de production ou nouvelle publication pendant cette vérification.
+
 ### Baseline historique filtrée avant envoi — correction locale
 
 Le reliquat observé à 20:10 provenait du champ `baseline` du contrôle général.
