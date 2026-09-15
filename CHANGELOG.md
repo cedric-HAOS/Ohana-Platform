@@ -4,6 +4,14 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.100] - 2026-09-15
+
+- Agent 1.29.0 enrichit les investigations avec la configuration MQTT et les
+  contrôles Supervisor de Mosquitto et teleinfo2mqtt, en lecture seule.
+- Katsuyu 0.8.7 corrige les faux positifs MQTT et régénère les réponses IA
+  invalides. Mettre à jour Agent avant Katsuyu ; aucune migration YAML.
+- Vision 1.22.14 et Shizune 0.3.0 restent compatibles.
+
 ## [1.0.99] - 2026-09-14
 
 - Agent 1.28.0 et Vision 1.22.14 rendent explicite la fin d’une collecte
