@@ -1,375 +1,579 @@
-# Roadmap
+# Roadmap Ohana
 
-## Vision
+## État de référence
 
-Ohana-Platform constitue le point d’entrée officiel de l’écosystème Ohana.
+Cette roadmap prend **Ohana-Platform 1.0.100** comme nouveau point de départ.
 
-Le dépôt rassemble la documentation globale, les procédures de déploiement, les outils d’orchestration et les exemples permettant d’installer et d’exploiter Ohana-Agent et Ohana-Vision comme une plateforme cohérente.
+Composition de référence :
 
----
+- Ohana-Agent 1.29.0 ;
+- Ohana-Vision 1.22.14 ;
+- Ohana-Katsuyu 0.8.7 ;
+- Ohana-Shizune 0.3.0 ;
+- Ohana-Installer 1.14.3.
 
-## Phase 0 — Fondation du dépôt
+L’architecture fonctionnelle actuelle est :
 
-* [x] Création du dépôt Ohana-Platform.
-* [x] Définition de son périmètre.
-* [x] Création de l’arborescence documentaire.
-* [x] Ajout du README.
-* [x] Ajout du CHANGELOG.
-* [x] Ajout de la roadmap.
-* [x] Ajout de la licence.
-* [x] Premier audit transversal de l'écosystème.
+```text
+                           OHANA
+                             │
+                           KONOHA
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+             INFRA-01                   BUBULE
+                │                         │
+       ┌────────┴────────┐              KATSUYU
+       │                 │
+   SHIKAMARU          TSUNADE
+       │                 │
+       │          ┌──────┴──────┐
+       │          │             │
+       │        VISION        SHIZUNE
+       │
+   Capacités
+   observées
+```
 
----
+Les noms techniques historiques restent stables :
 
-## Phase 1 — Documentation de la plateforme
+- **Ohana-Agent** : runtime technique hébergeant Shikamaru et Tsunade ;
+- **Ohana-Vision** : cockpit technique complet ;
+- **Ohana-Katsuyu** : worker lourd exécuté sur Bubule ;
+- **Ohana-Shizune** : PWA compagnon personnelle ;
+- **Ohana-Installer** : installation, mise à jour et migrations ;
+- **Ohana-Platform** : architecture commune, contrats et compositions de releases.
 
-* [x] Finaliser la documentation d'architecture.
-* [x] Finaliser `docs/Installer-Ohana-Platform.md`.
-* [x] Rédiger `docs/Operations.md`.
-* [ ] Rédiger `docs/Troubleshooting.md`.
-* [x] Ajouter une matrice de compatibilité Agent/Vision.
-* [ ] Documenter les ports et flux réseau.
-* [x] Documenter la stratégie de sauvegarde HAOS et sa validation de restauration.
+Les noms fonctionnels décrivent les responsabilités :
 
----
-
-## Phase 2 — Déploiement reproductible
-
-* [x] Ajouter l'installation Linux via Ohana-Installer.
-* [ ] Ajouter des scripts d’installation Windows.
-* [x] Générer les unités `systemd` via Ohana-Installer.
-* [ ] Ajouter les modèles de services Windows.
-* [x] Distribuer les fichiers de configuration d’exemple dans les releases.
-* [x] Ajouter les vérifications post-installation dans Ohana-Installer.
-* [x] Ajouter la désinstallation dans Ohana-Installer.
-
----
-
-## Phase 3 — Orchestration
-
-* [ ] Étudier Docker Compose.
-* [ ] Séparer les volumes de configuration et de données.
-* [ ] Ajouter les contrôles de santé.
-* [ ] Ajouter la gestion des secrets.
-* [ ] Ajouter un reverse proxy optionnel.
-* [ ] Ajouter le support HTTPS.
-* [ ] Préparer les procédures de mise à jour et de rollback.
+- **Konoha** : infrastructure gérée ;
+- **Shikamaru** : observation, mesure, détection et vérification ;
+- **Tsunade** : incidents, expertise, coordination, décisions et réparations ;
+- **Katsuyu** : exécution lourde et IA locale sur Bubule ;
+- **Shizune** : interaction personnelle et décisions utilisateur.
 
 ---
 
-## Phase 4 — Exploitation
+# Phase 1 — Stabilisation de Tsunade
 
-* [x] Ajouter une procédure de sauvegarde HAOS automatisée vers iCloud.
-* [x] Ajouter une procédure de restauration complète.
-* [ ] Ajouter la rotation des journaux.
-* [ ] Ajouter la supervision d’Ohana par Ohana.
-* [ ] Ajouter les diagnostics automatisés.
-* [ ] Documenter la maintenance préventive.
+Suivi : [campagne de validation et premiers constats](docs/Phase-1-Stabilisation-Tsunade.md).
+Phase démarrée le 15 septembre 2026 ; validation en production encore partielle.
+
+## Objectif
+
+Valider le comportement de Tsunade sur des incidents réels avant d’étendre ses capacités.
+
+Tsunade doit produire un diagnostic utile, compréhensible et reproductible sans multiplier les analyses IA inutiles.
+
+### Validation des investigations
+
+- [ ] Valider les investigations automatiques en lecture seule sur INFRA-01.
+- [ ] Valider les investigations automatiques sur HA-01.
+- [ ] Valider les investigations automatiques sur LINKY-01.
+- [ ] Valider les investigations automatiques sur ZWAVE-01.
+- [ ] Vérifier les diagnostics MQTT de Mosquitto.
+- [ ] Vérifier les diagnostics `teleinfo2mqtt`.
+- [ ] Vérifier les contrôles Supervisor Home Assistant.
+- [ ] Vérifier les investigations DNS, TCP et HTTP.
+- [ ] Vérifier les métriques système collectées sur INFRA-01.
+- [ ] Vérifier que les secrets restent exclus des preuves.
+
+### Qualité des diagnostics
+
+- [ ] Vérifier que Tsunade distingue clairement faits, hypothèses et éléments manquants.
+- [ ] Vérifier que les anomalies déjà connues ne déclenchent pas inutilement un nouveau cycle IA.
+- [ ] Vérifier que l’arrivée de nouvelles observations peut rouvrir correctement une analyse.
+- [ ] Vérifier que les diagnostics terminés ne sont pas relancés sans nouvelle information.
+- [ ] Vérifier que les faux positifs MQTT, série et télémétrie restent maîtrisés.
+- [ ] Vérifier que `INSUFFICIENT_CONTEXT` conduit à une investigation utile plutôt qu’à une conclusion artificielle.
+
+### Tests en production
+
+Créer progressivement des scénarios réels ou contrôlés :
+
+- [ ] indisponibilité DNS ;
+- [ ] Mosquitto indisponible ;
+- [ ] perte de `teleinfo2mqtt` ;
+- [ ] problème de communication LINKY-01 ;
+- [ ] Z-Wave JS indisponible ;
+- [ ] Home Assistant indisponible ;
+- [ ] problème réseau d’un équipement ;
+- [ ] surcharge ou anomalie d’INFRA-01 ;
+- [ ] incident Ohana-Agent ;
+- [ ] incident Ohana-Vision.
 
 ---
 
-## Phase 5 — Distribution de la plateforme
+# Phase 2 — Cycle complet incident → réparation
 
-* [x] Publier des releases cohérentes de la plateforme.
-* [x] Associer les versions compatibles d’Ohana-Agent et d’Ohana-Vision.
-* [x] Fournir des sommes de contrôle pour les releases des composants.
-* [ ] Fournir des archives de déploiement.
-* [x] Ajouter un manifeste de plateforme.
-* [x] Fournir un installateur unifié avec Ohana-Installer.
+## Objectif
+
+Faire de Tsunade non seulement un moteur de diagnostic, mais aussi un coordinateur capable de proposer une réparation sûre puis de vérifier son résultat.
+
+Le cycle cible est :
+
+```text
+Shikamaru détecte
+        │
+        ▼
+Tsunade ouvre l'incident
+        │
+        ▼
+Investigation déterministe
+        │
+        ├── preuve suffisante
+        │
+        └── preuve insuffisante
+                    │
+                    ▼
+                 Katsuyu
+                    │
+                    ▼
+            Analyse complémentaire
+                    │
+                    ▼
+              Décision Tsunade
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+       Surveiller          Réparer
+                              │
+                              ▼
+                     Autorisation requise
+                              │
+                              ▼
+                         Exécution
+                              │
+                              ▼
+                   Vérification Shikamaru
+                              │
+                     ┌────────┴────────┐
+                     │                 │
+                   Succès            Échec
+```
+
+### Réparations supervisées
+
+Le redémarrage de `dnsmasq.service` constitue le premier modèle.
+
+Étendre progressivement ce mécanisme à des actions simples, déterministes et réversibles.
+
+Candidats :
+
+- [ ] redémarrage supervisé de Mosquitto ;
+- [ ] redémarrage supervisé d’un composant Ohana ;
+- [ ] redémarrage supervisé d’un add-on Home Assistant lorsque l’API le permet ;
+- [ ] reprise contrôlée d’un service de télémétrie ;
+- [ ] renouvellement ou correction d’une configuration réseau connue ;
+- [ ] autres réparations identifiées à partir d’incidents réellement rencontrés.
+
+Chaque réparation doit définir :
+
+- le symptôme associé ;
+- les préconditions ;
+- l’action autorisée ;
+- les risques ;
+- les conséquences possibles ;
+- le mécanisme de retour arrière lorsque nécessaire ;
+- la vérification Shikamaru ;
+- le délai avant vérification ;
+- le résultat attendu.
+
+### Politique d’autorisation
+
+- [ ] Conserver une autorisation humaine pour toute action modifiant l’infrastructure.
+- [ ] Autoriser automatiquement uniquement les investigations strictement en lecture seule.
+- [ ] Afficher clairement dans Shizune la conséquence d’une action avant validation.
+- [ ] Conserver la provenance Vision ou Shizune de chaque autorisation.
+- [ ] Conserver l’historique de l’action et de son résultat.
 
 ---
 
-## Évolutions futures
+# Phase 3 — Mémoire opérationnelle de Tsunade
 
-* authentification ;
-* gestion multi-utilisateur ;
-* stockage persistant ;
-* notifications ;
-* gestion des incidents ;
-* haute disponibilité ;
-* déploiements distribués ;
-* catalogue de plugins ;
-* SDK Ohana.
+## Objectif
 
-## Version 1.0.69 — Expertise Tsunade et analyse IA avancée
+Permettre à Tsunade de réutiliser ce qui a déjà fonctionné sans transformer l’IA en moteur de décision autonome.
 
-**Statut : publiée.**
+### Réparations connues
 
-- [x] Exécuter les procédures et investigations déterministes avant tout LLM.
-- [x] Limiter le contexte IA aux preuves utiles et bornées de l'incident.
-- [x] Conserver les causes LLM comme hypothèses soumises à Tsunade.
-- [x] Afficher diagnostics, hypothèses, confiance et preuves dans Vision.
-- [x] Publier la composition Agent 1.22.0 / Vision 1.19.0, compatible avec
-  Katsuyu 0.6.0.
+- [ ] Consolider les réparations déjà validées.
+- [ ] Associer une réparation connue aux symptômes et preuves qui l’ont justifiée.
+- [ ] Conserver le nombre de tentatives.
+- [ ] Conserver le nombre de réussites.
+- [ ] Conserver les échecs.
+- [ ] Conserver la date de dernière réussite.
+- [ ] Présenter le taux de réussite dans Vision.
 
-## Version 1.0.70 — Cockpit Tsunade complet
+### Apprentissage des réparations manuelles
 
-**Statut : publiée.**
+Lorsqu’un incident est résolu manuellement :
 
-- [x] Formaliser la distinction entre noms techniques et rôles fonctionnels.
-- [x] Afficher la synthèse quotidienne des journaux sans lignes brutes.
-- [x] Comparer les anomalies à leur référence et qualifier leur évolution.
-- [x] Afficher les risques, conséquences et résultats des réparations.
-- [x] Présenter les réparations apprises et leur taux de réussite.
-- [x] Publier Agent 1.23.0, Vision 1.20.0 et Katsuyu 0.6.1 dans la composition
-  Platform 1.0.70.
+```text
+Incident
+   │
+   ▼
+Action manuelle utilisateur
+   │
+   ▼
+Shikamaru observe le retour à la normale
+   │
+   ▼
+Tsunade propose :
+« Cette action semble avoir résolu l'incident.
+Souhaitez-vous l'enregistrer comme réparation connue ? »
+```
 
-## Version 1.0.64 — Appairage Katsuyu et jobs déterministes
+- [ ] Permettre à l’utilisateur d’indiquer l’action manuelle réalisée.
+- [ ] Corréler cette action avec le retour à l’état sain.
+- [ ] Demander confirmation avant apprentissage.
+- [ ] Ne jamais transformer automatiquement une commande libre en action exécutable.
+- [ ] Transformer uniquement les cas retenus en procédures déterministes implémentées explicitement.
 
-**Statut : publiée.**
+---
 
-- [x] Publier les contrats Agent pour l'enregistrement et l'appairage Katsuyu.
-- [x] Publier les handlers déterministes `system.health`, `backup.compress`,
-  `backup.encrypt` et `backup.verify`.
-- [x] Exposer dans Vision la validation des demandes d'appairage.
-- [x] Publier la composition Agent 1.16.0 / Vision 1.15.0.
+# Phase 4 — Maintenance préventive
 
-## Version 1.0.63 — Supervision Hôte stable en charge
+## Objectif
 
-**Statut : publiée.**
+Passer progressivement d’une logique uniquement réactive à une logique de détection précoce.
 
-- [x] Servir la santé Hôte sans attendre le pool de threads d'ingestion.
-- [x] Éviter le faux incident DHCP à l'arrêt de l'Agent.
-- [x] Publier la composition Agent 1.15.2 / Vision 1.14.4.
+Tsunade ne doit pas chercher artificiellement des problèmes.
 
-## Version 1.0.62 — Catalogue stable après validation production
+Elle doit exploiter les observations déjà produites par Shikamaru et les contrôles planifiés existants.
 
-**Statut : publiée.**
+### Analyse des tendances
 
-- [x] Classer la composition régressive 1.0.60 comme historique.
-- [x] Conserver Agent 1.15.1 / Vision 1.14.3 comme composition recommandée.
+- [ ] Détecter l’évolution inhabituelle de l’utilisation disque.
+- [ ] Détecter une croissance anormale de la mémoire.
+- [ ] Détecter des redémarrages répétés.
+- [ ] Détecter une augmentation progressive des erreurs.
+- [ ] Détecter des pertes réseau répétitives.
+- [ ] Détecter une dégradation progressive des temps de réponse.
+- [ ] Détecter les anomalies récurrentes de journaux.
 
-## Version 1.0.61 — Santé Hôte compacte complète
+### Synthèse préventive
 
-**Statut : publiée.**
+Produire une synthèse courte du type :
 
-- [x] Conserver les dernières capacités équipement dans l'état compact Vision.
-- [x] Maintenir leur exclusion de la timeline de santé des services.
-- [x] Publier la composition Agent 1.15.1 / Vision 1.14.3.
+```text
+Konoha est stable.
 
-## Version 1.0.60 — Santé Hôte sans contention
+À surveiller :
+- INFRA-01 : espace disque en augmentation depuis 7 jours.
+- ZWAVE-01 : 4 interruptions courtes cette semaine.
 
-**Statut : publiée.**
+Aucune intervention nécessaire.
+```
 
-- [x] Lire `host.health` depuis l'état compact du processeur Vision.
-- [x] Éviter le verrou SQLite lors du rafraîchissement de la page Hôte.
-- [x] Publier la composition Agent 1.15.1 / Vision 1.14.2.
+Cette synthèse doit être adaptée :
 
-## Version 1.0.59 — Supervision fraîche et premier worker Katsuyu
+- à Vision pour le détail technique ;
+- à Shizune pour l’essentiel.
 
-**Statut : publiée.**
+---
 
-- [x] Rendre le rattrapage de la file Vision non bloquant pour Agent.
-- [x] Réutiliser un processeur Vision persistant et indexer `host.health`.
-- [x] Ajouter le worker Katsuyu `system.health` dans le dépôt Agent.
-- [x] Publier la composition Agent 1.15.1 / Vision 1.14.1.
-- [x] Ne pas lancer de sauvegarde réelle avant son orchestration par Katsuyu.
+# Phase 5 — Ohana supervise Ohana
 
-## Version 1.0.58 — Protection INFRA-01 et jobs distribués
+## Objectif
 
-**Statut : publiée.**
+Faire des composants Ohana eux-mêmes des capacités supervisées.
 
-- [x] Supprimer le chargement intégral de SQLite dans Vision.
-- [x] Borner, indexer et paginer les requêtes historiques.
-- [x] Ajouter la rétention, la purge et l'instrumentation runtime.
-- [x] Protéger les files d'observations et la sauvegarde INFRA-01.
-- [x] Introduire le protocole de jobs et le contrat `system.health`.
-- [x] Publier la composition Agent 1.15.0 / Vision 1.14.0.
+### Agent
 
-## Version 1.0.57 — Sauvegarde INFRA-01 terminable et carte stable
+- [x] état systemd ;
+- [x] uptime ;
+- [x] CPU ;
+- [x] mémoire ;
+- [x] disque ;
+- [x] température ;
+- [x] erreurs systemd ;
+- [ ] qualité du scheduler ;
+- [ ] longueur des files internes ;
+- [ ] âge de la dernière observation ;
+- [ ] état du stockage Tsunade ;
+- [ ] état de la file Katsuyu.
 
-**Statut : publiée.**
+### Vision
 
-- [x] Fermer le flux envoyé à `age` avant d'attendre la fin du processus.
-- [x] Libérer l'état **Backup in progress** après le chiffrement.
-- [x] Stabiliser l'action de sauvegarde pendant les rafraîchissements temps réel.
-- [x] Éviter le décalage de la fiche équipement sur mobile.
-- [x] Publier la composition Agent 1.14.4 / Vision 1.13.1.
+- [x] supervision du service ;
+- [x] base SQLite sauvegardée ;
+- [ ] temps de réponse HTTP ;
+- [ ] état WebSocket ;
+- [ ] retard d’ingestion ;
+- [ ] taille et croissance de la base ;
+- [ ] état de la rétention.
 
-## Version 1.0.56 — Archive INFRA-01 adaptée au tmpfs
+### Katsuyu
 
-**Statut : publiée.**
+- [x] présence du worker ;
+- [x] dernière connexion ;
+- [x] capacités annoncées ;
+- [x] Wake-on-LAN ;
+- [x] état des jobs ;
+- [ ] santé du runtime IA ;
+- [ ] espace disponible du workspace ;
+- [ ] dernière exécution réussie ;
+- [ ] version disponible.
 
-- [x] Compresser le tar avant son chiffrement avec `age`.
-- [x] Vérifier la capacité minimale du tmpfs avant l'instantané Vision.
-- [x] Remonter le diagnostic réel d'`age` au lieu de `Broken pipe`.
-- [x] Restaurer les tar compressés et non compressés.
-- [x] Publier la composition Agent 1.14.3 / Vision 1.13.0.
+### Shizune
 
-## Version 1.0.55 — Inventaire Vision par API locale
+- [ ] état de la passerelle compagnon ;
+- [ ] dernière synchronisation ;
+- [ ] version installée ;
+- [ ] état de l’association compagnon.
 
-**Statut : publiée.**
+---
 
-- [x] Lire la version de Vision via son API locale publique.
-- [x] Préserver les permissions privées de l'environnement Vision.
-- [x] Publier la composition Agent 1.14.2 / Vision 1.13.0.
+# Phase 6 — Katsuyu
 
-## Version 1.0.54 — Inventaire Vision fiable pour les sauvegardes
+## Objectif
 
-**Statut : publiée.**
+Conserver Bubule comme capacité de calcul optionnelle et non critique.
 
-- [x] Lire la version de Vision depuis son environnement Python dédié.
-- [x] Empêcher l'échec d'inventaire des sauvegardes INFRA-01.
-- [x] Publier la composition Agent 1.14.1 / Vision 1.13.0.
+Une panne ou une extinction de Bubule ne doit jamais empêcher les fonctions essentielles de Konoha.
 
-## Version 1.0.53 — Identité age gérée et restauration autonome
+### Cycle worker
 
-**Statut : publiée.**
+- [x] appairage sécurisé ;
+- [x] worker Windows ;
+- [x] installation autonome ;
+- [x] jobs déterministes ;
+- [x] Wake-on-LAN ;
+- [x] regroupement des jobs ;
+- [x] arrêt après traitement ;
+- [x] reprise après interruption ;
+- [x] IA locale ;
+- [x] vérification du modèle ;
+- [x] mise à jour manuelle assistée.
 
-- [x] Créer et valider automatiquement l'identité `age` d'INFRA-01.
-- [x] Conserver sa copie de récupération dans iCloud.
-- [x] Migrer `backup.yaml` sans perdre les réglages existants.
-- [x] Récupérer l'identité avant le déchiffrement d'une restauration iCloud.
-- [x] Limiter le menu aux neuf compositions antérieures supportées.
+### Évolutions
 
-## Version 1.0.52 — Sauvegardes et clé age explicites
+- [ ] améliorer les métriques de performance des jobs ;
+- [ ] afficher dans Vision la consommation réelle par traitement ;
+- [ ] mesurer les gains obtenus en déportant les traitements depuis INFRA-01 ;
+- [ ] vérifier régulièrement l’intégrité du workspace ;
+- [ ] améliorer le diagnostic du runtime IA ;
+- [ ] envisager d’autres handlers uniquement lorsqu’un besoin réel apparaît.
 
-**Statut : publiée.**
+---
 
-- [x] Présenter le plugin commun sous le nom **Sauvegardes**.
-- [x] Documenter la génération Windows du destinataire public `age`.
-- [x] Rappeler que l'identité privée reste hors d'INFRA-01.
-- [x] Afficher l'installation ou la présence de `age` dans Ohana-Installer.
+# Phase 7 — Shizune
 
-## Version 1.0.51 — Sauvegarde et restauration d'INFRA-01
+## Objectif
 
-**Statut : publiée.**
+Conserver Shizune comme interface personnelle simple entre Tsunade et l’utilisateur.
 
-- [x] Déclarer dnsmasq, Chrony et age dans le profil INFRA-01.
-- [x] Sauvegarder les configurations et la base Vision vers iCloud.
-- [x] Restaurer depuis iCloud ou une copie locale en `tmpfs`.
-- [x] Lier le manifeste public au descripteur inclus dans l'archive chiffrée.
-- [x] Conserver le DHCP inactif jusqu'à sa mise en production explicite.
+Shizune ne doit pas devenir un second Vision.
 
-## Version 1.0.50 — Topologie stable et préparation Z-Wave fiable
+### Fonctionnalités déjà présentes
 
-**Statut : publiée.**
+- [x] PWA installable sur iPhone ;
+- [x] état général de Konoha ;
+- [x] incidents prioritaires ;
+- [x] activité récente ;
+- [x] décisions Tsunade ;
+- [x] association contrôlée ;
+- [x] autoriser / refuser / plus tard ;
+- [x] demandes de diagnostic ;
+- [x] suivi des investigations complémentaires.
 
-- [x] Actualiser santé et présence sans reconstruire la carte.
-- [x] Synchroniser libellés, indicateurs, liaisons et accessibilité.
-- [x] Conserver vide l'action préparatoire ZWAVE-01 lorsqu'elle est supprimée.
-- [x] Recommander la planification NVM native de Z-Wave JS UI.
+### Évolutions à décider par l’usage
 
-## Version 1.0.49 — Streaming HAOS segmenté
+- [ ] améliorer uniquement les informations qui manquent réellement au quotidien ;
+- [ ] conserver une interface très synthétique ;
+- [ ] éviter toute topologie détaillée ;
+- [ ] éviter les paramètres techniques ;
+- [ ] éviter l’administration de l’infrastructure ;
+- [ ] étudier les notifications uniquement si l’usage montre qu’elles sont nécessaires.
 
-**Statut : publiée.**
+Les notifications Home Assistant et les notifications push natives restent hors priorité tant que la PWA suffit à l’usage.
 
-- [x] Accepter l'absence de `Content-Length` pour le téléchargement HAOS.
-- [x] Utiliser la taille exacte publiée par `backup/info`.
-- [x] Refuser tout flux qui reste réellement non borné.
-- [x] Conserver le streaming sans archive persistante sur INFRA-01.
+---
 
-## Version 1.0.48 — Sauvegarde HAOS immédiate par équipement
+# Phase 8 — Vision
 
-**Statut : publiée.**
+## Objectif
 
-- [x] Déclencher la cible HAOS correspondant exactement à l'équipement.
-- [x] Exécuter la sauvegarde en arrière-plan sans bloquer Vision.
-- [x] Remplacer l'action par **Backup in progress** pendant l'exécution.
-- [x] Tolérer le démarrage à froid de rclone pour iCloud et le test.
+Conserver Vision comme cockpit technique complet de Konoha.
 
-## Version 1.0.47 — Application fiable des sauvegardes HAOS
+Vision doit rester l’endroit où l’on comprend précisément :
 
-**Statut : publiée.**
+- ce qui existe ;
+- ce qui fonctionne ;
+- ce qui ne fonctionne pas ;
+- ce que Tsunade a diagnostiqué ;
+- ce qui a été exécuté ;
+- ce que Shikamaru a vérifié.
 
-- [x] Ne pas soumettre les champs Apple à la validation du formulaire HAOS.
-- [x] Valider les identifiants Apple uniquement pendant la connexion iCloud.
-- [x] Signaler les modifications non appliquées avant un test.
-- [x] Conserver Agent 1.12.5 et Installer 1.7.3.
+### Priorités
 
-## Version 1.0.46 — Ergonomie des sauvegardes HAOS
+- [ ] continuer à améliorer la lisibilité du centre d’incidents ;
+- [ ] rendre les investigations Tsunade facilement exploitables ;
+- [ ] mieux distinguer constat, diagnostic, décision, intervention et résultat ;
+- [ ] afficher clairement les limites d’une analyse ;
+- [ ] rendre l’historique des réparations réellement utile ;
+- [ ] conserver Vision sans logique métier dupliquée depuis Agent.
 
-**Statut : publiée.**
+---
 
-- [x] Distinguer clairement la clé de chiffrement du jeton Home Assistant.
-- [x] Indiquer l'emplacement de la clé dans l'interface Home Assistant.
-- [x] Préserver le formulaire HAOS pendant la connexion iCloud et le 2FA.
-- [x] Replier les identifiants Apple après configuration.
+# Phase 9 — Shikamaru
 
-## Version 1.0.45 — Secrets HAOS et connexion iCloud
+## Objectif
 
-**Statut : publiée.**
+Continuer à renforcer la qualité des observations plutôt que multiplier les plugins.
 
-- [x] Saisir les secrets HAOS dans Vision sans les relire depuis Agent.
-- [x] Connecter et renouveler iCloud avec le flux 2FA rclone.
-- [x] Installer automatiquement une version vérifiée de rclone.
-- [x] Utiliser les API publiques de sauvegarde Home Assistant.
+Une nouvelle capacité doit correspondre à une fonction réellement importante de Konoha.
 
-## Version 1.0.44 — Sauvegardes HAOS vers iCloud
+### Capacités existantes
 
-- [x] Référencer Ohana-Agent 1.12.4 et Ohana-Vision 1.11.3.
-- [x] Distribuer `backup.example.yaml` et l'argument `--backup-config`.
-- [x] Conserver les secrets hors YAML et hors de Vision.
-- [x] Documenter la validation progressive et la restauration.
+- [x] DNS ;
+- [x] DHCP ;
+- [x] NTP ;
+- [x] MQTT ;
+- [x] présence réseau ;
+- [x] Z-Wave ;
+- [x] WireGuard ;
+- [x] télémétrie Home Assistant ;
+- [x] Téléinformation ;
+- [x] santé INFRA-01 ;
+- [x] surveillance systemd.
 
-## Version 1.0.20 — Lot B
+### Évolutions
 
-- [x] Ohana-Agent 1.10.0 ;
-- [x] Ohana-Vision 1.9.0 ;
-- [x] Ohana-Installer 1.0.12 ;
-- [x] Téléinformation HTTP directe depuis RPI-Linky ;
-- [x] plages horaires et état de surveillance suspendu ;
-- [x] fork Home Assistant installable et image multiarchitecture.
+- [ ] réduire les faux positifs ;
+- [ ] améliorer la détection des états transitoires ;
+- [ ] améliorer la corrélation entre capacités ;
+- [ ] exploiter les groupes de disponibilité pour les services redondants ;
+- [ ] ajouter une capacité uniquement lorsqu’elle garantit une fonction réelle de Konoha.
 
+---
 
-## Version 1.0.28 — Cohérence de la santé des services
+# Phase 10 — Sauvegarde et restauration
 
-- [x] Référencer Ohana-Agent 1.11.5 et Ohana-Vision 1.10.2.
-- [x] Utiliser la timeline dans la carte des services comme dans la fiche.
-- [x] Conserver les capacités absentes des 100 observations récentes.
-- [x] Conserver Platform 1.0.27 comme composition supportée.
+## Objectif
 
+Considérer une sauvegarde comme valide uniquement lorsqu’elle peut réellement être restaurée.
 
-## Version 1.0.27 — Routage des suspensions d’équipements
+### Déjà livré
 
-- [x] Référencer Ohana-Agent 1.11.5 et Ohana-Vision 1.10.1.
-- [x] Conserver le ciblage `device` lors des suspensions planifiées.
-- [x] Reproduire le second défaut observé sur Infra-01 après 1.0.26.
-- [x] Retirer Platform 1.0.26 du catalogue sélectionnable.
+- [x] sauvegarde HAOS ;
+- [x] sauvegarde INFRA-01 ;
+- [x] chiffrement `age` ;
+- [x] iCloud ;
+- [x] streaming sans stockage permanent sur microSD ;
+- [x] traitement lourd déporté vers Katsuyu ;
+- [x] restauration INFRA-01 ;
+- [x] inventaire des versions.
 
+### À renforcer
 
-## Version 1.0.26 — Stabilité des surveillances planifiées
+- [ ] automatiser davantage la validation de restauration ;
+- [ ] conserver la date du dernier test de restauration ;
+- [ ] signaler une sauvegarde jamais restaurée/testée ;
+- [ ] vérifier l’intégrité des archives anciennes ;
+- [ ] intégrer l’état des sauvegardes à la maintenance préventive Tsunade.
 
-- [x] Référencer Ohana-Agent 1.11.4 et Ohana-Vision 1.10.1.
-- [x] Exporter les suspensions planifiées sans interrompre Agent.
-- [x] Conserver leurs métadonnées explicatives dans Vision.
-- [x] Conserver Platform 1.0.25 comme composition supportée.
+---
 
+# Phase 11 — Documentation et cohérence de l’écosystème
 
-## Version 1.0.25 — Stabilité MQTT Home Assistant
+## Objectif
 
-- [x] Référencer Ohana-Agent 1.11.3 et Ohana-Vision 1.10.1.
-- [x] Supprimer les faux états `Indisponible` lors des reconfigurations.
-- [x] Publier le résumé de santé MQTT avec rétention.
-- [x] Conserver Platform 1.0.24 comme composition supportée.
+Faire correspondre la documentation avec le logiciel réellement livré.
 
+### Documentation
 
-## Version 1.0.24 — Lecture des capacités réseau
+- [ ] mettre à jour `ROADMAP.md` à chaque nouvelle phase fonctionnelle importante ;
+- [ ] supprimer les éléments historiques devenus faux ou redondants ;
+- [ ] documenter clairement les ports et flux réseau ;
+- [ ] créer ou finaliser le guide Troubleshooting ;
+- [ ] documenter les investigations Tsunade ;
+- [ ] documenter les réparations supervisées ;
+- [ ] documenter le cycle Wake-on-LAN / Katsuyu / arrêt ;
+- [ ] documenter la PWA Shizune ;
+- [ ] maintenir le diagramme d’architecture global.
 
-- [x] Référencer Ohana-Agent 1.11.2 et Ohana-Vision 1.10.1.
-- [x] Distinguer le type Ethernet de sa capacité dans Vision.
-- [x] Représenter la capacité sans estimation de trafic ou de saturation.
-- [x] Conserver Platform 1.0.23 comme composition supportée.
+### Cohérence inter-dépôts
 
+Avant toute évolution majeure, vérifier conjointement :
 
-## Version 1.0.23 — Fiabilité DHCP
+- Ohana-Agent ;
+- Ohana-Vision ;
+- Ohana-Katsuyu ;
+- Ohana-Shizune ;
+- Ohana-Installer ;
+- Ohana-Platform ;
+- Ohana-House.
 
-- [x] Référencer Ohana-Agent 1.11.1 et Ohana-Vision 1.10.0.
-- [x] Déployer le helper de purge ciblée avec Ohana-Installer 1.6.1.
-- [x] Conserver Platform 1.0.22 comme composition supportée.
-- [x] Publier le manifeste et le catalogue coordonnés.
+Les contrats partagés, configurations, manifestes et documentations doivent rester cohérents entre les dépôts.
 
-## Version 1.0.22 — Catalogue de compositions
+---
 
-- [x] Publier `release-catalog.yaml` dans la release Platform.
-- [x] Référencer les compositions validées de Platform 1.0.13 à 1.0.22.
-- [x] Définir une composition recommandée unique.
-- [x] Permettre à Ohana-Installer 1.5.0 de sélectionner une version historique.
-- [x] Maintenir le manifeste 1.0.22 sur Agent 1.11.0 et Vision 1.10.0.
+# Phase 12 — Konoha de référence
 
-## Version 1.0.21 — Lot C
+## Objectif
 
-- [x] Ohana-Agent 1.11.0 ;
-- [x] Ohana-Vision 1.10.0 ;
-- [x] Ohana-Installer 1.0.13 ;
-- [x] administration réseau sécurisée et provisionnement initial.
+Faire d’Ohana-House la description fidèle de l’infrastructure Konoha réellement déployée.
+
+- [ ] aligner le vocabulaire Ohana-House avec Konoha ;
+- [ ] maintenir l’inventaire matériel ;
+- [ ] maintenir les liaisons réseau ;
+- [ ] maintenir les équipements supervisés ;
+- [ ] maintenir les capacités réellement garanties ;
+- [ ] documenter les dépendances entre les services critiques.
+
+Le dépôt reste une description de l’installation de référence et ne doit pas dupliquer la configuration opérationnelle détenue par Agent.
+
+---
+
+# Hors priorité actuelle
+
+Les sujets suivants ne doivent pas être développés sans besoin concret :
+
+- Docker Compose ;
+- Kubernetes ;
+- architecture multi-utilisateur ;
+- cloud Ohana ;
+- exécution de commandes libres par IA ;
+- administration directe depuis Katsuyu ;
+- administration directe depuis Shizune ;
+- remplacement de Vision par Shizune ;
+- système générique de plugins externes ;
+- SDK public ;
+- renommage des dépôts Agent, Vision, Installer ou Platform.
+
+---
+
+# Priorité immédiate
+
+La priorité actuelle est :
+
+```text
+1. Stabiliser Agent 1.29 / Katsuyu 0.8.7
+             │
+             ▼
+2. Tester Tsunade sur de vrais incidents
+             │
+             ▼
+3. Identifier les preuves qui lui manquent
+             │
+             ▼
+4. Ajouter des investigations déterministes ciblées
+             │
+             ▼
+5. Étendre progressivement les réparations supervisées
+             │
+             ▼
+6. Vérifier systématiquement le résultat avec Shikamaru
+             │
+             ▼
+7. Construire la mémoire opérationnelle de Tsunade
+             │
+             ▼
+8. Introduire progressivement la maintenance préventive
+```
+
+La prochaine étape d’Ohana n’est donc pas d’ajouter un nouveau composant.
+
+Elle consiste à rendre **Tsunade suffisamment fiable pour exploiter Konoha au quotidien**, en utilisant Shikamaru pour observer, Katsuyu pour les traitements lourds, Vision pour le cockpit technique et Shizune pour les interactions personnelles.
