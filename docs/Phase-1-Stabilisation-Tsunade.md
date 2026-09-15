@@ -12,6 +12,90 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Confidentialité et fraîcheur HA-01 — travaux locaux sans release
+
+La lecture des synthèses du cycle de 14:54 a révélé des paramètres de session
+caméra conservés dans certains chemins URL. Aucune valeur n'est recopiée ici.
+Le critère « secrets exclus des preuves » reste donc non validé en production.
+
+Corrections locales : Katsuyu masque les segments `/stok=…/` avant calcul des
+signatures et extraction des références. La comparaison avec les anciennes
+signatures applique le même masquage et regroupe les compteurs, afin de ne pas
+confondre une rotation de session avec une nouvelle anomalie. Agent masque aussi
+ces segments en reconstruisant les preuves JSON depuis les anciens résultats.
+Les bases existantes ne sont pas nettoyées par ces changements ; leurs données
+historiques et les anciens diagnostics peuvent donc encore contenir ces valeurs.
+
+La recherche ciblée HA-01 contient dix groupes d'anomalies sans `first_at` ni
+`last_at`. Le parseur conserve les lignes non datées : on ne peut pas affirmer
+qu'elles appartiennent à la fenêtre de deux heures demandée. La question de
+réévaluation précise désormais cette limite. Aucun horodatage n'a été inventé.
+Dans la collecte générale, des erreurs Kasa sont datées jusqu'au 15 septembre
+à 14:46:05 Europe/Paris ; celles de Tapo jusqu'à 10:48:25 et l'automatisation
+caméra jusqu'à 09:46:12. Ces dates proviennent des champs structurés lus en SSH ;
+elles décrivent la collecte, pas un contrôle de santé actuel des appareils.
+
+Validation locale : 18 tests de handlers Katsuyu passent, dont les deux parcours
+de collecte avec sessions fictives, conservation des références utiles et
+comparaison aux signatures anciennes. Le test Agent vérifie le masquage d'une
+ancienne preuve sans altérer l'objet historique d'origine. Aucun déploiement,
+publication ou nouveau job de production n'a été lancé.
+
+### Motif de décision fondé sur la collecte — correction locale
+
+Le cas INFRA-01 a révélé que le motif `INSUFFICIENT_CONTEXT` reprenait directement
+le résumé IA. Correction locale Agent : le motif utilise désormais les compteurs
+et le booléen de troncature de `investigation.followup`, enregistrés séparément
+dans `collection_facts`. Sans preuve correctement typée, le motif reste neutre.
+Le prompt distingue aussi explicitement fenêtre limitée et troncature.
+
+Le résumé IA d'origine est conservé comme hypothèse pour la traçabilité ; il n'est
+plus repris comme motif de décision pour ce verdict. Ce changement ne constitue
+pas un détecteur général de contradictions et ne modifie pas les verdicts OK/KO.
+
+Validation locale : **45 tests réussis**, Ruff et contrôle de diff propres.
+Le cas testé reprend une IA affirmant une troncature face à `truncated=false`,
+ainsi que `true`, une valeur inconnue et une chaîne invalide. La réception répétée
+du même résultat n'ajoute pas de diagnostic. Les tests des cycles et reprises passent.
+
+Non publié, non déployé. Les diagnostics déjà persistés, dont celui d'INFRA-01,
+restent inchangés ; le nouveau motif s'appliquera aux résultats traités après
+mise à jour. Aucun job réel n'a été relancé pendant cette correction.
+
+### Validation après déploiement — cycle de 14:54 à 14:56
+
+Version installée vérifiée par SSH : **Agent 1.29.2**, worker **Katsuyu 0.8.7**.
+Le commit Agent `de2a8e2` conserve la correction des preuves publiée en 1.29.1.
+Analyse manuelle `ce9cf2aa-2002-4d39-a690-785d3469a68a`, fenêtre du 14 septembre
+14:54:24 au 15 septembre 14:54:24 (Europe/Paris), terminée à 14:55:10.
+Les quatre sources ont été collectées sans troncature.
+
+| Cible | Résultat du nouveau cycle | Conclusion de validation |
+| --- | --- | --- |
+| LINKY-01 | Décision déterministe `stable`, anomalies connues sans aggravation significative | Pas de nouvelle IA sur ce cycle |
+| ZWAVE-01 | Décision déterministe `stable`, anomalies connues sans aggravation significative | Pas de nouvelle IA sur ce cycle |
+| HA-01 | Deux analyses IA réussies ; recherche `exception` : 382 lignes, 10 anomalies, sans troncature ; suivi `completed`, décision `investigate` | Le diagnostic identifie Tapo/Kasa et des erreurs d'automatisation ; causes encore hypothétiques |
+| INFRA-01 | Deux analyses IA réussies ; recherche `timeout` sur 12:55–14:55 : aucune correspondance ni anomalie, sans troncature ; suivi `incomplete`, décision `watch` | L'absence de preuve actuelle ne devient plus une affirmation de panne persistante |
+
+Les sept jobs de ce cycle (une collecte générale, quatre analyses IA et deux
+collectes ciblées) sont `SUCCEEDED` et `completion_processed=1`. Aucun job
+`QUEUED` ou `RUNNING` au contrôle. Les deux réévaluations comprennent désormais
+`logs.analysis` et `investigation.followup` : la conservation des preuves est
+confirmée en production. Aucun échec de schéma IA sur ce cycle.
+
+**Défaut restant confirmé :** l'analyse INFRA-01
+`b5a5893c-2042-4de8-ad1c-21e2a2cb0d10` affirme que les résultats sont tronqués,
+alors que sa propre preuve `investigation.followup.result.truncated` vaut `false`.
+La limite de fenêtre est réelle ; la troncature alléguée est fausse. La qualité
+des conclusions n'est donc pas entièrement validée. La décision finale reste
+`watch` avec cause non confirmée, sans relance supplémentaire observée.
+
+Prochaine priorité : vérifier la fidélité des limites formulées par l'IA aux
+champs structurés, puis analyser les anomalies HA-01 les plus récentes pour
+distinguer défaut actif et erreurs historiques. Les quatre incidents de journaux
+restent ouverts ; `stable` ne signifie pas résolu. Aucun changement de production
+n'a été effectué pendant ce contrôle.
+
 ### Suite de campagne — correction locale du 15 septembre
 
 La vérification suivante précise les premiers constats :
