@@ -12,6 +12,53 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Baseline historique filtrée avant envoi — correction locale
+
+Le reliquat observé à 20:10 provenait du champ `baseline` du contrôle général.
+Agent masque désormais les paramètres de session dans chaque signature avant
+de créer le job. La règle est partagée avec le filtrage des preuves IA pour
+éviter des comportements divergents. Les sources et compteurs sont conservés ;
+Katsuyu 0.8.8 sait déjà regrouper les signatures masquées identiques.
+
+Validation : **90 tests ciblés réussis**, Ruff et `git diff --check` propres.
+Un test part d'une référence historique contenant deux sessions fictives,
+crée le contrôle, relit le job avec une nouvelle connexion SQLite puis le
+récupère par le parcours worker. Les paramètres sont masqués à chaque étape,
+les compteurs conservés et l'objet historique d'origine inchangé.
+
+Correction non publiée et non déployée. Elle concerne les contrôles créés après
+mise à jour ; les paramètres des anciens jobs ne sont pas réécrits. La validation
+du prochain contrôle réel devra donc porter sur son nouveau champ `baseline`,
+en plus des prompts IA et résultats déjà vérifiés.
+
+### Contrôle Agent 1.29.3 / Katsuyu 0.8.8 — 15 septembre, 20:10–20:12
+
+Versions vérifiées en SSH : Agent 1.29.3 et worker 0.8.8. Le contrôle manuel
+`e29dca79-6c1b-4f5b-8547-e86118917d3f` et ses neuf jobs complémentaires ont
+réussi ; dernier résultat à 20:12:46 Europe/Paris, aucun job en attente au relevé.
+
+- LINKY-01 : décision déterministe `stable`, sans nouveau cycle IA.
+- INFRA-01 : recherche ciblée sans correspondance ni anomalie ; décision `watch`.
+- ZWAVE-01 : 239 lignes correspondantes, aucune anomalie reconnue ; décision `watch`.
+- HA-01 : 372 lignes correspondantes, huit groupes d'anomalies ; décision
+  `investigate`. La qualification de persistance actuelle reste à confronter
+  aux dates des anomalies, particulièrement aux fragments non datés.
+
+Les trois collectes ciblées indiquent `truncated=false`. Les motifs Tsunade
+INFRA-01 et ZWAVE-01 restituent correctement les compteurs et « Collecte non
+tronquée », sans reprendre une troncature inventée par l'IA. Le correctif du motif
+est donc confirmé sur ce cycle réel.
+
+Audit ciblé des segments `/stok=…/`, sans export de leurs valeurs : aucun segment
+non masqué dans les nouveaux résultats de ces dix jobs ni dans les paramètres
+des six analyses IA. En revanche, quatre segments historiques non masqués sont
+encore présents dans les paramètres du contrôle général. Le filtrage de sortie
+fonctionne mais le trajet complet des données n'est pas encore validé : les
+références historiques doivent être filtrées avant persistance et envoi du job.
+Cet audit ne constitue pas une recherche exhaustive de toutes les formes de secrets.
+
+Aucune modification de production, publication ou relance pendant ce contrôle.
+
 ### Confidentialité et fraîcheur HA-01 — travaux locaux sans release
 
 La lecture des synthèses du cycle de 14:54 a révélé des paramètres de session
