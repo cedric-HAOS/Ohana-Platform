@@ -12,6 +12,54 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Rejeu local des corrélations et reprise — 16 septembre 2026
+
+Un test utilise les sources et dates des deux corrélations du contrôle réel
+`11dcefd0-d7cc-45db-8b64-f8013c66c75a` : INFRA-01 / ZWAVE-01,
+15 septembre à 18:23:05.518642Z et 18:23:05.642184Z. Le libellé et les
+anomalies sont synthétiques ; aucun journal brut ni secret n'est conservé.
+Les horodatages ci-dessus sont les valeurs source utilisées pour le rejeu.
+
+Le vrai moteur de décision est exercé avec un dispatcher simulé, sans inference
+IA réelle. La base des incidents est fermée puis rouverte à chaque collecte :
+première corrélation → analyse ; répétition et réception en double → aucune
+analyse supplémentaire ; nouvelle date → nouvelle analyse.
+
+Le test a aussi révélé un défaut : lorsqu'aucun job IA ne pouvait être créé,
+les corrélations étaient malgré tout marquées comme examinées. Correction locale :
+leurs empreintes ne sont pas acquittées dans ce cas, afin de permettre la reprise
+au prochain contrôle. Cela concerne l'absence de job, pas un worker simplement
+éteint alors qu'un job est déjà en attente.
+
+**53 tests ciblés réussis**, Ruff et contrôle de diff propres. Le correctif est
+local, non publié et non déployé. Les marqueurs éventuellement enregistrés par
+les versions précédentes ne sont pas réécrits. La déduplication sur corrélation
+répétée reste validée en rejeu local, et non par un nouveau cycle de production.
+
+### Contrôle Agent 1.29.5 / Katsuyu 0.8.8 — 15 septembre, 20:42–20:43
+
+Versions confirmées en SSH. Contrôle
+`1dfda66a-de85-4efb-a8cf-44f826359297`, créé à 20:42:46 Europe/Paris,
+dernier résultat à 20:43:55. Quatre jobs réussis et traités ; aucun restant.
+
+- INFRA-01 conserve l'incident `dea74d31-6a14-4a17-83c8-f48ef94928e0`, désormais
+  attribué à `system-journal` : migration d'attribution confirmée.
+- Son verdict KO intermédiaire présente explicitement des pistes à vérifier,
+  sans confirmer une panne ni sa cause. Sa réévaluation finit en surveillance
+  avec contexte insuffisant, zéro correspondance, zéro anomalie reconnue et
+  collecte non tronquée correctement restituée.
+- HA-01 : surveillance déterministe ; LINKY-01 et ZWAVE-01 : stables.
+  Aucun nouveau job IA pour ces trois sources.
+- Aucun segment de session caméra non masqué dans les paramètres et résultats
+  des quatre jobs, selon le contrôle ciblé `/stok=…/`.
+
+Les marqueurs de corrélations examinées sont présents pour les quatre incidents.
+Cette collecte ne contient aucune corrélation : elle confirme l'enregistrement
+des marqueurs, mais ne valide pas encore en production le rejet d'une corrélation
+identique répétée. Ce cas reste couvert par les tests locaux.
+
+Aucune modification de production ni nouveau job pendant cette vérification.
+
 ### Conclusions IA et constats — correction locale
 
 Les verdicts IA OK/KO utilisaient directement l'interprétation libre du modèle
