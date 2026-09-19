@@ -59,6 +59,10 @@ Les noms fonctionnels décrivent les responsabilités :
 Suivi : [campagne de validation et premiers constats](docs/Phase-1-Stabilisation-Tsunade.md).
 Phase démarrée le 15 septembre 2026 ; validation en production encore partielle.
 
+Checklist rapprochée du rapport le 19 septembre 2026. Les cases cochées
+correspondent aux validations ci-dessous dans leur périmètre indiqué ; elles
+ne valent pas validation des scénarios de panne ni de toute la chaîne en production.
+
 ## Objectif
 
 Valider le comportement de Tsunade sur des incidents réels avant d’étendre ses capacités.
@@ -75,15 +79,15 @@ Tsunade doit produire un diagnostic utile, compréhensible et reproductible sans
 - [ ] Vérifier les diagnostics `teleinfo2mqtt`.
 - [ ] Vérifier les contrôles Supervisor Home Assistant.
 - [ ] Vérifier les investigations DNS, TCP et HTTP.
-- [ ] Vérifier les métriques système collectées sur INFRA-01.
+- [x] Vérifier les métriques système collectées sur INFRA-01 (snapshot CPU, mémoire, disque et unités du 15 septembre ; scénario de surcharge restant).
 - [ ] Vérifier que les secrets restent exclus des preuves.
 
 ### Qualité des diagnostics
 
 - [ ] Vérifier que Tsunade distingue clairement faits, hypothèses et éléments manquants.
-- [ ] Vérifier que les anomalies déjà connues ne déclenchent pas inutilement un nouveau cycle IA.
-- [ ] Vérifier que l’arrivée de nouvelles observations peut rouvrir correctement une analyse.
-- [ ] Vérifier que les diagnostics terminés ne sont pas relancés sans nouvelle information.
+- [ ] Vérifier que les anomalies déjà connues ne déclenchent pas inutilement un nouveau cycle IA (cycles stables et rejeu des corrélations validés ; perte de référence après contrôle partiel constatée le 19 septembre, correction locale à déployer puis vérifier).
+- [x] Vérifier que l’arrivée de nouvelles observations peut rouvrir correctement une analyse (nouvelles corrélations du 16 septembre, contrôle 09:01–09:03).
+- [x] Vérifier que les diagnostics terminés ne sont pas relancés sans nouvelle information (tests de cycle et rejeu avec réouverture de base ; reprise en production restant à observer).
 - [ ] Vérifier que les faux positifs MQTT, série et télémétrie restent maîtrisés.
 - [ ] Vérifier que `INSUFFICIENT_CONTEXT` conduit à une investigation utile plutôt qu’à une conclusion artificielle.
 

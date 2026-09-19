@@ -12,6 +12,149 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Reprise du 19 septembre — Katsuyu 0.8.9 et références par source
+
+Vérification SSH en lecture seule vers 16:37–16:43 Europe/Paris : Agent
+**1.29.6**, Katsuyu **0.8.9** (présence worker à 16:38:12), Agent et Vision
+actifs. SQLite ouvert avec `mode=ro` et `PRAGMA query_only=ON`.
+Aucun job créé, service modifié, incident provoqué ou déploiement effectué.
+
+Les commits locaux de release sont Agent `53a8645` et Katsuyu `07d3c43`.
+Les mentions « Non publié » ci-dessous décrivent les passes historiques :
+le correctif INFO Z-Wave et la normalisation ISO sont inclus dans le commit
+0.8.9. Les assets distants n'ont pas été réaudités pendant cette reprise.
+Agent, Katsuyu et House étaient propres ; le rapport Platform comportait déjà
+les constats du 16 septembre, conservés ici.
+
+**Effet observé sur Z-Wave :**
+
+| Contrôle | Groupes Z-Wave | Déconnexion INFO classée en anomalie | Corrélations |
+| --- | --- | --- | --- |
+| 16/09 09:01, `baecd2f5-95d2-4f78-9607-bb680d7e4d3f` (0.8.8 vérifiée lors du contrôle précédent) | 10 | Oui, 96 occurrences | 3 INFRA-01 / ZWAVE-01 |
+| 17/09 04:45, `e4dc12d6-d175-4d78-a4b3-2e7ff63eb18e` | 10 | Non | 0 |
+| 18/09 10:40, `0411c04f-b19f-4989-a39a-e02683b0b3dc` | 9 | Non | 0 |
+| 19/09 04:45, `e81481df-c09d-4b51-8164-14b30faff3ae` | 9 | Non | 0 |
+
+Les trois résultats postérieurs à la release ne contiennent plus la signature
+INFO de déconnexion. Le timeout de nœud `ZW0201` reste détecté le 18 septembre
+à 07:59:57 Europe/Paris. Cela confirme le comportement attendu sur les résultats
+observés ; la version n'est pas persistée individuellement dans chaque job et
+les journaux bruts n'ont pas été recollectés pour rejouer à l'identique les
+fenêtres. L'absence de corrélation seule ne démontre pas la causalité du filtre
+ni une santé Z-Wave entièrement validée.
+
+**Défaut distinct confirmé dans les données persistées :** le contrôle
+`6084d9f8-665b-4b22-8e7a-652d94a2300f`, le 18 à 10:48, ne couvre qu'INFRA-01.
+Le code choisissait le dernier résultat global comme référence de toutes les
+sources. La baseline du 19 ne contient donc que trois groupes INFRA-01 ;
+HA-01, LINKY-01 et ZWAVE-01 n'ont plus de référence. Les huit groupes Z-Wave
+`s6-rc` déjà stables le 18 deviennent `new` avec `reference_occurrences=null`.
+Le neuvième groupe du 19 est `INFO BACKUP: Backup store started` à 02:00.
+Ce cycle ne présente aucune corrélation : la nouvelle analyse ne vient donc
+pas d'une répétition des trois corrélations du 16.
+
+Le cycle du 19 comprend dix jobs réussis et traités (une collecte générale,
+six analyses IA, trois recherches ciblées), terminé à **05:07:27**. INFRA-01
+reste `stable`, HA-01 et LINKY-01 finissent en `investigate`, ZWAVE-01 en
+`watch` pour contexte insuffisant après une recherche sans correspondance ni
+anomalie, non tronquée. Aucun job en attente ni résultat à traiter au relevé.
+Deux contrôles du 18 ont expiré ; ils ne sont pas comptés comme validations.
+
+**Correction locale Agent, non publiée et non déployée :** rechercher la
+dernière source présente dans un contrôle réussi pour chacune des sources
+demandées. Un contrôle partiel ne remplace que sa propre référence ; un résultat
+sain sans finding efface bien les anciens groupes de cette source, et un job
+échoué ne devient pas une référence. Le masquage avant persistance est conservé.
+Les anciens résultats suffisent à la reprise, sans migration ni réécriture.
+La même sélection en lecture seule, arrêtée avant le contrôle du 19, retrouve
+3 groupes INFRA-01 dans le contrôle de 10:48 et respectivement 12, 16 et 9
+groupes HA-01, LINKY-01 et ZWAVE-01 dans celui de 10:40.
+
+Validation locale : **57 tests réussis** (cycle des journaux, rejeu des
+corrélations, jobs d'administration et sources). Deux cas couvrent le contrôle
+partiel, la reprise par nouvelle connexion SQLite, un job échoué, une source
+jamais collectée et une référence saine vide ; le test de masquage reste passant.
+Ruff, vérification du formatage et contrôles de diff passent.
+
+Suite prioritaire : valider cette correction après déploiement autorisé sur
+un enchaînement contrôle global → INFRA-01 seul → contrôle global. Examiner
+ensuite le classement des messages INFO `s6-rc` et `BACKUP` comme anomalies :
+le défaut de référence est corrigé localement, leur pertinence reste ouverte.
+Les scénarios de panne et l'audit exhaustif des secrets restent non validés.
+La roadmap est rapprochée de ces preuves, sans cocher une validation globale
+du traitement des anomalies connues tant que cette régression demeure déployée.
+
+### Déconnexion INFO Z-Wave — correction locale ciblée
+
+Le message exact `INFO Z-WAVE-SERVER: Client disconnected`, provenant de
+ZWAVE-01, est désormais exclu du classement en anomalie. Sa présence seule
+ne démontre pas un défaut de communication. Les variantes WARNING/ERROR,
+les messages mentionnant un timeout, les erreurs de nœud et les autres
+émetteurs restent soumis au détecteur existant.
+
+Le filtre s'applique à la collecte générale et à la recherche ciblée. Cette
+dernière conserve la ligne dans `matched_lines` mais ne produit pas de finding
+pour ce seul message. Sans finding, ce message ne participe plus aux
+corrélations avec les avertissements INFRA-01.
+
+**35 tests handlers/IA réussis.** Six scénarios vérifient les deux collectes,
+les compteurs et les corrélations face à un timeout simultané sur INFRA-01.
+La correction de normalisation des dates de la passe précédente est incluse.
+Non publié et non déployé ; les anciens résultats ne sont pas modifiés.
+Cela ne valide pas à lui seul la santé Z-Wave et ne supprime pas les autres
+anomalies ou corrélations présentes.
+
+### Qualité du regroupement et corrélations au démarrage — 16 septembre
+
+La lecture du contrôle de 09:01 montre des avertissements de synchronisation
+et de timeout sur INFRA-01, proches d'une ligne INFO « client disconnected »
+Z-Wave. Les démarrages Agent/Vision sont datés vers 09:01:09–09:01:38.
+La proximité temporelle est réelle ; elle ne démontre ni une causalité ni une
+panne Z-Wave. La déconnexion reste classée comme anomalie par le détecteur actuel.
+
+Défaut de regroupement confirmé : `_signature` mettait le texte en minuscules
+avant de retirer les horodatages, alors que le séparateur ISO attendu était `T`.
+Les synthèses réelles contiennent ainsi un fragment `16t09` dans leur signature.
+Un message identique à une autre date pouvait être classé à tort comme nouveau.
+
+Correction locale Katsuyu : retirer les dates avant conversion en minuscules.
+Test avec deux lignes journald ayant des dates, heures et PID différents :
+signature identique, tendance stable, compteur précédent conservé et date réelle
+de la nouvelle observation correctement extraite.
+
+**29 tests handlers/IA réussis**, contrôles de style et diff propres. Non publié,
+non déployé. Les anciennes signatures déjà mal normalisées ne sont pas migrées :
+une première collecte après mise à jour peut encore provoquer un changement de
+référence. La comparaison stabilisée se juge ensuite entre collectes produites
+avec cette correction. La pertinence des déconnexions INFO Z-Wave et des
+corrélations de démarrage reste un point ouvert distinct.
+
+### Contrôle Agent 1.29.6 / Katsuyu 0.8.8 — 16 septembre, 09:01–09:03
+
+Versions vérifiées en SSH. Contrôle
+`baecd2f5-95d2-4f78-9607-bb680d7e4d3f`, créé à 09:01:50 Europe/Paris,
+dernier résultat à 09:03:57. Sept jobs réussis et traités ; aucun restant.
+
+Trois corrélations INFRA-01 / ZWAVE-01 sont présentes, à 09:01:43, 09:01:47
+et 09:01:49 Europe/Paris. La comparaison des empreintes avec les marqueurs
+antérieurs confirme trois nouveautés et aucune répétition déjà traitée pour
+chacun des deux incidents. L'escalade IA est donc conforme au critère de nouveauté ;
+elle ne constitue pas une preuve de boucle sur les mêmes corrélations.
+
+- HA-01 : surveillance déterministe ; LINKY-01 : stable, sans nouvelle IA.
+- INFRA-01 : attribution `system-journal` conservée ; décision `investigate`
+  formulée en pistes à vérifier, sans affirmation de panne confirmée.
+  Recherche ciblée : zéro correspondance et anomalie, non tronquée.
+- ZWAVE-01 : surveillance pour contexte insuffisant ; 239 correspondances,
+  aucune anomalie reconnue, collecte non tronquée.
+- Aucun segment de session caméra non masqué dans les paramètres et résultats
+  des sept jobs examinés, selon l'audit ciblé `/stok=…/`.
+
+Ce contrôle valide la prise en compte de nouvelles corrélations en production.
+Il ne teste ni leur répétition identique ni l'impossibilité de créer un job IA ;
+ces deux cas restent couverts par le rejeu local. Aucun changement de production
+pendant la vérification.
+
 ### Rejeu local des corrélations et reprise — 16 septembre 2026
 
 Un test utilise les sources et dates des deux corrélations du contrôle réel
