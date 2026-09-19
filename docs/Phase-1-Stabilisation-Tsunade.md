@@ -12,6 +12,105 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Limites d'analyse des journaux — correction locale suivante du 19 septembre
+
+L'examen du code Katsuyu révèle que le contrôle général plafonnait l'analyse
+à 200 000 lignes et la restitution à 64 groupes par source sans reporter ces
+deux limites dans `truncated`. Le parcours ciblé les signalait déjà. Une
+absence dans les groupes rendus pouvait également alimenter
+`disappeared_anomalies` malgré une collecte tronquée ou une source non collectée.
+Ces défauts sont reproduits localement ; rien dans cette passe ne démontre
+qu'un contrôle historique de production a atteint ces plafonds.
+
+Le contrôle général signale maintenant toute troncature par octets, lignes ou
+groupes. Les anomalies absentes ne sont déclarées disparues que pour les
+sources effectivement collectées et non tronquées. Une disparition reste
+l'absence d'un groupe dans cette collecte, pas une résolution de l'incident.
+Les seuils, les compteurs et les schémas de jobs restent inchangés.
+
+**57 tests handlers/IA réussis**, dont dix cas de régression : exactement
+200 000 lignes / 64 groupes et dépassement, collecte générale et ciblée,
+source tronquée et source absente d'un contrôle partiel. Les nouvelles
+limites remontent dans les résultats structurés consommés par Agent.
+
+**Local, non publié et non déployé.** Aucun contrôle réel relancé, aucun
+résultat historique réécrit. Cette correction ne valide pas la fraîcheur des
+messages `s6-rc` sans date, la qualification de leurs démarrages, ni la
+comparabilité des compteurs entre fenêtres ou collectes incomplètes. Ces
+points restent ouverts, avec HTTP en production et les scénarios de panne.
+
+### Reprise — couverture HTTP des snapshots, correction locale du 19 septembre
+
+La reprise retrouve un test non terminé sur la sélection des sondes. Le défaut
+est reproduit avec l'architecture d'exemple : Home Assistant est le huitième
+point d'accès, alors que la sélection s'arrêtait dès six cibles avec inspection
+de configuration, sept sans. Pour INFRA-01, ZWAVE-01 et LINKY-01, aucun HTTP
+n'était alors sélectionné. Cela explique l'absence sur cet exemple ; la
+configuration de production n'a pas été relue pendant cette passe.
+
+Agent construit désormais les candidats avant d'appliquer le plafond : services
+du nœud demandé d'abord, puis HTTP/HTTPS, puis autres cibles, en conservant
+l'ordre de déclaration dans chaque priorité et la déduplication des points
+d'accès. Si les services du nœud demandé remplissent le budget, ils restent
+prioritaires. `omitted_targets` expose les cibles écartées avec
+`reason=probe_limit` ; une cible non testée n'est pas considérée saine.
+
+**68 tests ciblés réussis**, Ruff et formatage validés : quatre nœuds avec et
+sans inspection, priorité locale lorsque le budget est rempli, limites de
+sondes, HTTP HEAD local 302/401/403/503 sans redirection, inspection Supervisor,
+investigations et suivis. Le parcours de réévaluation conserve la liste des
+cibles omises dans les preuves transmises à Katsuyu.
+
+**Local, non publié et non déployé.** Aucun job réel lancé ni changement de
+production. Les limites de six/sept sondes et dix/six secondes restent
+inchangées. Aucun exemple de configuration ni contrat de job modifié ; le
+champ ajouté appartient au snapshot JSON des preuves. Les anciens snapshots
+restent inchangés. La validation HTTP sur une nouvelle investigation réelle
+reste à faire après déploiement autorisé ; qualification des journaux Z-Wave,
+scénarios de panne et audit complet des secrets restent ouverts.
+
+### Contrôle Agent 1.29.8 — 19 septembre, 17:50–17:53
+
+Agent **1.29.8** et Katsuyu **0.8.10** confirmés en SSH ; commit local Agent
+`d9d3eee`, dépôt propre. Contrôle manuel
+`1db9a8e0-6a79-4a23-83a0-432e02247cb0`, créé à **17:50:21 Europe/Paris**.
+Sept jobs réussis et traités (collecte générale, quatre analyses IA et deux
+recherches ciblées), dernier résultat à **17:53:50**, dernière décision à
+**17:53:51**. Aucun job restant. Consultation en lecture seule ; aucun job
+supplémentaire ni changement de production pendant cette vérification.
+
+**Sélection Supervisor Z-Wave validée dans le cycle réel :** snapshot à
+**17:51:53**, `requested_node=zwave-01`, origine `zwave-01 / Supervisor`,
+`addon_selection.status=matched`. L'add-on `a0d7b954_zwavejs2mqtt` est sélectionné,
+version **7.7.0**, état **started**, CPU **0,02 %**, mémoire **3,14 %**.
+Cette preuve est persistée dans l'événement d'investigation et transmise à
+la réévaluation `782e9e0c-1256-45bf-b82e-1f8b29919c29`. DNS et TCP 3000
+réussissent depuis Agent. Cela valide la collecte et sa transmission, pas la
+santé de chaque nœud Z-Wave ni tous les cas de panne Supervisor.
+
+L'inspection INFRA-01 à 17:51:44 sélectionne toujours Mosquitto sur HA-01 :
+`core_mosquitto`, **7.1.1**, `started`, CPU **0,08 %**, mémoire **0,44 %**.
+Elle est également transmise à la réévaluation. Les endpoints des deux
+snapshots ne contiennent **aucun résultat HTTP** : ce point reste ouvert.
+
+| Source | Collecte générale | Décision finale |
+| --- | --- | --- |
+| INFRA-01 | 12 groupes connus, 1 en hausse, 1 stable, 2 nouveaux | `investigate`, hypothèses à vérifier ; recherche ciblée sans correspondance ni anomalie |
+| HA-01 | 20 stables, 1 nouveau | `watch`, sans IA |
+| LINKY-01 | 15 stables, 1 connu | `stable`, sans IA |
+| ZWAVE-01 | 8 connus, 38 nouveaux | `watch` après investigation et réévaluation ; recherche ciblée sans correspondance ni anomalie |
+
+Aucune corrélation et collectes déclarées non tronquées. Les 46 groupes Z-Wave
+se répartissent en 36 `restart`, 9 `zwave` et 1 `network` ; plusieurs nouveaux
+groupes n'ont pas de date exploitable. Ils ne constituent pas 38 pannes
+actuelles démontrées. La fraîcheur et la pertinence de ces groupes restent
+à examiner ; une recherche ciblée vide ne prouve pas la résolution globale.
+
+Le correctif Supervisor est désormais déployé et confirmé sur ZWAVE-01.
+La case des investigations automatiques ZWAVE-01 est cochée pour ce cycle
+borné de lecture seule. HTTP, qualification des journaux et scénarios de panne
+restent hors de cette validation.
+
 ### Inspection Supervisor Z-Wave et sondes HTTP — correction locale du 19 septembre
 
 La poursuite de Phase 1 révèle un défaut de sélection dans l'inspection
