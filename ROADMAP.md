@@ -77,15 +77,15 @@ Tsunade doit produire un diagnostic utile, compréhensible et reproductible sans
 - [ ] Valider les investigations automatiques sur ZWAVE-01.
 - [ ] Vérifier les diagnostics MQTT de Mosquitto.
 - [ ] Vérifier les diagnostics `teleinfo2mqtt`.
-- [ ] Vérifier les contrôles Supervisor Home Assistant.
-- [ ] Vérifier les investigations DNS, TCP et HTTP.
+- [ ] Vérifier les contrôles Supervisor Home Assistant (sélection Z-Wave corrigée et testée localement le 19 septembre ; nouvelle inspection en production restant à valider).
+- [ ] Vérifier les investigations DNS, TCP et HTTP (HEAD 302/401/403/503 et absence de redirection vérifiés sur serveur local ; validation HTTP sur les cibles réelles restante).
 - [x] Vérifier les métriques système collectées sur INFRA-01 (snapshot CPU, mémoire, disque et unités du 15 septembre ; scénario de surcharge restant).
 - [ ] Vérifier que les secrets restent exclus des preuves.
 
 ### Qualité des diagnostics
 
 - [ ] Vérifier que Tsunade distingue clairement faits, hypothèses et éléments manquants.
-- [ ] Vérifier que les anomalies déjà connues ne déclenchent pas inutilement un nouveau cycle IA (cycles stables et rejeu des corrélations validés ; perte de référence après contrôle partiel constatée le 19 septembre, correction locale à déployer puis vérifier).
+- [x] Vérifier que les anomalies déjà connues ne déclenchent pas inutilement un nouveau cycle IA (Agent 1.29.7 : global → INFRA-01 seul → global validé le 19 septembre à 17:13–17:14, références conservées et aucune nouvelle IA ; répétition des corrélations également validée en rejeu local).
 - [x] Vérifier que l’arrivée de nouvelles observations peut rouvrir correctement une analyse (nouvelles corrélations du 16 septembre, contrôle 09:01–09:03).
 - [x] Vérifier que les diagnostics terminés ne sont pas relancés sans nouvelle information (tests de cycle et rejeu avec réouverture de base ; reprise en production restant à observer).
 - [ ] Vérifier que les faux positifs MQTT, série et télémétrie restent maîtrisés.

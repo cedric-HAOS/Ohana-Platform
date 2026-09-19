@@ -12,6 +12,179 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Inspection Supervisor Z-Wave et sondes HTTP — correction locale du 19 septembre
+
+La poursuite de Phase 1 révèle un défaut de sélection dans l'inspection
+Supervisor : seul LINKY-01 avait une sélection spécifique ; ZWAVE-01 héritait
+de la recherche Mosquitto/MQTT. Z-Wave JS pouvait être ignoré, ou Z-Wave JS UI
+sélectionné accidentellement via son ancien nom `zwavejs2mqtt`. Ce constat
+vient du code et des tests, pas d'une nouvelle investigation de production.
+
+**Correction locale Agent :** ZWAVE-01 sélectionne désormais les identifiants
+et noms `z-wave js`, `zwavejs` et `zwave_js`. HA-01 et l'inspection MQTT associée
+à INFRA-01 conservent Mosquitto/MQTT ; LINKY-01 conserve teleinfo/Linky.
+Un champ `addon_selection` distingue liste inaccessible (`unavailable`),
+aucune correspondance (`no_match`) et sélection effectuée (`matched`). Ce
+dernier statut décrit la sélection, pas la santé de l'add-on. Une absence de
+correspondance ne prouve ni arrêt ni absence du service sur la machine.
+
+Les requêtes restent des GET fixes `/addons`, `/hardware/info`, puis
+`/addons/{slug}/info`, `/addons/{slug}/stats` et `/core/info`, avec les limites
+existantes. Les options Z-Wave libres, dont les clés réseau et S2, ne sont pas
+exportées. Aucun changement de configuration ni de contrat de job requis.
+
+**58 tests ciblés réussis** : inspection de configuration, sondes en lecture
+seule, investigations et suivis. Le Supervisor simulé couvre les quatre cibles,
+Z-Wave JS et JS UI, un Mosquitto présent sur ZWAVE-01 mais ignoré, une liste
+inaccessible et une liste sans Z-Wave. Les tests vérifient les routes GET,
+l'origine, l'état retourné et l'absence de clés fictives dans les preuves.
+Un serveur HTTP local réel vérifie les réponses **302, 401, 403 et 503** :
+une unique requête `HEAD /`, aucune redirection suivie, statut conservé sans
+le transformer en erreur de transport. Ruff et contrôle de diff propres.
+
+**Non publié et non déployé.** Les anciennes inspections restent inchangées ;
+aucun incident ni job n'est relancé par ce correctif. Les cases Supervisor et
+DNS/TCP/HTTP restent ouvertes, car ces tests ne remplacent pas une validation
+sur les cibles réelles. Prochaine étape après déploiement autorisé : vérifier
+une nouvelle inspection ZWAVE-01 (add-on sélectionné, état et ressources), puis
+les réponses HTTP effectivement présentes dans une investigation réelle.
+
+### Contrôle Katsuyu 0.8.10 — 19 septembre, 17:30–17:31
+
+Agent **1.29.7** et worker **0.8.10** confirmés en SSH ; présence worker à
+17:32:24 Europe/Paris. Commit local Katsuyu `3d65774`, dépôt propre. Contrôle
+manuel `3a9a6448-c9d0-4de8-945c-edf989d64ff8`, créé à **17:30:40**, terminé
+à **17:31:21** ; dernières décisions à **17:31:23**. Vérification SQLite en
+lecture seule, sans nouvelle collecte ou modification de production.
+
+Un seul job, réussi et traité : aucune analyse IA ni recherche complémentaire,
+aucun job restant. Les quatre références sont présentes (14 / 21 / 16 / 9
+groupes), aucune corrélation et les quatre collectes déclarent `truncated=false`.
+
+| Source | Groupes observés | Décision déterministe |
+| --- | --- | --- |
+| INFRA-01 | 12 stables, 2 connus | `watch` |
+| HA-01 | 20 stables, 1 nouveau | `watch` |
+| LINKY-01 | 16 stables | `stable` |
+| ZWAVE-01 | 8 stables | `stable` |
+
+**Effet du filtre firmware confirmé sur ce résultat :** Z-Wave passe de neuf
+à huit groupes. Le groupe `INFO Z-WAVE: Starting bulk firmware update check
+for all nodes` est explicitement dans `disappeared_anomalies`, alors que sa
+date précédemment observée (19 septembre à 15:38:32) reste dans la fenêtre
+du nouveau contrôle (18 à 17:30:40 → 19 à 17:30:40). Les huit groupes `s6-rc`
+restent stables. La disparition d'un finding filtré n'est pas une résolution
+d'incident ni une preuve de santé complète.
+
+Les messages INFO de déconnexion et `Backup store started` sont également
+absents des findings. Le second était déjà absent du contrôle précédent :
+son absence ici ne valide pas à elle seule le filtre sur une occurrence réelle
+recollectée. Ce cas et le maintien des erreurs restent couverts par les tests
+locaux, sans scénario d'erreur provoqué pendant cette passe.
+
+Le correctif est désormais déployé ; la mention « local, non publié » de la
+section historique ci-dessous ne décrit plus son état courant. La Phase 1
+reste partielle : qualification des démarrages `s6-rc`, contrôles HTTP/Supervisor,
+scénarios de panne et audit exhaustif des secrets encore ouverts.
+
+### Global → INFRA-01 seul → global validé — 19 septembre, 17:13–17:14
+
+Suite demandée par l'opérateur, avec Agent **1.29.7** et Katsuyu **0.8.9**.
+Deux contrôles bornés de lecture des journaux ont été lancés par l'API
+d'administration authentifiée, sans changement de configuration ni de service.
+Le contrôle global de 17:05 sert de référence initiale.
+
+- Partiel `aa183a70-5970-46a2-888e-f044a87aa913` : INFRA-01 seul,
+  créé à **17:13:00**, terminé à **17:13:12 Europe/Paris**. Fenêtre de 24 heures,
+  plafond de 4 Mio, baseline INFRA-01 issue du contrôle de 17:05. Soumission
+  par `/v1/jobs`, car le parcours `/v1/incidents/logs/check` utilise toutes les
+  sources configurées. Quatorze groupes stables, décision `stable`, aucune IA.
+- Global `f5b76ebf-f944-4bcc-9cd5-c18e66f18923` : lancé à **17:13:47** par
+  `/v1/incidents/logs/check`, après traitement du partiel. Collecte terminée
+  à **17:14:28**, dernière décision à **17:14:30**.
+
+La comparaison exacte des signatures et compteurs confirme que la baseline
+du global combine les **14 groupes INFRA-01 du partiel** et les **21 HA-01,
+16 LINKY-01 et 9 ZWAVE-01 du global de 17:05**. La sélection standard d'Agent
+conserve donc les références des sources absentes du contrôle intermédiaire.
+
+| Source | Résultat global | Décision |
+| --- | --- | --- |
+| INFRA-01 | 13 groupes stables, 1 connu | `stable` |
+| HA-01 | 19 groupes stables, 1 connu, 1 nouveau | `watch` |
+| LINKY-01 | 16 groupes stables | `stable` |
+| ZWAVE-01 | 9 groupes stables | `stable` |
+
+Les deux jobs sont `SUCCEEDED`, `completion_processed=1`. Aucune corrélation,
+aucune collecte déclarée tronquée, aucun nouveau job IA ni suivi complémentaire.
+Aucun job en attente ni résultat à traiter au relevé. Le cas de régression
+global → partiel → global est désormais validé en production ; la case sur
+les anomalies connues est cochée pour ce périmètre dans la roadmap. `stable`
+ne signifie pas que les incidents historiques sont résolus.
+
+### Messages INFO d'activité Z-Wave — correction locale suivante
+
+Les messages exacts `INFO Z-WAVE: Starting bulk firmware update check for all
+nodes` et `INFO BACKUP: Backup store started`, observés dans les contrôles
+précédents, correspondaient aux mots `starting` / `started` du détecteur.
+Leur présence seule n'établit pas une anomalie. Katsuyu les exclut désormais
+sur ZWAVE-01 dans les collectes générales et ciblées ; la recherche ciblée
+conserve le compteur des lignes correspondantes. Ils ne créent plus seuls de
+corrélation avec un timeout simultané sur INFRA-01.
+
+**47 tests handlers/IA réussis**, Ruff, formatage et diff propres. Les tests
+couvrent les variantes WARNING/ERROR, les suffixes d'échec ou timeout, un autre
+émetteur, un démarrage de driver et les mêmes textes provenant d'INFRA-01 ou
+HA-01 : leur détection reste conservée. Les messages `s6-rc` ne sont pas
+modifiés : distinguer un démarrage isolé d'une répétition anormale reste à
+examiner, notamment avec leurs horodatages absents.
+
+Ce filtre est **local, non publié et non déployé**. Les résultats historiques
+restent inchangés. Prochaine validation : vérifier ses effets sur une collecte
+après déploiement autorisé. Les scénarios de panne, HTTP/Supervisor et l'audit
+exhaustif des secrets restent ouverts ; cette passe ne valide pas toute la Phase 1.
+
+### Contrôle Agent 1.29.7 / Katsuyu 0.8.9 — 19 septembre, 17:05–17:07
+
+Versions vérifiées en SSH après le déploiement signalé par l'opérateur ;
+commit local Agent `f9096d8`. Consultation SQLite en lecture seule, sans
+création de job ni modification de production pendant cette vérification.
+
+Contrôle manuel `64b1314d-1728-4c16-8508-8848384b4566`, créé à
+**17:05:18 Europe/Paris**, collecte terminée à 17:06:07. Les sept jobs du cycle
+(une collecte générale, quatre analyses IA, deux recherches ciblées) sont
+réussis et traités ; dernier résultat à **17:07:51**, aucun job restant.
+
+La baseline est exactement égale aux signatures et compteurs du contrôle
+global précédent : INFRA-01 1 groupe, HA-01 20, LINKY-01 16, ZWAVE-01 9.
+Les quatre collectes déclarent `truncated=false` ; aucune corrélation.
+
+| Source | Résultat | Décision / nouvelle IA |
+| --- | --- | --- |
+| INFRA-01 | 1 groupe connu, 13 nouveaux ; recherche ciblée sans correspondance ni anomalie | `investigate` après deux analyses IA ; pas de preuve de résolution globale |
+| HA-01 | 13 groupes stables, 1 connu, 1 en baisse, 6 nouveaux ; recherche ciblée : 380 correspondances, 6 anomalies | `investigate` après deux analyses IA |
+| LINKY-01 | 16 groupes stables | `stable`, aucune nouvelle IA |
+| ZWAVE-01 | 8 groupes stables, 1 nouveau | `watch` déterministe, aucune nouvelle IA |
+
+Les huit groupes Z-Wave `s6-rc` ont retrouvé une référence et ne sont plus
+artificiellement nouveaux. La déconnexion INFO reste absente des findings.
+Le nouveau groupe est `INFO Z-WAVE: Starting bulk firmware update check for
+all nodes`, le 19 à **15:38:32 Europe/Paris**, une occurrence classée `warning`.
+La pertinence de ce classement reste à examiner avec les autres messages INFO
+de démarrage ; il n'a pas déclenché d'IA sur ce cycle.
+
+Aucun segment de session caméra `/stok=…/` non masqué détecté dans les
+paramètres et résultats des sept jobs. Ce contrôle ciblé ne constitue pas un
+audit exhaustif de toutes les formes de secrets.
+
+**Validation partielle du correctif 1.29.7 :** conservation des références
+et absence de relance IA LINKY-01 / ZWAVE-01 confirmées sur ce contrôle réel.
+Le contrôle précédent était global : cette passe ne reproduit donc pas le
+cas global → INFRA-01 seul → global, qui reste validé par les tests locaux
+et doit encore être observé en production. Le critère global sur les anomalies
+connues reste ouvert dans la roadmap. Le correctif est désormais déployé ;
+les mentions « local, non publié » de la section suivante sont historiques.
+
 ### Reprise du 19 septembre — Katsuyu 0.8.9 et références par source
 
 Vérification SSH en lecture seule vers 16:37–16:43 Europe/Paris : Agent
