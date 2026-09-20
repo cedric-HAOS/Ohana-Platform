@@ -242,7 +242,7 @@ Chaque nouvelle étape d’investigation doit être justifiée par une nouvelle 
 
 - [ ] Limiter le nombre de réinvestigations successives sans nouvelle preuve.
 - [ ] Ne pas relancer Katsuyu pour un dossier d’investigation inchangé.
-- [ ] Ne pas relancer une expertise IA avec les mêmes preuves et la même question.
+- [ ] Ne pas relancer une expertise IA avec les mêmes preuves et la même question (mémoire des groupes déclencheurs, reprise SQLite et collectes tronquées testées localement le 20 septembre ; validation réelle du correctif Agent restante).
 - [ ] Limiter les réveils successifs de Bubule pour un même incident.
 - [ ] Regrouper lorsque possible plusieurs traitements Katsuyu compatibles dans un même cycle worker.
 - [ ] Conserver la raison ayant déclenché chaque nouvelle investigation.

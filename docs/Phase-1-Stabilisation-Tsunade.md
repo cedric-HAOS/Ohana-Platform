@@ -12,6 +12,120 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Contrôle Agent 1.29.11 / Katsuyu 0.8.13 — 20 septembre, 17:04–17:05
+
+Versions confirmées en SSH après le déploiement opérateur. Le contrôle manuel
+`9bb9ad2f-8a32-490a-a0bf-b06c7a98e331`, créé à **17:04:02 Europe/Paris**,
+termine sa collecte à **17:04:39**. Ses quatre jobs (collecte générale, deux
+analyses IA HA-01 et une recherche ciblée) sont réussis et traités.
+Dernier job terminé à **17:05:36**, décision HA-01 à **17:05:37** ; aucun job
+en attente au relevé. Base consultée avec `mode=ro` et `query_only=ON`.
+
+| Source | Collecte générale | Décision finale |
+| --- | --- | --- |
+| INFRA-01 | 10 000 lignes, 14 groupes datés, tronquée | `watch`, sans nouvelle IA |
+| HA-01 | 5 554 lignes, 26 groupes dont 14 non datés, tronquée | `investigate`, KO IA conservé comme hypothèse |
+| LINKY-01 | 9 385 lignes, 16 groupes non datés, tronquée | `watch`, sans nouvelle IA |
+| ZWAVE-01 | 6 567 lignes, 8 groupes non datés, tronquée | `watch`, sans nouvelle IA |
+
+La recherche ciblée HA-01 rapporte **343 correspondances, 8 groupes et
+`truncated=true`**. Aucun des quatre incidents n'est clôturé. Il n'y a pas de
+corrélation temporelle dans ce contrôle. Le signalement de troncature est bien
+présent ; le détail de chaque plafond Supervisor n'a pas été reconstitué ici.
+
+Le snapshot transmis contient **HTTP 405 / `method_not_allowed`** : la
+qualification du refus de HEAD est confirmée dans la preuve réellement envoyée.
+Les **10 blocs structurés sont du JSON valide**, avec **2 réductions explicites** ;
+un bloc supplémentaire est la note textuelle attendue `diagnostics.configuration`.
+Aucun segment `/stok` non masqué dans les paramètres et résultats des nouveaux
+jobs examinés. Ce contrôle ciblé ne constitue pas un audit exhaustif des secrets,
+ni une preuve que tous les groupes critiques sont conservés dans tous les volumes.
+
+**Défaut de relance confirmé :** le contrôle précédent
+`23788e70-c9a2-4d55-a847-59885e2792a9`, lancé à **16:41:21**, avait déjà conduit
+à deux analyses HA-01 et à la même recherche ciblée. Les **six groupes déclencheurs**
+de 17:04 sont inchangés par rapport à cette collecte : même signature, criticité,
+catégorie, compteur et dernière date ; cinq restent marqués `new`.
+Les deux collectes sont tronquées et ne remplacent donc pas la baseline complète.
+L'évolution d'autres groupes et le déplacement de fenêtre ne justifient pas à eux
+seuls une nouvelle expertise de ces mêmes éléments. Les signatures brutes n'ont
+pas été exportées ; l'égalité a été vérifiée sur le serveur et seuls les compteurs
+ont été affichés.
+
+### Correctifs locaux Agent après ce contrôle — 20 septembre
+
+1. **Mémoire des preuves déjà prises en compte.** Les groupes ayant conduit à
+   une demande d'expertise reçoivent une empreinte persistée, indépendante du
+   libellé, de l'ordre, de la baseline et du déplacement de début de fenêtre.
+   Signature filtrée, criticité, catégorie, compteur et dernière date identifient
+   la preuve ; deux représentations du même instant sont équivalentes.
+   Une répétition reste en surveillance avec une raison explicite, sans nouvelle IA.
+   Les preuves et hypothèses restent conservées ; cela ne clôture pas l'incident
+   et ne signifie pas que le LLM a examiné individuellement tous les groupes
+   d'un extrait borné. L'absence de worker ne marque pas les preuves comme traitées.
+2. **Reprise et historique existant.** L'empreinte est enregistrée dès le diagnostic
+   de mise en file : une interruption avant la fin de revue ne suffit pas à relancer
+   l'expertise. Les empreintes restent consultables au-delà des 1 000 événements
+   affichés. Les anciens cycles reconnaissables dans l'historique récent sont
+   exploités sans réécriture ; leurs empreintes réutilisées deviennent durables
+   lors de la prochaine revue. Un ancien cycle hors de cet historique et dépourvu
+   d'empreinte n'est pas garanti dédupliqué rétroactivement.
+3. **Durées de comparaison compatibles.** La baseline vient de la dernière
+   collecte complète de même durée réelle. Une collecte de deux heures ne sert
+   plus de référence à une fenêtre de vingt-quatre heures. Sans référence compatible,
+   aucune baseline n'est inventée. Les tests incluent le changement d'heure
+   Europe/Paris. Une durée identique ne garantit pas la même activité ni la fraîcheur
+   des groupes non datés, et ne corrige pas un ancien flag de complétude erroné.
+
+**166 tests Agent réussis** : rejeux, historique antérieur, interruption après
+mise en file, limite de 1 000 événements, nouvelles occurrences/dates/signatures/
+criticités/corrélations, diagnostic opérateur, indisponibilité du worker,
+sélection de durée, incidents, investigations, suivis et jobs. Ruff, formatage
+et contrôle de diff propres. Aucun schéma de job ni paramètre de configuration
+modifié. **Corrections locales Agent uniquement, non publiées et non déployées.**
+Katsuyu n'a pas été modifié dans cette reprise.
+
+### Prochaine validation du correctif de relance
+
+Après publication et déploiement **Agent** par l'opérateur, conserver Katsuyu
+0.8.13 et effectuer un nouveau contrôle manuel autorisé. Vérifier que les groupes
+HA-01 déjà pris en compte n'engendrent pas une nouvelle IA sans modification
+utile des preuves, que la raison de surveillance est explicite et que la
+troncature reste visible. Une preuve réellement nouvelle doit rester admissible
+selon la politique existante, ainsi qu'un diagnostic explicitement demandé.
+Cette validation réelle du correctif nécessite sa mise en production.
+
+Les messages `s6-rc` sans date, la comparabilité effective des contenus collectés,
+l'audit exhaustif des secrets et les scénarios de panne contrôlée restent ouverts.
+Leurs cases de roadmap ne sont pas déclarées validées par ces tests.
+
+### Reprise locale — priorité des anomalies critiques dans Katsuyu, 20 septembre
+
+Le lot de stabilisation ci-dessous est déjà présent dans les dépôts à la reprise.
+Un défaut complémentaire a été reproduit dans les deux parcours Katsuyu :
+64 groupes fréquents pouvaient évincer un groupe critique rare avant même
+la réduction du dossier IA par Agent. Les deux tests de reproduction échouaient.
+
+Les collectes générales et ciblées sélectionnent désormais les groupes critiques
+en priorité, puis conservent l'ordre par fréquence au sein de chaque priorité.
+Les messages `CRITICAL` et `FATAL` seuls sont également reconnus : auparavant,
+un autre mot tel que `failure` était nécessaire pour les détecter.
+Le plafond de 64 groupes et `truncated=true` restent appliqués ; les occurrences,
+les correspondances ciblées et les dates inconnues ne sont pas modifiées.
+Au-delà de 64 groupes critiques, l'extrait reste nécessairement incomplet.
+
+Validation locale : **119 tests Katsuyu réussis** (suite complète), dont quatre
+cas de groupe critique rare pour les deux collectes et les deux niveaux.
+Les **98 tests Agent** des investigations, preuves, suivis, cycles de journaux
+et rejeux de corrélations passent également sur le lot existant.
+Ruff, formatage et contrôle de diff validés sur les fichiers modifiés.
+Les anciens résultats persistés restent inchangés. **Non publié, non déployé.**
+
+Ce correctif complète le lot Agent/Katsuyu à déployer ensemble pour la prochaine
+validation réelle décrite ci-dessous. La qualification `s6-rc`, la comparabilité
+des fenêtres, l'audit exhaustif des secrets et les pannes contrôlées restent ouverts ;
+cette reprise ne les déclare ni résolus ni bloqués techniquement par le déploiement.
+
 ### Lot de stabilisation avant prochaine release — 20 septembre
 
 Développement local demandé après le contrôle Agent 1.29.10. Les changements
@@ -80,10 +194,11 @@ d'au moins 10 001 lignes démontre le dépassement lors de cette vérification.
 Le correctif local décrit ci-dessus couvre ce défaut ; aucune modification de
 production n'a été effectuée pendant ce contrôle.
 
-### Prochaine validation après publication/déploiement par l'opérateur
+### Protocole du lot précédent — contrôles complémentaires restant à exercer
 
-1. Déployer les corrections Agent et Katsuyu ensemble pour couvrir les deux
-   collecteurs, puis lancer un nouveau contrôle manuel autorisé.
+1. Le lot Agent 1.29.11 / Katsuyu 0.8.13 est désormais déployé et le contrôle
+   de 17:04 décrit plus haut en valide une partie ; conserver les vérifications
+   complémentaires ci-dessous sans les considérer toutes acquises.
 2. Vérifier les flags de troncature à chaque étape, particulièrement INFRA-01
    lorsque le journal dépasse 10 000 lignes. Ne pas considérer les anciennes
    références inexactes comme une preuve de complétude historique.
