@@ -12,6 +12,99 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Références après collecte tronquée — développement local du 20 septembre
+
+La poursuite locale révèle un défaut complémentaire à la correction Katsuyu :
+Agent prenait le dernier résultat réussi de chaque source comme baseline,
+même tronqué. Un résultat tronqué vide effaçait les groupes de référence ; un
+résultat tronqué non vide remplaçait leurs compteurs. Les deux cas sont
+reproduits avant correction dans le parcours API de création de contrôle.
+
+Agent choisit désormais la dernière collecte réussie avec `truncated=false`
+explicitement booléen, source par source. Sans collecte complète connue, aucune
+référence n'est créée pour cette source. Une collecte complète vide remplace
+toujours son ancienne référence. Aucun résultat historique n'est modifié : la
+sélection s'applique aussi aux jobs déjà persistés après mise à jour.
+
+**16 tests de cycle/rejeu réussis**, Ruff, formatage et diff Agent validés.
+Les scénarios couvrent contrôle global puis partiel, résultats échoués ignorés,
+collectes tronquées vides ou non vides, source sans référence complète et
+réouverture SQLite avant création et relecture du prochain job.
+
+**Local, non publié et non déployé**, conformément au choix de l'opérateur de
+faire la release et le déploiement ultérieurement. Cette correction protège les
+références ; elle ne rend pas les fenêtres temporelles identiques, ne qualifie
+pas les messages sans date et ne garantit pas qu'une anomalie nouvelle vue
+uniquement dans des collectes tronquées ne sera jamais réexaminée. Le correctif
+HTTP local précédent reste également en attente de publication/déploiement.
+
+### HTTP depuis la cible Supervisor configurée — développement local du 20 septembre
+
+Suite au contrôle 1.29.9, le runtime Agent réutilise désormais l'URL de la cible
+Supervisor activée dans `backup.targets` pour compléter les candidats HTTP.
+La sélection suit celle de l'inspection existante : HA-01 pour INFRA-01, sinon
+la cible du nœud demandé. Aucun port ni URL n'est inventé, aucune configuration
+de production n'est modifiée et aucun nouveau paramètre de configuration ajouté.
+
+La sonde utilise uniquement hôte, port et schéma HTTP/HTTPS, avec `HEAD /`
+sans authentification ni redirection. Les URL mal formées ou avec identifiants
+intégrés sont ignorées. Chemins, paramètres et fragments ne rejoignent pas les
+preuves. La provenance est `backup.targets.url`, avec une cible
+`supervisor-http:<id>`. Déduplication et plafonds existants sont conservés ;
+les services du nœud demandé restent prioritaires et peuvent remplir le budget.
+
+**92 tests réussis**, couvrant lecture de configuration, sélection sans service
+HTTP dans l'architecture, URL invalides/avec identifiants, absence de secrets,
+déduplication, investigations, suivis et démarrage du runtime. Ruff et formatage
+validés. Les tests HTTP locaux HEAD 302/401/403/503 sans redirection passent aussi.
+
+**Local, non publié et non déployé.** Après déploiement autorisé, vérifier une
+nouvelle investigation : provenance de la cible, résultat HTTP ou erreur de
+transport explicite et transmission à Katsuyu. HTTP en production reste ouvert,
+comme les journaux sans date, les scénarios de panne et l'audit complet des secrets.
+
+### Contrôle Agent 1.29.9 / Katsuyu 0.8.11 — 20 septembre, 10:42–10:45
+
+Versions confirmées en SSH : Agent **1.29.9**, worker **0.8.11** (présence
+à 11:17:36 Europe/Paris). Contrôle manuel
+`c10e4bdc-efca-45f2-8899-431e55578e4a`, créé à **10:42:52** : sept jobs
+réussis et traités, dernière complétion à **10:45:31**, dernière décision
+à **10:45:32**. Aucun job en attente lors du relevé. SQLite consulté avec
+`mode=ro` et `PRAGMA query_only=ON` ; aucun job créé ni changement de production.
+
+| Source | Collecte générale | Décision finale |
+| --- | --- | --- |
+| INFRA-01 | 17 groupes, 1 nouveau, 2 en hausse ; recherche ciblée vide | `watch`, `INSUFFICIENT_CONTEXT`, cause non confirmée |
+| HA-01 | 26 groupes, 6 nouveaux ; recherche ciblée : 350 correspondances, 6 groupes | `investigate`, verdict IA KO conservé comme hypothèse |
+| LINKY-01 | 16 groupes stables, tous sans date exploitable | `stable`, aucune nouvelle IA |
+| ZWAVE-01 | 9 groupes, 1 nouveau, 8 connus dont 8 sans date exploitable | `watch`, aucune nouvelle IA |
+
+Les quatre sources générales et les deux recherches ciblées déclarent
+`truncated=false`. Aucun plafond local de 200 000 lignes ou 64 groupes n'est
+atteint : ce cycle ne valide donc pas en production le cas de dépassement
+corrigé dans Katsuyu. Aucune corrélation ; 38 groupes déclarés disparus, ce qui
+ne prouve pas la résolution des incidents. HA-01 comporte 12 groupes non datés.
+
+**Sélection bornée confirmée, HTTP toujours non exercé :** les snapshots
+INFRA-01 à **10:44:45** et HA-01 à **10:44:59** contiennent six cibles et
+quatre `omitted_targets` avec `reason=probe_limit`. Ils sont transmis aux
+réévaluations. DNS et TCP 53/1883/3000 réussissent ; aucun résultat HTTP.
+La configuration `/etc/ohana-agent/infrastructure.yaml`, consultée uniquement
+sur les types et ports, ne déclare aucun service Home Assistant/HTTP ni port
+HTTP ; les endpoints des nœuds ne portent pas de schéma HTTP. La priorité HTTP
+ne peut donc sélectionner aucune cible admissible. Le défaut d'ordre corrigé
+dans l'exemple ne suffit pas à couvrir cette architecture réelle.
+
+Prochaine étape : préparer une cible HTTP explicitement configurée et sa
+validation, sans déduire une URL de l'identité du nœud. Aucun changement de
+configuration effectué ici. La qualification des journaux sans date reste
+ouverte. Deux anciens contrôles de 04:45 et 06:03 sont `TIMEOUT`, traités ;
+leur cause n'a pas été examinée et ne se confond pas avec le cycle manuel réussi.
+
+Les corrections 1.29.9/0.8.11 sont désormais déployées ; les mentions locales
+ci-dessous décrivent les passes historiques. Aucun audit des assets de release
+n'a été effectué pendant cette vérification.
+
 ### Limites d'analyse des journaux — correction locale suivante du 19 septembre
 
 L'examen du code Katsuyu révèle que le contrôle général plafonnait l'analyse
