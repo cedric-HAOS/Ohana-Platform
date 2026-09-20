@@ -12,6 +12,90 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Lot de stabilisation avant prochaine release — 20 septembre
+
+Développement local demandé après le contrôle Agent 1.29.10. Les changements
+concernent **Agent et Katsuyu**, sans nouveau champ de configuration ni changement
+de schéma des jobs. Les ajouts de métadonnées restent dans le JSON des preuves.
+Publication et déploiement sont laissés à l'opérateur.
+
+| Défaut / limite | Changement local | Validation représentative |
+| --- | --- | --- |
+| Journald plafonné silencieusement à 10 000 lignes | Demande de 10 001 lignes, conservation des 10 000 dernières et troncature explicite en cas de dépassement | 9 999 / 10 000 / 10 001 lignes et plafond d'octets |
+| Limites Supervisor masquées ou ambiguës | Ligne témoin par journal ; dépassement d'octets distingué d'un volume exactement égal au plafond | Limites de lignes et d'octets, collecte Core/add-on |
+| Repli Core après échec Supervisor | Résultat déclaré incomplet ; exception limitée à son type, sans message brut | Erreur contenant des identifiants fictifs, absents des preuves |
+| Collecte tronquée considérée stable | Décision déterministe `watch` avec limite explicite ; une preuve critique reste admissible à l'investigation | Anomalies connues, source tronquée et anomalie critique |
+| Collecte vide incomplète clôturant un incident | Clôture seulement avec `truncated=false` booléen ; maintien de l'incident et de l'historique séparé | Reprise SQLite, rejeu idempotent, collectes incomplètes successives puis collecte complète |
+| Preuve IA coupée au milieu du JSON | Réduction structurelle sous 8 000 caractères, marqueur `_evidence_truncated`, compteurs d'origine préservés | 64 groupes longs, caractères Unicode, secrets fictifs, objets/listes/chaînes volumineux |
+| Contexte temporel perdu dans le dossier IA | Conservation des dates/fenêtres, comptage des groupes sans date et distinction historique / collecte actuelle | Nouvelle collecte et réévaluation, sans dater artificiellement les lignes |
+| Anomalie critique omise car placée en fin de liste | Priorité aux groupes critiques puis aux évolutions dans l'extrait borné | Finding critique placé en 64e position, conservé après réduction |
+| HEAD 405 ambigu et sondes saturées | Qualification explicite du 405 ; retour immédiat `busy` pour les opérations non démarrées | Serveur HTTP local, erreurs DNS/TCP/TLS simulées et saturation du sémaphore |
+
+Les preuves déjà persistées ne sont pas réécrites. Les anciens `truncated=false`
+incorrects ne deviennent pas fiables rétroactivement ; le contrôle de 1.29.10
+ci-dessous en fournit un exemple. Aucune ancienne clôture n'est rouverte
+automatiquement. La conservation des références repose encore sur les flags
+historiques disponibles, dont cette limite doit être connue.
+
+La qualification détaillée des messages `s6-rc` sans date, les fenêtres de
+comparaison différentes et l'audit exhaustif de toutes les formes de secrets
+restent ouverts. Les tests de panne locaux ne valent pas scénario de panne
+validé sur Konoha. La phase 1 n'est pas déclarée terminée.
+
+### Contrôle Agent 1.29.10 / Katsuyu 0.8.11 — 20 septembre, 12:16–12:20
+
+Versions confirmées en SSH. Contrôle manuel
+`14823dee-b33f-404a-8ec3-d02cb85b4734`, créé à **12:16:14 Europe/Paris**,
+collecte terminée à **12:18:35**, dernier job à **12:20:20**, dernière décision
+à **12:20:22**. Sept jobs réussis et traités : une collecte générale, quatre
+analyses IA, deux recherches ciblées. Aucun job en attente au relevé.
+Consultation SQLite en lecture seule (`mode=ro`, `query_only=ON`), sans nouveau job.
+
+**HTTP exercé en production :** les snapshots INFRA-01 à **12:19:25** et HA-01
+à **12:19:44** sélectionnent `supervisor-http:ha-01`, port **8123**, origine
+`backup.targets.url`. DNS et TCP réussissent, **HEAD / répond 405**. Les deux
+preuves sont transmises aux réévaluations. Cela confirme sélection, exécution et
+transmission ; le refus de HEAD ne prouve ni panne ni santé applicative complète.
+Six sondes sont présentes, cinq cibles sont explicitement omises par le plafond.
+
+**Références conformes :** comparaison exacte signatures/compteurs avec les
+dernières collectes déclarées complètes : INFRA-01 **17**, HA-01 **26**, LINKY-01
+**16**, ZWAVE-01 **9** groupes. Ce cycle n'intercale pas de contrôle déclaré
+tronqué ; l'exclusion de tels contrôles reste couverte par les tests locaux.
+
+| Source | Résultat | Décision finale |
+| --- | --- | --- |
+| INFRA-01 | 16 groupes, 3 en hausse ; recherche ciblée vide | `watch`, `INSUFFICIENT_CONTEXT` |
+| HA-01 | 26 groupes, 1 nouveau, 12 non datés ; 348 correspondances et 6 groupes ciblés | `investigate`, KO IA conservé comme hypothèse |
+| LINKY-01 | 16 groupes stables, tous non datés | `stable`, sans nouvelle IA |
+| ZWAVE-01 | 9 groupes stables, dont 8 non datés | `stable`, sans nouvelle IA |
+
+Trois corrélations temporelles, sans preuve de causalité. Les résultats généraux
+et ciblés déclarent `truncated=false`, **mais cette déclaration est infirmée pour
+la collecte générale INFRA-01** : une seconde lecture bornée de la même fenêtre,
+avec seulement les compteurs affichés, retourne **10 001 lignes / 1 716 298 octets**.
+La fenêtre dépassait le plafond journald de 10 000 lignes, silencieux dans 1.29.10.
+Les compteurs exacts de contenu peuvent évoluer avec la rétention ; la présence
+d'au moins 10 001 lignes démontre le dépassement lors de cette vérification.
+Le correctif local décrit ci-dessus couvre ce défaut ; aucune modification de
+production n'a été effectuée pendant ce contrôle.
+
+### Prochaine validation après publication/déploiement par l'opérateur
+
+1. Déployer les corrections Agent et Katsuyu ensemble pour couvrir les deux
+   collecteurs, puis lancer un nouveau contrôle manuel autorisé.
+2. Vérifier les flags de troncature à chaque étape, particulièrement INFRA-01
+   lorsque le journal dépasse 10 000 lignes. Ne pas considérer les anciennes
+   références inexactes comme une preuve de complétude historique.
+3. Vérifier qu'une collecte vide tronquée maintient l'incident actif, sans perte
+   de son historique et sans réévaluation coûteuse automatiquement répétée.
+4. Vérifier le 405 HTTP qualifié, les limites DNS/TCP/TLS et les cibles omises
+   dans la preuve réellement transmise à Katsuyu.
+5. Sur un dossier volumineux, vérifier que tous les contenus sont du JSON valide,
+   que la réduction est explicite et que les groupes critiques sont conservés.
+6. Exercer séparément les pannes contrôlées prévues par la roadmap, avec cible,
+   impact, durée maximale et retour sain définis avant toute perturbation.
+
 ### Références après collecte tronquée — développement local du 20 septembre
 
 La poursuite locale révèle un défaut complémentaire à la correction Katsuyu :
