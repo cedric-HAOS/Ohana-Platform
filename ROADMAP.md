@@ -523,7 +523,7 @@ Restent notamment à suivre :
 - [x] **Hypothèses maîtrisées**.
 - [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis ; le full-stack valide également une vraie inférence Ministral, son traitement par Tsunade et son rendu Vision. Il reste à démontrer qu'une expertise Katsuyu apporte une information réellement utile sur un incident ambigu effectivement observé dans Konoha.
 - [ ] **Mode dégradé démontré** — comportement Tsunade validé en Sandbox face à Katsuyu indisponible ; continuité opérationnelle réelle de Shikamaru/Konoha encore à exercer.
-- [ ] **Preuves suffisamment sûres** — redaction des exceptions de sondes validée en Sandbox avec secrets fictifs ; audit plus large des preuves toujours ouvert.
+- [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint 1557 tests PASS (1 skipped), les 9 scénarios Sandbox restent PASS et le full-stack avec inférence Ministral réelle et rendu Vision reste PASS.
 - [ ] **Pannes représentatives exercées** — les simulations Sandbox sécurisent les invariants mais ne remplacent pas les scénarios de panne contrôlée réellement exercés sur Konoha.
 - [x] **Vision exploitable** — le full-stack local pilote Vision dans Chromium, ouvre le dossier d'incident, vérifie l'analyse Katsuyu et le résumé IA, contrôle les vues desktop et mobile sans débordement horizontal et ne détecte aucune erreur JavaScript ni réponse HTTP serveur en erreur.
 

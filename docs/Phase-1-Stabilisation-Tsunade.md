@@ -12,6 +12,94 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Audit de sûreté des preuves — 21 septembre 2026
+
+L'audit élargi de la chaîne de preuves Tsunade est terminé.
+
+Une sanitation centralisée protège désormais les données techniques avant leur
+utilisation ou leur exposition lorsque celles-ci peuvent contenir des secrets.
+
+Les chemins couverts comprennent notamment :
+
+- messages et métadonnées des observations Shikamaru ;
+- résultats des investigations déterministes ;
+- erreurs de jobs distribués lorsqu'elles deviennent une preuve Tsunade ;
+- contexte et événements persistés dans les incidents ;
+- données transmises à Katsuyu pour `ai.inference` ;
+- résultats et hypothèses retournés par Katsuyu ;
+- erreurs d'inférence ;
+- collectes complémentaires et follow-up ;
+- expériences mémorisées ;
+- résultats finaux ;
+- projections destinées à Vision et Shizune.
+
+La protection traite notamment :
+
+- credentials inclus dans une URL ;
+- tokens génériques et variantes `*_token` ;
+- API keys ;
+- mots de passe ;
+- secrets ;
+- en-têtes Authorization/Bearer ;
+- chemins de session caméra `/stok=.../`.
+
+La sanitation conserve autant que possible la structure diagnostique utile.
+Le test historique des chemins caméra vérifie par exemple que :
+
+/stok=<secret>/ds
+devient :
+/stok=[redacted]/ds
+
+et non une preuve entièrement supprimée.
+Une seconde barrière protège également la relecture de données anciennes déjà
+présentes en SQLite. Il n'est donc pas nécessaire de réécrire ou migrer les
+anciens dossiers uniquement pour appliquer les règles de confidentialité
+actuelles.
+Validation finale :
+Ohana-Agent
+1557 passed, 1 skipped
+
+Ohana Sandbox
+9/9 scénarios PASS
+
+Full-stack
+PASS
+
+Le full-stack confirme après ces modifications que la chaîne complète reste
+fonctionnelle :
+
+Vision
+  ↓
+Tsunade
+  ↓
+Katsuyu HTTPS
+  ↓
+llama.cpp / Ministral
+  ↓
+Tsunade
+  ↓
+Vision
+
+Le passage final a généré 718 tokens et validé le rendu desktop/mobile, sans
+erreur JavaScript ni réponse HTTP serveur en erreur.
+Le message asyncio WinError 995 observé lors de la fermeture du serveur Vision
+sous Windows reste un bruit de teardown du laboratoire. Il survient après les
+contrôles fonctionnels et ne remet pas en cause le PASS.
+Le critère de sortie « Preuves suffisamment sûres » est donc acquis.
+La sanitation globale de toutes les données internes du protocole générique des
+jobs distribués reste un sujet de durcissement possible. Elle n'est pas requise
+pour la Phase 1 : toute donnée provenant de ce protocole qui entre dans le
+dossier de preuve Tsunade passe désormais par la frontière de sanitation.
+
+
+### Où nous en sommes réellement
+
+La partie **développement pur de la Phase 1 est désormais presque épuisée**. Les quatre cases restantes demandent surtout d’exercer Ohana sur Konoha.
+
+Je ferais néanmoins **une dernière petite correction de développement avant ces essais : supprimer proprement le `WinError 995` du full-stack**. Il est non bloquant, mais maintenant que ce laboratoire devient notre outil de référence, il serait préférable qu’un `PASS` soit totalement propre.
+
+Ensuite, on pourra attaquer méthodiquement **INFRA-01, HA-01 et LINKY-01**, et profiter de ces validations pour construire nos trois pannes contrôlées.
+
 ### État consolidé après validation full-stack — 21 septembre 2026
 
 La validation de Phase 1 dispose désormais de trois niveaux complémentaires :
