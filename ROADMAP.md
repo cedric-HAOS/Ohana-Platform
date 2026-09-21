@@ -300,6 +300,9 @@ déploiement → vérification opérationnelle. Depuis la racine d'Ohana-Platfor
 # Journaux : code local Agent/Katsuyu/Tsunade, avant toute release
 .\sandbox\run.ps1 run all --exercise-logs
 
+# Full-stack local : worker HTTPS réel, IA locale réelle et Vision dans Chromium
+.\sandbox\run.ps1 run --full-stack
+
 # Recette du déploiement réel en lecture seule
 .\sandbox\run.ps1 post-deploy agent 1.29.14
 
@@ -313,8 +316,21 @@ elle doit être adaptée au déploiement à vérifier.
 `run --exercise-logs` utilise le véritable analyseur Katsuyu local sur des
 journaux locaux, puis traite son résultat dans Agent/Tsunade avec des bases
 temporaires. `--logs-file` et `--window-end` permettent de rejouer un journal
-historique. La projection pour Vision est vérifiée, mais le rendu navigateur,
-la boucle réseau du worker et l'inférence IA restent à intégrer au laboratoire.
+historique. Ce parcours ne pilote pas à lui seul le navigateur, la boucle réseau
+réelle du worker ni le runtime LLM.
+
+Ces dimensions sont désormais couvertes par `run --full-stack`. La validation
+du 21 septembre 2026 exerce un worker Katsuyu réel par HTTPS avec certificat
+local vérifié, le cycle réseau
+`register → next → source → heartbeat → complete`, une inférence locale réelle
+via llama.cpp avec le modèle Ministral, puis la restitution du résultat dans
+Vision avec Chromium.
+
+Le passage final a généré 867 tokens, vérifié les vues desktop et mobile sans
+débordement horizontal et n'a détecté aucune erreur JavaScript ni réponse HTTP
+serveur en erreur. Les bases, le journal déclencheur et l'infrastructure de ce
+laboratoire restent locaux et temporaires : ce PASS ne constitue pas une panne
+réellement exercée sur Konoha.
 
 Les **9 scénarios locaux** couvrent notamment les niveaux de diagnostic,
 les échecs de sondes, l'absence de Katsuyu, la reprise des suivis persistés
@@ -359,7 +375,7 @@ Une validation complète et exhaustive de tous les protocoles disponibles sur ch
 - [x] Le même dossier ou les mêmes preuves ne provoquent pas une nouvelle expertise IA automatique.
 - [x] Une conclusion produite par l’IA reste explicitement identifiable comme une hypothèse.
 - [x] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu (Sandbox `probe-confirmed-failure` : observation DNS, deux contrôles déterministes, panne confirmée par `dns.query`, réseau sain, décision `action_required`, aucune IA, puis résolution sur observation saine).
-- [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu.
+- [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu. **Le full-stack du 21 septembre valide le chemin réel jusqu'au LLM, l'acceptation du résultat par Tsunade et son rendu dans Vision ; le journal déclencheur reste synthétique, donc la valeur opérationnelle sur un incident réel ambigu reste à démontrer.**
 - [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Tsunade validé fonctionnellement en Sandbox le 21 septembre (`UNAVAILABLE` → `WAITING_WORKER` → `TIMEOUT`, incident conservé, aucune relance) ; continuité réelle de Shikamaru/Konoha encore à exercer.**
 - [x] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué (contrôle du 21 septembre à 09:11 : quatre décisions `watch`, job traité, aucun job restant).
 
@@ -428,7 +444,7 @@ Critères :
 
 ## Frontière Tsunade ↔ Katsuyu
 
-- [ ] Tsunade constitue un dossier suffisamment structuré pour permettre à Katsuyu de comprendre la cible, les preuves et la question posée.
+- [x] Tsunade constitue un dossier suffisamment structuré pour permettre à Katsuyu de comprendre la cible, les preuves et la question posée. **Validé par le full-stack du 21 septembre : le dossier est transmis au worker HTTPS réel, une inférence Ministral est exécutée, le résultat est accepté par Tsunade puis exploité dans Vision.**
 - [x] Katsuyu retourne un résultat structuré exploitable par Tsunade.
 - [x] Une contribution IA reste identifiable comme telle.
 - [x] Un traitement déterministe lourd peut être distingué d’une expertise IA (contrôle du 21 septembre : `logs.health_check` Katsuyu réussi, décisions Tsunade déterministes, aucun `ai.inference`).
@@ -492,23 +508,24 @@ Restent notamment à suivre :
 - sondes MQTT, Supervisor et `teleinfo2mqtt` ;
 - scénarios de panne supplémentaires ;
 - reprises rares après interruption ;
-- présentation Vision ;
-- nombre de jobs et réveils Katsuyu.
+- raffinements de présentation Vision ;
+- nombre de jobs et réveils Katsuyu ;
+- bruit de fermeture asyncio/Windows du laboratoire full-stack.
 
 ---
 
 ## Critères de sortie de la Phase 1
 
-- [ ] **Cycle de vie fiable** — cycle observation → diagnostic déterministe → retour sain validé fonctionnellement en Sandbox ; reprise des suivis expirés et déjà traités validée par `followup-restart`, sans perte de preuves ni relance ; contrôle après déploiement encore nécessaire.
+- [x] **Cycle de vie fiable** — cycle observation → diagnostic déterministe → retour sain validé fonctionnellement en Sandbox ; reprise des suivis expirés et déjà traités validée par `followup-restart`, sans perte de preuves ni relance ; Agent 1.29.14 contrôlé après déploiement avec 10/10 vérifications PASS, aucun job actif restant et aucun résultat terminal non traité.
 - [ ] **Investigations essentielles** — INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ont été suffisamment exercés.
 - [x] **Absence de boucle sur dossier inchangé** — également couverte par `followup-evidence-cycle` : deux résultats IA simulés et une collecte autorisée, sans nouveau travail après doublons et reprise SQLite.
 - [x] **Réévaluation sur information nouvelle**.
 - [x] **Hypothèses maîtrisées**.
-- [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis en Sandbox ; un cas complexe réel bénéficiant effectivement de Katsuyu reste à démontrer.
+- [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis ; le full-stack valide également une vraie inférence Ministral, son traitement par Tsunade et son rendu Vision. Il reste à démontrer qu'une expertise Katsuyu apporte une information réellement utile sur un incident ambigu effectivement observé dans Konoha.
 - [ ] **Mode dégradé démontré** — comportement Tsunade validé en Sandbox face à Katsuyu indisponible ; continuité opérationnelle réelle de Shikamaru/Konoha encore à exercer.
 - [ ] **Preuves suffisamment sûres** — redaction des exceptions de sondes validée en Sandbox avec secrets fictifs ; audit plus large des preuves toujours ouvert.
 - [ ] **Pannes représentatives exercées** — les simulations Sandbox sécurisent les invariants mais ne remplacent pas les scénarios de panne contrôlée réellement exercés sur Konoha.
-- [ ] **Vision exploitable**.
+- [x] **Vision exploitable** — le full-stack local pilote Vision dans Chromium, ouvre le dossier d'incident, vérifie l'analyse Katsuyu et le résumé IA, contrôle les vues desktop et mobile sans débordement horizontal et ne détecte aucune erreur JavaScript ni réponse HTTP serveur en erreur.
 
 La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.
 
@@ -1485,23 +1502,27 @@ Toutes les phases
 La priorité actuelle reste :
 
 ```text
-1. Terminer la stabilisation essentielle de Tsunade
+1. Exercer suffisamment INFRA-01, HA-01 et LINKY-01
              │
              ▼
-2. Exercer quelques incidents et pannes représentatifs
+2. Exercer trois pannes contrôlées dans plusieurs familles
              │
              ▼
-3. Démontrer clairement la frontière Tsunade / Katsuyu
+3. Vérifier en réel le mode dégradé sans Katsuyu
              │
              ▼
-4. Vérifier le fonctionnement dégradé sans Katsuyu
+4. Démontrer la valeur de l'IA sur un incident Konoha réellement ambigu
              │
              ▼
-5. Rendre le résultat exploitable dans Vision
+5. Terminer l'audit de sûreté des preuves nécessaire à la sortie de phase
              │
              ▼
 6. Passer à la première réparation supervisée
 ```
+La frontière Tsunade/Katsuyu et le rendu Vision sont désormais validés dans le
+laboratoire full-stack local. Ils restent à observer et à durcir dans l'usage
+réel, mais ne constituent plus à eux seuls les principaux inconnus techniques de
+la Phase 1.
 
 La prochaine étape d’Ohana n’est pas d’ajouter un nouveau composant ni d’atteindre une couverture parfaite.
 

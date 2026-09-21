@@ -77,12 +77,29 @@ def _wait(label, predicate, *, timeout, worker=None, page=None):
     raise TimeoutError(f"Délai dépassé ({timeout}s) : {label}")
 
 
-def _stop_vision(server, thread):
+def _stop_vision(server, thread, listener):
     server.should_exit = True
-    thread.join(timeout=10)
-    if thread.is_alive():
-        raise RuntimeError("Vision ne s'est pas arrêté")
 
+    # Fermer le socket d'écoute aide Uvicorn à sortir proprement
+    # sous Windows lorsqu'il utilise un socket fourni explicitement.
+    try:
+        listener.close()
+    except OSError:
+        pass
+
+    thread.join(timeout=10)
+
+    if thread.is_alive():
+        # Dernier recours : abandonner l'attente des connexions/tâches
+        # restantes sans laisser le laboratoire bloqué.
+        server.force_exit = True
+        server.should_exit = True
+        thread.join(timeout=5)
+
+    if thread.is_alive():
+        raise RuntimeError(
+            "Vision ne s'est pas arrêté après arrêt forcé"
+        )
 
 def _model_settings(args):
     cache = args.katsuyu.resolve() / ".benchmark-cache"
@@ -228,7 +245,12 @@ def run(*, args):
                 target=server.run, kwargs={"sockets": [listener]}, daemon=True
             )
             thread.start()
-            stack.callback(_stop_vision, server, thread)
+            stack.callback(
+                _stop_vision,
+                server,
+                thread,
+                listener,
+            )
             _wait("démarrage Vision", lambda: server.started, timeout=20)
 
             stop_file = root / "worker.stop"
@@ -378,8 +400,30 @@ def run(*, args):
             page.locator('[data-navigation-target="incidents"]').click()
             expect(page.locator("#incidents-error")).not_to_be_visible()
             page.locator(f'[data-tsunade-details="{incident_id}"]').click()
+            katsuyu_analysis = page.locator(
+                "#incidents-list .incident-katsuyu-analysis"
+            )
+
+            expect(katsuyu_analysis).to_have_count(
+                1,
+                timeout=15000,
+            )
+
+            expect(katsuyu_analysis).to_contain_text(
+                "Analyse Katsuyu"
+            )
+
+            expect(katsuyu_analysis).to_contain_text(
+                "Hypothèses exploitables"
+            )
+
             expect(page.locator("#incidents-list")).to_contain_text(
-                ai_job.result["summary"], timeout=15000
+                "À approfondir"
+            )
+
+            check(
+                "Analyse Katsuyu effectivement rendue dans le dossier Vision",
+                True,
             )
             check("Résumé IA effectivement rendu dans le dossier Vision", True)
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):

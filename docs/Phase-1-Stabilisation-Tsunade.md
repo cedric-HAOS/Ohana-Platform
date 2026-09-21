@@ -12,6 +12,90 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### État consolidé après validation full-stack — 21 septembre 2026
+
+La validation de Phase 1 dispose désormais de trois niveaux complémentaires :
+
+1. les scénarios Sandbox déterministes et reproductibles avec bases temporaires ;
+2. la recette post-déploiement d'Agent sur INFRA-01 ;
+3. un laboratoire full-stack local exerçant réellement Agent, Katsuyu, le runtime
+   IA et Vision.
+
+Le scénario suivant a été exécuté avec succès :
+
+powershell
+.\sandbox\run.ps1 run --full-stack
+Résultat final : PASS.
+Ce parcours exerce une chaîne d'intégration nettement plus complète que les
+scénarios simulés précédents :
+- démarrage d'un worker Katsuyu réel ;
+- communication worker en HTTPS avec certificat local vérifié ;
+- enregistrement du worker auprès d'Agent ;
+- demande de contrôle des journaux depuis Vision ;
+- collecte et analyse logs.health_check ;
+- transmission d'une demande explicite de diagnostic à Tsunade ;
+- création d'un vrai job ai.inference ;
+- exécution d'une inférence locale réelle via llama.cpp ;
+- utilisation du modèle Ministral-3-14B-Reasoning-2512-Q4_K_M.gguf ;
+- validation de l'empreinte du modèle ;
+- génération effective de tokens par le modèle ;
+- réception et traitement du résultat IA par Tsunade ;
+- projection de l'analyse Katsuyu dans le dossier d'incident ;
+- affichage du résumé IA dans Vision ;
+- contrôle du rendu Vision dans Chromium en desktop et mobile ;
+- absence de débordement horizontal dans les deux formats ;
+- absence d'erreur JavaScript ou de réponse HTTP serveur en erreur pendant le
+  parcours ;
+- vérification du cycle réseau worker
+  register → next → source → heartbeat → complete.
+
+Lors de l'exécution finale, le modèle a généré 867 tokens.
+Cette validation démontre donc réellement le chemin :
+
+```text brut
+Vision
+  ↓
+Tsunade
+  ↓
+Katsuyu
+  ↓
+llama.cpp / Ministral
+  ↓
+Katsuyu
+  ↓
+Tsunade
+  ↓
+Vision
+```
+Elle démontre également que le dossier constitué par Tsunade est suffisamment
+structuré pour être consommé par le worker réel, que la réponse IA peut être
+acceptée et réintégrée sans court-circuiter Tsunade, et que le résultat est
+effectivement exploitable dans Vision.
+Le test reste toutefois un laboratoire local contrôlé :
+- les bases Agent et Vision sont temporaires ;
+- le journal déclencheur est synthétique ;
+- l'infrastructure décrite au laboratoire est locale ;
+- aucune panne de Konoha n'est provoquée ;
+- la qualité opérationnelle de l'hypothèse produite sur un incident réellement
+  ambigu n'est pas démontrée par ce seul PASS.
+La valeur technique de la chaîne IA est donc validée, mais le critère de valeur
+ajoutée de Katsuyu reste ouvert tant qu'un incident réel ambigu de Konoha n'a pas
+bénéficié de manière identifiable de cette expertise.
+Le teardown du laboratoire sous Windows peut encore produire un message asyncio
+WinError 995 lors de la fermeture du socket Vision. Ce message apparaît après
+les contrôles fonctionnels et n'a pas fait échouer le scénario final. Il est
+classé comme bruit de fermeture du laboratoire à durcir, pas comme défaut
+fonctionnel de la chaîne Ohana.
+À ce stade, les principaux critères encore ouverts pour la sortie de Phase 1
+sont donc opérationnels :
+- exercer suffisamment INFRA-01, HA-01 et LINKY-01 ;
+- réaliser trois pannes contrôlées représentatives dans plusieurs familles ;
+- vérifier réellement la continuité de Shikamaru/Konoha sans Katsuyu ;
+- démontrer la valeur de Katsuyu sur un incident réel ambigu ;
+- terminer l'audit de sûreté des preuves nécessaire à la sortie de phase.
+La frontière technique Tsunade ↔ Katsuyu et l'exploitation du résultat dans
+Vision ne constituent plus des inconnues fondamentales.
+
 ### Cycle de collecte et réévaluation bornée — 21 septembre 2026
 
 Le scénario `followup-evidence-cycle` porte la suite à **9 scénarios sur 9**.
@@ -152,8 +236,10 @@ des journaux PASS (sain, anomalie, troncature, doublons, reprise).
 Le rejeu d'un journal historique synthétique filtre correctement la fenêtre
 de 24 heures ; les dates sans fuseau et les arguments incomplets sont refusés.
 Le rendu Vision, le transport réseau du worker et l'inférence IA ne sont pas
-couverts par ce parcours. Aucune release ni aucun déploiement n'a été effectué
-pour cette extension. Voir `sandbox/README.md` pour les commandes de rejeu.
+couverts par ce parcours `--exercise-logs` lui-même. Ils sont désormais couverts
+séparément par le laboratoire `run --full-stack`, décrit dans l'état consolidé
+ci-dessus. Aucune release ni aucun déploiement n'est nécessaire pour exécuter
+ce laboratoire local. Voir `sandbox/README.md` pour les commandes de rejeu.
 
 Agent 1.29.14 publié et déployé sur INFRA-01. Le nouveau contrôle automatisé
 `.\sandbox\run.ps1 post-deploy agent 1.29.14` a été exécuté depuis le poste de

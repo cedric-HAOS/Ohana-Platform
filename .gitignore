@@ -27,6 +27,7 @@ logs/
 data/
 *.log
 *.pid
+sandbox/runs/
 
 # Local configuration
 .env
