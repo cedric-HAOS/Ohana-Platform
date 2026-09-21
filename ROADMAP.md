@@ -360,9 +360,9 @@ consignées dans le [bilan de stabilisation](docs/Phase-1-Stabilisation-Tsunade.
 
 Les quatre nœuds principaux doivent avoir été réellement observés par le moteur :
 
-- [ ] INFRA-01 ;
-- [ ] HA-01 ;
-- [ ] LINKY-01 ;
+- [x] INFRA-01 ;
+- [x] HA-01 ;
+- [x] LINKY-01 ;
 - [x] ZWAVE-01.
 
 Une validation complète et exhaustive de tous les protocoles disponibles sur chacun de ces nœuds n’est pas nécessaire pour sortir de Phase 1.
@@ -516,8 +516,14 @@ Restent notamment à suivre :
 
 ## Critères de sortie de la Phase 1
 
-- [x] **Cycle de vie fiable** — cycle observation → diagnostic déterministe → retour sain validé fonctionnellement en Sandbox ; reprise des suivis expirés et déjà traités validée par `followup-restart`, sans perte de preuves ni relance ; Agent 1.29.14 contrôlé après déploiement avec 10/10 vérifications PASS, aucun job actif restant et aucun résultat terminal non traité.
-- [ ] **Investigations essentielles** — INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ont été suffisamment exercés.
+- [x] **Cycle de vie fiable** — cycle observation → diagnostic déterministe →
+  retour sain validé fonctionnellement en Sandbox ; reprise des suivis expirés
+  et déjà traités validée par `followup-restart`, sans perte de preuves ni
+  relance ; Agent 1.29.15 contrôlé après déploiement sur INFRA-01 avec recette
+  complète PASS, `NRestarts=0`, aucun job actif, aucun résultat terminal non
+  traité, puis `logs.health_check` réel exécuté par `katsuyu-bubule`,
+  `SUCCEEDED` et traité sans job résiduel.
+- [x] **Investigations essentielles** — INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ont été réellement exercés sur Konoha. Les investigations bornées Agent, le chemin MQTT vers HA-01, l'accès API Home Assistant et la Téléinformation directe `teleinfo2mqtt → Agent` ont fourni des preuves déterministes exploitables.
 - [x] **Absence de boucle sur dossier inchangé** — également couverte par `followup-evidence-cycle` : deux résultats IA simulés et une collecte autorisée, sans nouveau travail après doublons et reprise SQLite.
 - [x] **Réévaluation sur information nouvelle**.
 - [x] **Hypothèses maîtrisées**.

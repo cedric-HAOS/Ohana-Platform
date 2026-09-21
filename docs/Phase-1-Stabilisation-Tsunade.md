@@ -12,6 +12,85 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Validation opérationnelle des investigations essentielles — 21 septembre 2026
+
+Les quatre nœuds représentatifs prévus pour la sortie de Phase 1 ont désormais
+été exercés sur Konoha : ZWAVE-01, INFRA-01, HA-01 et LINKY-01.
+
+INFRA-01 a été contrôlé avec les huit investigations bornées exposées par
+Tsunade :
+
+- `backup.status` : dernier backup distribué `SUCCEEDED`, exécuté par
+  `katsuyu-bubule` ;
+- `cpu.status` : charge nominale et température normale ;
+- `disk.usage` : capacité disponible suffisante ;
+- `memory.status` : mémoire et swap sans pression ;
+- `service.status` : aucune unité supervisée en échec ou inactive,
+  `agent_restarts=0` ;
+- `dns.query` : résolution effective via le DNS primaire sur ZWAVE-01 ;
+- `mqtt.status` : aller-retour MQTT réel vers HA-01 réussi ;
+- `network.ping` : présence réseau de la FreeBox confirmée.
+
+HA-01 a ensuite été exercé directement via le plugin
+`home_assistant_telemetry`. L'Agent s'est authentifié auprès de Home Assistant,
+a lu une entité réelle et récente et a obtenu un résultat `success=true`,
+sans erreur du plugin.
+
+LINKY-01 a été exercé via le plugin `teleinformation` dans son mode cible
+`direct_http`. Le contrôle a validé le chemin direct
+`teleinfo2mqtt → Ohana-Agent`, sans passage par Home Assistant :
+
+- source `rpi-linky` ;
+- puissance apparente `SINSTS` reçue ;
+- tarif `NTARF` interprété ;
+- période Tempo courante déterminée ;
+- index actif identifié ;
+- six index `EASF01` à `EASF06` disponibles ;
+- données âgées d'environ deux secondes au moment du test ;
+- aucune erreur.
+
+La campagne opérationnelle confirme donc que Tsunade dispose de preuves
+déterministes exploitables sur les quatre nœuds représentatifs de la Phase 1.
+
+### Déploiement Agent 1.29.15 — 21 septembre 2026
+
+La version qualifiée localement a été publiée puis déployée sur INFRA-01.
+
+La recette post-déploiement en lecture seule est entièrement réussie :
+
+- connexion INFRA-01 : PASS ;
+- version Ohana-Agent 1.29.15 : PASS ;
+- service `ohana-agent` actif : PASS ;
+- aucun redémarrage automatique (`NRestarts=0`) ;
+- API d'administration sur le port 8765 accessible ;
+- base des jobs accessible ;
+- aucun job actif restant ;
+- aucun résultat terminal non traité ;
+- journal Agent accessible ;
+- aucune erreur Agent récente.
+
+Le service observé avait démarré le 21 septembre 2026 à 17:55:38 CEST.
+
+Un contrôle réel des journaux a ensuite été déclenché avec :
+
+powershell
+.\sandbox\run.ps1 post-deploy agent 1.29.15 --exercise-logs
+
+Résultat :
+- worker katsuyu-bubule disponible ;
+- job logs.health_check créé :
+  a174c66d-fba0-4e1f-9c25-ca54c1a729e1 ;
+- job terminé SUCCEEDED ;
+- résultat terminal traité par Tsunade ;
+- completion_processed=1 ;
+- aucun contrôle logs.health_check résiduel ;
+- aucun autre résultat terminal en attente ;
+- aucune erreur Agent récente.
+Cette validation confirme que le code Agent 1.29.15 qualifié localement est
+effectivement déployé et que le cycle réel
+Agent → Katsuyu → résultat → Tsunade fonctionne après déploiement.
+
+
 ### Audit de sûreté des preuves — 21 septembre 2026
 
 L'audit élargi de la chaîne de preuves Tsunade est terminé.
