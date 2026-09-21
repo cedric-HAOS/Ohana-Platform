@@ -310,7 +310,7 @@ Une validation complète et exhaustive de tous les protocoles disponibles sur ch
 - [ ] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu.
 - [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu.
 - [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles.
-- [ ] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué.
+- [x] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué (contrôle du 21 septembre à 09:11 : quatre décisions `watch`, job traité, aucun job restant).
 
 ---
 
@@ -380,7 +380,7 @@ Critères :
 - [ ] Tsunade constitue un dossier suffisamment structuré pour permettre à Katsuyu de comprendre la cible, les preuves et la question posée.
 - [x] Katsuyu retourne un résultat structuré exploitable par Tsunade.
 - [x] Une contribution IA reste identifiable comme telle.
-- [ ] Un traitement déterministe lourd peut être distingué d’une expertise IA.
+- [x] Un traitement déterministe lourd peut être distingué d’une expertise IA (contrôle du 21 septembre : `logs.health_check` Katsuyu réussi, décisions Tsunade déterministes, aucun `ai.inference`).
 - [ ] Tsunade décide de la suite après réception du résultat.
 - [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement.
 

@@ -12,6 +12,129 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Contrôle Agent 1.29.13 / Katsuyu 0.8.15 — 21 septembre, 09:34–09:35
+
+Versions confirmées en SSH après déploiement opérateur ; worker vu à **09:36:02
+Europe/Paris**. Contrôle `fd36c235-2d87-4571-8469-ff1ef0e22e00`, créé à
+**09:34:17**, collecte terminée à **09:34:59**. Un seul job, `SUCCEEDED` et
+`completion_processed=1`. Quatre décisions déterministes `watch` de **09:35:00
+à 09:35:11**, aucune expertise IA, aucune collecte complémentaire et aucun job
+`QUEUED`/`RUNNING` au relevé. SQLite consulté avec `mode=ro` et `query_only=ON`.
+
+| Source | Groupes avant → après | Collecte actuelle |
+| --- | --- | --- |
+| INFRA-01 | 14 → 16 | 10 000 lignes, tous les groupes datés, tronquée |
+| HA-01 | 21 → 21 | 5 079 lignes, 14 groupes non datés, tronquée |
+| LINKY-01 | 16 → 8 | 9 385 lignes, 8 groupes non datés, tronquée |
+| ZWAVE-01 | 9 → 1 | 6 119 lignes, groupe restant daté, tronquée |
+
+**Effet attendu du filtre s6 confirmé sur les résultats réels :** par comparaison
+exacte avec le contrôle de 09:11, les huit groupes retirés de LINKY-01 et les huit
+retirés de ZWAVE-01 sont exclusivement `s6-rc`. Aucun autre groupe n'est ajouté
+ou retiré sur ces deux sources ; les signatures conservées ont exactement les
+mêmes compteurs et criticités. Les trois groupes d'erreur série LINKY-01 restent
+présents. HA-01 conserve ses signatures et criticités ; ses compteurs évoluent.
+Les journaux bruts n'ont pas été recollectés à l'identique : les cas de répétition
+et de démarrage incomplet restent couverts localement, sans panne provoquée ici.
+
+Les quatre incidents de journaux restent actifs : le filtre n'a pas entraîné
+de clôture. La troncature reste visible. Aucun segment `/stok` non masqué dans
+les paramètres et le résultat du nouveau contrôle ; audit ciblé uniquement.
+
+Deux groupes d'erreur INFRA-01 sont présents à **09:21:57–09:21:58** : un groupe
+Vision nouveau et un groupe Agent classé en diminution. Une lecture journald
+bornée à **09:21:55–09:22:01** identifie une trace `BrokenPipeError` Agent à
+**09:21:59**. Seuls classe d'exception et indicateurs ont été exportés. Cette
+proximité temporelle ne suffit pas à expliquer les deux groupes ni à conclure
+à une panne persistante ; aucune correction supplémentaire n'est déduite de
+ces seuls éléments.
+
+Le lot s6 est désormais déployé et son effet ciblé observé. Les mentions locales
+ci-dessous restent historiques. **Aucun nouveau déploiement requis par cette
+vérification.** Les étapes restantes sont les validations représentatives de
+phase 1 : mode dégradé réel, sondes indisponibles, pannes contrôlées autorisées,
+valeur ajoutée IA et exploitation dans Vision. Aucun job, arrêt de service,
+changement de configuration ou scénario de panne n'a été lancé ici.
+
+### Contrôle Agent 1.29.13 / Katsuyu 0.8.14 — 21 septembre, 09:11
+
+Versions confirmées en SSH après déploiement et contrôle manuel par l'opérateur.
+Agent et Vision sont `active/running`, `NRestarts=0` au relevé ; ce compteur ne
+prouve pas l'absence de tout arrêt antérieur. Worker 0.8.14 vu à **09:14:06
+Europe/Paris**. Consultation SQLite avec `mode=ro` et `PRAGMA query_only=ON`.
+Aucun job lancé ni modification de production pendant cette vérification.
+
+Contrôle `a268ca57-5fd5-4f5e-af8d-2922768b351d`, créé à **09:11:04** et terminé
+à **09:11:48**, fenêtre de 24 heures depuis le 20 septembre à 09:11:04.
+**Un seul job, réussi et traité (`completion_processed=1`)**, aucune expertise
+IA ni collecte complémentaire. Quatre décisions déterministes `watch` entre
+**09:11:49 et 09:11:50** ; aucun job `QUEUED`/`RUNNING` au relevé.
+
+| Source | Collecte | Décision |
+| --- | --- | --- |
+| INFRA-01 | 10 000 lignes, 14 groupes datés, tronquée | Surveillance d'une évolution |
+| HA-01 | 5 058 lignes, 21 groupes dont 14 non datés, tronquée | Surveillance d'une évolution |
+| LINKY-01 | 9 385 lignes, 16 groupes non datés, tronquée | Surveillance avec limite de complétude explicite |
+| ZWAVE-01 | 6 187 lignes, 9 groupes dont 8 non datés, tronquée | Surveillance d'une évolution |
+
+Ce cycle confirme une collecte déterministe Katsuyu suivie de décisions Tsunade
+sans expertise IA, ainsi qu'un aboutissement explicite en surveillance sans job
+bloqué. La situation représentative correspondante et la distinction traitement
+déterministe / expertise IA sont cochées dans la roadmap. Cela ne valide pas le
+cycle de vie global ni un diagnostic causal suffisamment approfondi sans IA.
+
+Aucun groupe critique dans cette collecte, contrairement au faux positif HTTP
+du 20 septembre. La ligne historique n'a pas été recollectée à l'identique et
+INFRA-01 est tronqué : son absence seule ne démontre pas l'effet du filtre HTTP
+sur cette occurrence précise. La version du worker contenant le filtre est
+confirmée. Aucun segment `/stok` non masqué dans les paramètres ou le résultat
+du nouveau contrôle ; contrôle ciblé, sans audit exhaustif des secrets.
+
+**Limite de validation de 1.29.13 :** ce cycle n'exerce ni sonde KO/TIMEOUT ni
+absence de worker compatible. Les corrections du lot précédent sont déployées,
+mais leur validation opérationnelle spécifique reste ouverte. Les quatre
+surveillances ne signifient pas que les incidents historiques sont résolus.
+
+### Qualification locale des démarrages s6-rc — 21 septembre
+
+Dans le contrôle réel, LINKY-01 et ZWAVE-01 ont chacun huit groupes `s6-rc` :
+quatre `starting` et quatre `successfully started`, une occurrence par groupe,
+sans date, stables et classés `warning`. La syntaxe INFO exacte a été vérifiée
+par comparaison de modèles, sans exporter les noms de services ni les messages
+bruts. Ces messages seuls ne démontrent pas une panne actuelle.
+
+**Correction Katsuyu locale :** sur HA-01, LINKY-01 et ZWAVE-01, retirer du
+classement en anomalie seulement une paire unique, ordonnée, de messages INFO
+exacts « démarrage puis succès » du même service. Le rapprochement est fait dans
+la source et le budget analysé, avant le filtre de recherche ciblée. Les lignes
+restent comptées dans `analyzed_lines` / `matched_lines` ; les flags de troncature
+ne sont pas modifiés. La reconnaissance n'invente aucun horodatage et ne conclut
+pas à la santé actuelle du service.
+
+Restent détectés : démarrage isolé, succès isolé, ordre inversé, autre service,
+répétitions, WARNING/ERROR, suffixe d'erreur et échec après démarrage réussi.
+Une paire partiellement hors fenêtre, aux dates inversées ou dont un seul membre
+est daté n'est pas exclue. Le journal INFRA-01 conserve son comportement.
+Une paire unique dans un extrait tronqué ne démontre pas l'absence de répétitions
+dans les données omises ; la collecte reste incomplète pour Tsunade.
+
+Reproduction : **4 échecs sur les 18 premiers cas** avant correction.
+Validation finale : **177 tests Katsuyu réussis (suite complète)**, dont 36 cas
+s6 ; **98 tests Agent réussis** sur expertise, suivis, revue, empreintes et
+corrélations. Ruff, formatage et contrôle de diff passent. Aucun changement de
+schéma de job, configuration, Agent ou Vision. Les anciens résultats, empreintes
+et diagnostics ne sont pas réécrits ; leur historique reste conservé.
+
+**Local, non publié et non déployé.** Le prochain déploiement utile pour valider
+ce nouveau lot concerne **Katsuyu uniquement** ; Agent 1.29.13 peut être conservé.
+Après publication/déploiement opérateur, comparer un nouveau contrôle : paires
+INFO effectivement reconnues, vraies erreurs conservées, limites visibles,
+nombre de jobs et décisions finales. Ne pas assimiler disparition d'un groupe
+filtré et résolution de l'incident. Les scénarios contrôlés, le mode dégradé réel,
+la valeur ajoutée d'une expertise IA et le rendu Vision restent à exercer ;
+ils ne sont pas déclarés acquis par ces tests. La qualification des répétitions
+s6 et leur fraîcheur restent du durcissement continu.
+
 ### Reprise locale — sondes indisponibles et mode dégradé, 21 septembre
 
 Reprise à partir de la roadmap recentrée et du présent rapport. Agent est en
