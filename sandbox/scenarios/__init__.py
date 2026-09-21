@@ -28,4 +28,11 @@ SCENARIOS = {
             "sans fuite d'information sensible."
         ),
     ),
+    "probe-confirmed-failure": (
+        "scenarios.probe_confirmed_failure",
+        (
+            "Vérifier qu'une panne réellement mesurée "
+            "produit un diagnostic déterministe confirmé."
+        ),
+    ),
 }

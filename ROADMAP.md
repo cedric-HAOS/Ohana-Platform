@@ -371,7 +371,7 @@ Critères :
 - [ ] Les trois niveaux sont utilisés de manière cohérente sur des incidents représentatifs.
 - [ ] `CONFIRMED` peut être relié à ses preuves déterministes.
 - [ ] `PROBABLE` indique ce qui empêche sa confirmation.
-- [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Tsunade validé fonctionnellement en Sandbox le 21 septembre (`UNAVAILABLE` → `WAITING_WORKER` → `TIMEOUT`, incident conservé, aucune relance) ; continuité réelle de Shikamaru/Konoha encore à exercer.**
+- [x] `INSUFFICIENT_CONTEXT` peut mettre fin proprement à une investigation (Sandbox `probe-timeout` et `probe-error` : décision `watch`, justification et prochaine action persistées, aucune panne artificiellement confirmée).
 
 ---
 
