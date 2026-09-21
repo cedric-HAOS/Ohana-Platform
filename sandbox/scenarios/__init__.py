@@ -35,4 +35,11 @@ SCENARIOS = {
             "produit un diagnostic déterministe confirmé."
         ),
     ),
+    "diagnostic-levels": (
+        "scenarios.diagnostic_levels",
+        (
+            "Vérifier le contrat CONFIRMED, PROBABLE "
+            "et INSUFFICIENT_CONTEXT."
+        ),
+    ),
 }

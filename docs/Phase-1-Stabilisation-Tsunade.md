@@ -24,14 +24,38 @@ d'Ohana-Agent en mode editable, des bases SQLite temporaires et une horloge
 contrôlée. Les scénarios n'accèdent à aucune sonde, aucun worker ni aucun
 équipement réel sauf mention explicite contraire.
 
-Premier lot de validation : **4 scénarios réussis**.
+Validation consolidée : **6 scénarios réussis sur 6**.
 
 | Scénario | Résultat | Propriété démontrée |
 | --- | --- | --- |
+| `probe-confirmed-failure` | PASS | Une sonde exécutée avec succès peut confirmer un défaut réel sans confondre les autres contrôles : `dns.query` mesure l'échec, `network.ping` reste sain, Tsunade produit `CONFIRMED` / `action_required` sans IA puis le même incident est résolu par une observation saine. |
+| `diagnostic-levels` | PASS | Le contrat transversal `CONFIRMED` / `PROBABLE` / `INSUFFICIENT_CONTEXT` est conservé jusqu'à la projection utilisateur. `PROBABLE` reste une hypothèse, expose son `confirmation_gap` et ne peut pas devenir `action_required`. |
 | `terminal-jobs-over-16` | PASS | Une consultation réconcilie plus d'un lot SQL de résultats terminaux ; 17 échecs sont traités, le suivi devient `failed`, l'incident expose `Investigation interrompue`, aucune relance n'est créée et une seconde consultation est idempotente. |
 | `katsuyu-unavailable` | PASS | Sans nouveau polling Katsuyu, le worker devient `UNAVAILABLE`, le job passe `WAITING_WORKER` puis `TIMEOUT`, Tsunade reste consultable, l'incident reste actif, le suivi termine explicitement en échec et aucun travail n'est relancé. |
 | `probe-timeout` | PASS | Un `TIMEOUT` de sonde reste une limite de collecte. Il ne produit jamais `confirmed_by_probe` ; Tsunade termine en `INSUFFICIENT_CONTEXT`, décision `watch`, avec justification et prochaine action exploitables. |
 | `probe-error` | PASS | Une exception réelle dans `InvestigationExecutor` produit `KO` sans confirmer la panne. Seul le type d'exception est conservé ; le message contenant URL, identifiant, mot de passe et token fictifs n'est pas persisté dans l'incident. |
+
+Le deuxième lot Sandbox introduit explicitement les trois niveaux de diagnostic
+prévus par la roadmap.
+
+- `CONFIRMED` exige une preuve déterministe effectivement obtenue et directement
+  reliée au défaut ;
+- `PROBABLE` conserve une hypothèse suffisamment étayée pour justifier une
+  investigation, tout en indiquant explicitement ce qui manque encore pour la
+  confirmer ;
+- `INSUFFICIENT_CONTEXT` signifie que les preuves disponibles ne permettent pas
+  de retenir une cause et constitue une terminaison valide en surveillance.
+
+Le niveau de diagnostic est désormais persisté avec la décision et propagé
+jusqu'à la projection d'incident. Un résultat Katsuyu `KO` accompagné
+d'hypothèses peut produire `PROBABLE`, mais l'origine reste
+`epistemic_status=hypothesis` et aucune intervention n'est autorisée sur cette
+seule base.
+
+Le scénario `probe-confirmed-failure` valide également fonctionnellement qu'un
+incident simple peut rester entièrement chez Tsunade : observation, contrôles
+déterministes, confirmation de la panne, décision et retour sain sont réalisés
+sans création d'un job IA Katsuyu.
 
 Le défaut selon lequel un job pouvait expirer alors que son suivi restait affiché
 « en cours » est donc couvert par un scénario de régression dépassant
