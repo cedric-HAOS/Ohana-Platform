@@ -309,7 +309,7 @@ Une validation complète et exhaustive de tous les protocoles disponibles sur ch
 - [x] Une conclusion produite par l’IA reste explicitement identifiable comme une hypothèse.
 - [ ] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu.
 - [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu.
-- [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles.
+- [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Tsunade validé fonctionnellement en Sandbox le 21 septembre (`UNAVAILABLE` → `WAITING_WORKER` → `TIMEOUT`, incident conservé, aucune relance) ; continuité réelle de Shikamaru/Konoha encore à exercer.**
 - [x] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué (contrôle du 21 septembre à 09:11 : quatre décisions `watch`, job traité, aucun job restant).
 
 ---
@@ -371,7 +371,7 @@ Critères :
 - [ ] Les trois niveaux sont utilisés de manière cohérente sur des incidents représentatifs.
 - [ ] `CONFIRMED` peut être relié à ses preuves déterministes.
 - [ ] `PROBABLE` indique ce qui empêche sa confirmation.
-- [ ] `INSUFFICIENT_CONTEXT` peut mettre fin proprement à une investigation.
+- [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Tsunade validé fonctionnellement en Sandbox le 21 septembre (`UNAVAILABLE` → `WAITING_WORKER` → `TIMEOUT`, incident conservé, aucune relance) ; continuité réelle de Shikamaru/Konoha encore à exercer.**
 
 ---
 
@@ -382,7 +382,7 @@ Critères :
 - [x] Une contribution IA reste identifiable comme telle.
 - [x] Un traitement déterministe lourd peut être distingué d’une expertise IA (contrôle du 21 septembre : `logs.health_check` Katsuyu réussi, décisions Tsunade déterministes, aucun `ai.inference`).
 - [ ] Tsunade décide de la suite après réception du résultat.
-- [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement.
+- [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement. **Le maintien de Tsunade et la terminaison bornée des travaux sont validés en Sandbox ; l'exécution d'une investigation locale pendant une indisponibilité réelle de Katsuyu reste à démontrer.**
 
 ---
 
@@ -454,9 +454,9 @@ Restent notamment à suivre :
 - [x] **Réévaluation sur information nouvelle**.
 - [x] **Hypothèses maîtrisées**.
 - [ ] **Valeur de Katsuyu démontrée** — au moins un cas simple reste chez Tsunade et un cas complexe bénéficie réellement de Katsuyu.
-- [ ] **Mode dégradé démontré**.
-- [ ] **Preuves suffisamment sûres**.
-- [ ] **Pannes représentatives exercées**.
+- [ ] **Mode dégradé démontré** — comportement Tsunade validé en Sandbox face à Katsuyu indisponible ; continuité opérationnelle réelle de Shikamaru/Konoha encore à exercer.
+- [ ] **Preuves suffisamment sûres** — redaction des exceptions de sondes validée en Sandbox avec secrets fictifs ; audit plus large des preuves toujours ouvert.
+- [ ] **Pannes représentatives exercées** — les simulations Sandbox sécurisent les invariants mais ne remplacent pas les scénarios de panne contrôlée réellement exercés sur Konoha.
 - [ ] **Vision exploitable**.
 
 La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.

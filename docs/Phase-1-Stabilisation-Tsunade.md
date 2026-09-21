@@ -12,6 +12,55 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Validation Ohana Sandbox — 21 septembre 2026
+
+Un premier bac à sable d'intégration a été ajouté à `Ohana-Platform` afin de
+valider les comportements multi-composants directement depuis les checkouts
+locaux, sans publication de release, sans déploiement sur INFRA-01 et sans
+perturbation de Konoha.
+
+Le Sandbox utilise un environnement Python isolé, les sources locales
+d'Ohana-Agent en mode editable, des bases SQLite temporaires et une horloge
+contrôlée. Les scénarios n'accèdent à aucune sonde, aucun worker ni aucun
+équipement réel sauf mention explicite contraire.
+
+Premier lot de validation : **4 scénarios réussis**.
+
+| Scénario | Résultat | Propriété démontrée |
+| --- | --- | --- |
+| `terminal-jobs-over-16` | PASS | Une consultation réconcilie plus d'un lot SQL de résultats terminaux ; 17 échecs sont traités, le suivi devient `failed`, l'incident expose `Investigation interrompue`, aucune relance n'est créée et une seconde consultation est idempotente. |
+| `katsuyu-unavailable` | PASS | Sans nouveau polling Katsuyu, le worker devient `UNAVAILABLE`, le job passe `WAITING_WORKER` puis `TIMEOUT`, Tsunade reste consultable, l'incident reste actif, le suivi termine explicitement en échec et aucun travail n'est relancé. |
+| `probe-timeout` | PASS | Un `TIMEOUT` de sonde reste une limite de collecte. Il ne produit jamais `confirmed_by_probe` ; Tsunade termine en `INSUFFICIENT_CONTEXT`, décision `watch`, avec justification et prochaine action exploitables. |
+| `probe-error` | PASS | Une exception réelle dans `InvestigationExecutor` produit `KO` sans confirmer la panne. Seul le type d'exception est conservé ; le message contenant URL, identifiant, mot de passe et token fictifs n'est pas persisté dans l'incident. |
+
+Le défaut selon lequel un job pouvait expirer alors que son suivi restait affiché
+« en cours » est donc couvert par un scénario de régression dépassant
+volontairement la limite interne de 16 résultats terminaux. La correction vide
+tous les lots disponibles lors de la consultation sans dépendre d'un nouveau
+passage de Katsuyu.
+
+Les deux scénarios de sondes confirment également la frontière épistémique
+attendue : une impossibilité d'exécuter une mesure (`KO` ou `TIMEOUT`) décrit
+l'indisponibilité de la preuve, pas l'état de la cible. Seule une investigation
+effectivement exécutée peut contribuer à une conclusion déterministe confirmée.
+
+Le scénario d'indisponibilité Katsuyu valide localement le comportement de
+Tsunade lorsque le worker disparaît : attente explicite, expiration bornée,
+absence de conclusion artificielle, absence de relance et conservation de
+l'incident. Il ne démontre toutefois pas encore que Shikamaru continue réellement
+ses observations sur Konoha pendant une indisponibilité opérationnelle de Bubule
+ou Katsuyu.
+
+Ces validations sont **locales et reproductibles**, mais ne sont pas assimilées
+à une validation de production. Elles ne remplacent ni un contrôle après
+déploiement, ni les scénarios de panne contrôlée réellement exercés, ni la
+validation du rendu Vision.
+
+Le lot Agent correspondant n'est pas considéré comme validé en production par
+ces seuls PASS. Le Sandbox permet désormais de regrouper les corrections et
+d'effectuer une seule validation opérationnelle ciblée après publication, plutôt
+que de publier une release pour chaque cas intermédiaire.
+
 ### Contrôle Agent 1.29.13 / Katsuyu 0.8.15 — 21 septembre, 09:34–09:35
 
 Versions confirmées en SSH après déploiement opérateur ; worker vu à **09:36:02
@@ -186,11 +235,20 @@ historique. Les erreurs déjà stockées ne sont pas nettoyées par ce correctif
 
 ### Prochain point de passage opérationnel
 
-Le lot Agent ci-dessus doit être publié puis déployé avant de valider son effet
-réel. Vérifier également la version Katsuyu exécutée pour le correctif HTTP
-0.8.14 déjà présent dans le dépôt. Aucune publication ni déploiement n'a été
-effectué dans cette reprise. La validation réelle reste nécessaire ; les travaux
-locaux de durcissement ne sont pas déclarés techniquement impossibles.
+Les corrections Agent relatives aux sondes indisponibles, au mode dégradé et à
+la réconciliation des jobs terminaux sont désormais couvertes par les tests
+locaux et par le Ohana Sandbox. Elles restent à publier puis à vérifier après
+déploiement avant d'être considérées comme validées opérationnellement.
+
+La prochaine publication utile peut regrouper ce lot : il n'est plus nécessaire
+de publier une release intermédiaire pour chaque scénario déjà reproductible dans
+le Sandbox. Après déploiement, effectuer un contrôle de fumée borné sur les
+versions installées, le cycle des jobs, la projection des incidents et l'absence
+de régression générale.
+
+Les scénarios perturbant réellement Konoha restent soumis à autorisation
+explicite. Une validation Sandbox ne constitue pas à elle seule un scénario de
+panne contrôlée réellement exercé.
 
 Ordre proposé après mise à jour, sans incident provoqué automatiquement :
 
