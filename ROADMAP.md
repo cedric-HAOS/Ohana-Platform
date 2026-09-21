@@ -288,6 +288,57 @@ Pour un incident représentatif, Vision doit permettre de comprendre sans consul
 
 ## Validation représentative
 
+### Outillage de validation : Ohana Sandbox
+
+Le cycle attendu est développement local → validation Sandbox → release →
+déploiement → vérification opérationnelle. Depuis la racine d'Ohana-Platform :
+
+```powershell
+# Scénarios locaux, bases temporaires et sondes simulées
+.\sandbox\run.ps1 run all
+
+# Journaux : code local Agent/Katsuyu/Tsunade, avant toute release
+.\sandbox\run.ps1 run all --exercise-logs
+
+# Recette du déploiement réel en lecture seule
+.\sandbox\run.ps1 post-deploy agent 1.29.14
+
+# Recette puis déclenchement et suivi d'un contrôle réel des journaux
+.\sandbox\run.ps1 post-deploy agent 1.29.14 --exercise-logs
+```
+
+La version passée à `post-deploy` est la version Agent attendue sur INFRA-01 ;
+elle doit être adaptée au déploiement à vérifier.
+
+`run --exercise-logs` utilise le véritable analyseur Katsuyu local sur des
+journaux locaux, puis traite son résultat dans Agent/Tsunade avec des bases
+temporaires. `--logs-file` et `--window-end` permettent de rejouer un journal
+historique. La projection pour Vision est vérifiée, mais le rendu navigateur,
+la boucle réseau du worker et l'inférence IA restent à intégrer au laboratoire.
+
+Les **9 scénarios locaux** couvrent notamment les niveaux de diagnostic,
+les échecs de sondes, l'absence de Katsuyu, la reprise des suivis persistés
+et le diagnostic local pendant l'attente d'un worker. Le scénario
+`followup-evidence-cycle` couvre aussi une collecte autorisée suivie d'une
+réévaluation : preuves initiales conservées, limites factuelles respectées et
+terminaison sans relance après livraison répétée des résultats et reprise.
+
+La recette distante contrôle la version, le service, le port d'administration,
+la file de jobs et les erreurs récentes du journal Agent. L'option
+`--exercise-logs` va plus loin : elle exige un worker Katsuyu `AVAILABLE`
+compatible, demande un `logs.health_check` via l'API Agent et vérifie son état
+`SUCCEEDED`, son traitement (`completion_processed=1`) et l'absence de contrôle
+`logs.health_check` encore actif. Le délai de suivi est de 180 secondes par
+défaut, configurable avec `--exercise-timeout`.
+
+**Avec `--exercise-logs`, le parcours n'est plus en lecture seule : il déclenche
+un travail réel et peut alimenter les incidents et décisions Tsunade.** Son PASS
+valide le traitement du contrôle, pas l'absence d'anomalies dans les journaux,
+la qualité de chaque diagnostic ni la fin d'éventuels jobs complémentaires.
+Cette capacité complète les scénarios locaux sans remplacer les pannes
+contrôlées et les autres critères de sortie. Les exécutions observées sont
+consignées dans le [bilan de stabilisation](docs/Phase-1-Stabilisation-Tsunade.md).
+
 ### Investigations principales
 
 Les quatre nœuds principaux doivent avoir été réellement observés par le moteur :
@@ -382,7 +433,7 @@ Critères :
 - [x] Une contribution IA reste identifiable comme telle.
 - [x] Un traitement déterministe lourd peut être distingué d’une expertise IA (contrôle du 21 septembre : `logs.health_check` Katsuyu réussi, décisions Tsunade déterministes, aucun `ai.inference`).
 - [x] Tsunade décide de la suite après réception du résultat (Sandbox `diagnostic-levels` : un résultat Katsuyu `KO` reste une hypothèse, devient `PROBABLE` avec décision `investigate` et ne produit jamais `action_required`).
-- [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement. **Le maintien de Tsunade et la terminaison bornée des travaux sont validés en Sandbox ; l'exécution d'une investigation locale pendant une indisponibilité réelle de Katsuyu reste à démontrer.**
+- [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement. **Validé fonctionnellement en Sandbox le 21 septembre (`local-diagnosis-worker-unavailable`) : diagnostic DNS déterministe et retour sain pendant qu'une collecte distante reste en attente. Les sondes et observations sont simulées ; la validation pendant une indisponibilité réelle de Katsuyu reste à démontrer.**
 
 ---
 
@@ -448,9 +499,9 @@ Restent notamment à suivre :
 
 ## Critères de sortie de la Phase 1
 
-- [ ] **Cycle de vie fiable** — cycle observation → diagnostic déterministe → retour sain validé fonctionnellement en Sandbox ; contrôle après déploiement encore nécessaire.
+- [ ] **Cycle de vie fiable** — cycle observation → diagnostic déterministe → retour sain validé fonctionnellement en Sandbox ; reprise des suivis expirés et déjà traités validée par `followup-restart`, sans perte de preuves ni relance ; contrôle après déploiement encore nécessaire.
 - [ ] **Investigations essentielles** — INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ont été suffisamment exercés.
-- [x] **Absence de boucle sur dossier inchangé**.
+- [x] **Absence de boucle sur dossier inchangé** — également couverte par `followup-evidence-cycle` : deux résultats IA simulés et une collecte autorisée, sans nouveau travail après doublons et reprise SQLite.
 - [x] **Réévaluation sur information nouvelle**.
 - [x] **Hypothèses maîtrisées**.
 - [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis en Sandbox ; un cas complexe réel bénéficiant effectivement de Katsuyu reste à démontrer.

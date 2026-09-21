@@ -161,8 +161,33 @@ def environment():
         try:
             yield sandbox
         finally:
-            jobs.close()
-            incidents.close()
+            sandbox.jobs.close()
+            sandbox.incidents.close()
+
+
+def restart(sandbox: SandboxEnvironment, *, downtime_seconds: int = 0) -> None:
+    """Recréer les services depuis SQLite, sans conserver leurs caches mémoire."""
+    sandbox.jobs.close()
+    sandbox.incidents.close()
+    sandbox.clock.advance(seconds=downtime_seconds)
+    sandbox.jobs = DistributedJobRepository(
+        sandbox.root / "jobs.db", clock=sandbox.clock
+    )
+    sandbox.incidents = TsunadeIncidentRepository(sandbox.root / "incidents.db")
+    sandbox.expertise = TsunadeExpertiseService(
+        incidents=sandbox.incidents,
+        investigations=NoProbes(),
+        ai_dispatcher=sandbox.jobs.create,
+    )
+    sandbox.service = AdministrationService(
+        infrastructure_repository=InfrastructureConfigurationRepository(
+            sandbox.root / "infra.yaml"
+        ),
+        job_repository=sandbox.jobs,
+        incident_repository=sandbox.incidents,
+        expertise_service=sandbox.expertise,
+        log_sources=("ha-01",),
+    )
 
 
 def poll(sandbox: SandboxEnvironment):

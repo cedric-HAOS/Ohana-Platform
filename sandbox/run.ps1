@@ -64,6 +64,19 @@ if (-not (Test-Path $Marker)) {
 
 $Runner = Join-Path $SandboxDir "runner.py"
 
-& $Python $Runner @SandboxArgs
+# Le parcours de développement utilise aussi le code et les dépendances Katsuyu.
+if (($SandboxArgs -contains "run") -and ($SandboxArgs -contains "--exercise-logs")) {
+    $KatsuyuDir = Join-Path $WorkspaceDir "Ohana-Katsuyu"
+    $KatsuyuIndex = [Array]::IndexOf($SandboxArgs, "--katsuyu")
+    if ($KatsuyuIndex -ge 0 -and $KatsuyuIndex + 1 -lt $SandboxArgs.Count) {
+        $KatsuyuDir = $SandboxArgs[$KatsuyuIndex + 1]
+    }
+    & $Python -m pip install -e $KatsuyuDir --disable-pip-version-check
+    if ($LASTEXITCODE -ne 0) {
+        exit $LASTEXITCODE
+    }
+}
+
+& $Python -X utf8 $Runner @SandboxArgs
 
 exit $LASTEXITCODE

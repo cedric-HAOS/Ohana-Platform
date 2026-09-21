@@ -12,6 +12,62 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Cycle de collecte et réévaluation bornée — 21 septembre 2026
+
+Le scénario `followup-evidence-cycle` porte la suite à **9 scénarios sur 9**.
+Ses **57 vérifications** couvrent trois variantes : zéro ligne correspondante,
+239 lignes sans anomalie reconnue, et 239 lignes sans anomalie avec collecte
+tronquée. Chaque variante utilise les services Agent et des bases SQLite
+temporaires, avec réponses de collecte et d'IA simulées.
+
+Le parcours commence par une demande de contexte supplémentaire, attend
+l'autorisation simulée de l'opérateur, exécute la collecte complémentaire puis
+sa réévaluation. Les contrôles démontrent que :
+
+- les anomalies initiales restent dans `logs.analysis`, séparées de
+  `investigation.followup`, sans dates inventées ;
+- la cible, la fenêtre de collecte et l'observation de référence restent
+  présentes dans le dossier transmis ;
+- `matched_lines` reste distinct du nombre d'anomalies ;
+- pour `INSUFFICIENT_CONTEXT`, le motif de décision reprend la troncature
+  factuelle même si le résumé IA simulé affirme le contraire ;
+- une recherche vide ne résout pas l'incident : il reste actif avec décision
+  `watch`, suivi `incomplete` et projection `investigation_exhausted` ;
+- le cycle reste limité à deux jobs IA et une collecte, sans nouvelle demande
+  d'autorisation ni résultat non traité ;
+- recevoir à nouveau les deux résultats puis reconstruire les services depuis
+  SQLite conserve les événements et la projection, sans créer de nouveau travail.
+
+Validation locale : suite complète réussie, Ruff sur le nouveau scénario et
+le registre, contrôle du diff sur les fichiers de ce lot. Aucun changement du
+runtime Agent n'a été nécessaire. Ces résultats valident le contrat et l'arrêt
+du cycle ; ils ne démontrent ni la qualité d'un modèle réel, ni la valeur ajoutée
+de Katsuyu sur un incident ambigu, ni le rendu dans Vision. Aucun accès à la
+production, publication ou déploiement pendant ce lot.
+
+### Reprise et diagnostic local sans worker — 21 septembre 2026
+
+Deux scénarios supplémentaires prolongent les six validations initiales :
+
+| Scénario | Propriété vérifiée localement |
+| --- | --- |
+| `followup-restart` | Reconstruction des services depuis les deux bases SQLite, expiration pendant l'arrêt ou échec déjà traité avant l'arrêt ; conservation exacte des événements historiques, suivi `failed`, interruption visible, aucune conclusion équipement inventée ni relance après une seconde reprise. |
+| `local-diagnosis-worker-unavailable` | Avec Katsuyu `UNAVAILABLE` et une collecte `WAITING_WORKER`, Tsunade exécute deux sondes simulées, confirme le défaut DNS sans IA supplémentaire, expose `action_required` puis résout le même incident sur observation saine. L'incident de journaux et sa collecte restent distincts et en attente. |
+
+Validation consolidée : **8 scénarios sur 8**, dont **33 vérifications** dans
+les deux nouveaux scénarios. Le lanceur PowerShell active également le mode
+UTF-8 pour éviter une erreur d'encodage des symboles PASS/FAIL sous Windows.
+
+Ce lot ne modifie pas le runtime Agent. Il vérifie sa logique existante depuis
+les checkouts locaux, sans accès à Konoha, publication ou déploiement. La reprise
+est une fermeture/réouverture des bases et une reconstruction des services,
+pas un test d'arrêt brutal au milieu d'une transaction. Les sondes et observations
+sont simulées ; l'horloge accélérée concerne la file de jobs, tandis que les
+décisions et les nouvelles observations locales utilisent l'heure système.
+
+Les critères de sortie opérationnels restent ouverts : continuité réelle de
+Shikamaru, pannes contrôlées, valeur ajoutée IA sur un cas ambigu et rendu Vision.
+
 ### Validation Ohana Sandbox — 21 septembre 2026
 
 Un premier bac à sable d'intégration a été ajouté à `Ohana-Platform` afin de
@@ -84,6 +140,93 @@ Le lot Agent correspondant n'est pas considéré comme validé en production par
 ces seuls PASS. Le Sandbox permet désormais de regrouper les corrections et
 d'effectuer une seule validation opérationnelle ciblée après publication, plutôt
 que de publier une release pour chaque cas intermédiaire.
+
+### Contrôle post-déploiement Agent 1.29.14 — 21 septembre 2026
+
+Le développement dispose aussi d'un parcours indépendant du déploiement :
+`sandbox/run.ps1 run all --exercise-logs`. Il exerce les sources locales
+Agent/Katsuyu, le traitement Tsunade et la projection destinée à Vision sur
+des journaux locaux, avec des bases temporaires. Validation locale du
+21 septembre : neuf scénarios existants PASS et 25 contrôles de l'exercice
+des journaux PASS (sain, anomalie, troncature, doublons, reprise).
+Le rejeu d'un journal historique synthétique filtre correctement la fenêtre
+de 24 heures ; les dates sans fuseau et les arguments incomplets sont refusés.
+Le rendu Vision, le transport réseau du worker et l'inférence IA ne sont pas
+couverts par ce parcours. Aucune release ni aucun déploiement n'a été effectué
+pour cette extension. Voir `sandbox/README.md` pour les commandes de rejeu.
+
+Agent 1.29.14 publié et déployé sur INFRA-01. Le nouveau contrôle automatisé
+`.\sandbox\run.ps1 post-deploy agent 1.29.14` a été exécuté depuis le poste de
+développement.
+
+Le contrôle se connecte explicitement à INFRA-01 par SSH et limite ses accès aux
+lectures nécessaires à la recette. Les données de jobs sont consultées en SQLite
+avec `mode=ro` et `PRAGMA query_only=ON`. Les lectures nécessitant les droits du
+service sont exécutées sous le compte `ohana-agent` via une élévation `sudo`
+bornée déjà autorisée ; aucune permission de production n'a été élargie.
+
+Résultat : **10 contrôles sur 10 réussis**.
+
+- version déployée : Agent `1.29.14` ;
+- service `ohana-agent` : `active/running` ;
+- `NRestarts=0` depuis le démarrage du service à 14:07:22 CEST ;
+- port d'administration local `8765` accessible ;
+- base des jobs accessible en lecture seule ;
+- aucun job `QUEUED`, `WAITING_WORKER` ou `RUNNING` au relevé ;
+- aucun résultat terminal avec `completion_processed=0` ;
+- journal Agent accessible ;
+- aucune erreur de niveau `err..alert` dans la fenêtre contrôlée ;
+- les cinq derniers jobs visibles sont terminaux et traités, dont les contrôles
+  `logs.health_check` précédemment validés.
+
+Ce contrôle constitue la première recette post-déploiement automatisée du
+Sandbox. Il valide l'intégration opérationnelle d'Agent 1.29.14 après
+déploiement. Cette exécution sans `--exercise-logs` n'a provoqué aucune panne
+et n'a lancé aucun nouveau contrôle de journaux. Les scénarios de panne
+contrôlée et de mode dégradé réel restent donc distincts.
+
+### Exercice réel des journaux depuis le Sandbox
+
+Le Sandbox peut également déclencher et suivre un contrôle de journaux après
+la recette du déploiement, depuis la racine d'Ohana-Platform :
+
+```powershell
+.\sandbox\run.ps1 post-deploy agent 1.29.14 --exercise-logs
+```
+
+`1.29.14` désigne la version Agent attendue et doit être adaptée au déploiement
+contrôlé. L'option `--exercise-timeout 300`, par exemple, porte le délai de suivi
+à 300 secondes au lieu des 180 secondes par défaut.
+
+Le parcours utilise SSH vers INFRA-01 et l'API d'administration locale sous le
+compte `ohana-agent`. Il vérifie qu'un worker Katsuyu est `AVAILABLE` et annonce
+`logs.health_check`, puis appelle `POST /v1/incidents/logs/check`. Sans worker
+compatible disponible, l'exercice est signalé non réalisé et le contrôle échoue.
+
+Après la demande, il suit le job retourné et ajoute les vérifications suivantes
+à la recette de base :
+
+- worker disponible pour l'exercice ;
+- job `logs.health_check` terminé en `SUCCEEDED` ;
+- résultat traité par Agent (`completion_processed=1`) ;
+- aucun `logs.health_check` en `QUEUED`, `WAITING_WORKER` ou `RUNNING`.
+
+L'identifiant du job, son statut et son worker sont affichés. La vérification
+SQLite reste en lecture seule (`mode=ro`, `PRAGMA query_only=ON`), mais
+**l'exercice lui-même déclenche un travail réel** susceptible d'alimenter les
+incidents et décisions Tsunade. Le dépassement du délai de suivi ne supprime
+ni n'annule le job demandé.
+
+Un PASS signifie que le contrôle des journaux a réussi et que son résultat a
+été traité. Il ne signifie pas que les journaux sont exempts d'anomalies, que
+toutes les conclusions sont correctes ou que les éventuelles analyses IA et
+collectes complémentaires sont terminées : le contrôle résiduel porte seulement
+sur les jobs `logs.health_check`.
+
+Cette section décrit la capacité disponible, vérifiée dans le code du Sandbox.
+Elle n'ajoute pas de résultat d'exécution à la recette historique de **10/10**
+ci-dessus, réalisée sans cette option. Aucun exercice distant n'a été lancé
+pour cette mise à jour documentaire.
 
 ### Contrôle Agent 1.29.13 / Katsuyu 0.8.15 — 21 septembre, 09:34–09:35
 

@@ -13,7 +13,7 @@ scénarios sauf mention explicite contraire.
 Le Sandbox utilise directement :
 
 - `../Ohana-Agent/src`
-- puis, ultérieurement, `../Ohana-Katsuyu`
+- `../Ohana-Katsuyu` pour `run --exercise-logs`
 - et les autres composants nécessaires.
 
 Les bases SQLite et autres données de scénario sont créées dans un
@@ -31,3 +31,81 @@ pour lancer les tests d'Ohana-Agent.
 
 ```powershell
 python .\sandbox\runner.py list
+```
+
+## Exécuter les validations locales
+
+Le cycle de travail est : développement sur les checkouts locaux → validation
+Sandbox → release → déploiement → vérification du comportement réel.
+La publication n'est pas un prérequis à l'exercice des journaux.
+
+```powershell
+# Agent + analyseur Katsuyu + traitement Tsunade locaux
+.\sandbox\run.ps1 run --exercise-logs
+
+# Scénarios existants et exercice des journaux
+.\sandbox\run.ps1 run all --exercise-logs
+
+# Reproduction à partir d'un journal UTF-8 (source ha-01, fenêtre de 24 h)
+.\sandbox\run.ps1 run --exercise-logs --logs-file C:\Temp\ha.log --window-end "2026-09-21T12:00:00+02:00"
+```
+
+Sans fichier, trois entrées sont exercées : journal sain, anomalie répétée et
+collecte tronquée. Le véritable `LogsHealthCheckHandler` de Katsuyu traite une
+source locale inline, puis le résultat retourne dans la file Agent et Tsunade.
+Le parcours vérifie la projection de données destinée à Vision, les doublons,
+la reprise SQLite et l'absence de nouveau contrôle. Les bases sont temporaires.
+Le lanceur installe les dépendances Katsuyu dans le venv Sandbox ; `--katsuyu`
+permet de sélectionner un autre checkout. Pour une invocation Python directe,
+installer au préalable les dépendances des deux dépôts dans cet environnement.
+
+Un fichier est analysé dans une fenêtre de 24 heures se terminant maintenant,
+ou à `--window-end` pour un journal historique (fuseau obligatoire). La collecte
+est bornée aux 4096 derniers octets. Le résumé affiche le nombre de lignes et
+d'anomalies, sans afficher le contenu du journal. PASS indique le bon traitement
+du cycle, y compris si Katsuyu trouve des anomalies.
+
+Ce parcours n'exécute pas encore la boucle réseau du worker, un modèle IA ou le
+rendu navigateur Vision. Il constitue un socle d'intégration avant release,
+à étendre pour couvrir ces composants. Il ne contacte pas INFRA-01.
+`post-deploy agent VERSION --exercise-logs` reste le parcours distinct de recette
+réelle après déploiement, avec déclenchement d'un travail sur l'infrastructure.
+
+Depuis la racine d'Ohana-Platform :
+
+```powershell
+.\sandbox\run.ps1 run all
+.\sandbox\run.ps1 run followup-restart
+.\sandbox\run.ps1 run local-diagnosis-worker-unavailable
+.\sandbox\run.ps1 run followup-evidence-cycle
+```
+
+Le lanceur initialise `sandbox/.venv` si nécessaire et active le mode UTF-8
+de Python pour afficher les résultats dans les terminaux Windows.
+Avec un environnement déjà prêt :
+
+```powershell
+python -X utf8 .\sandbox\runner.py run all
+```
+
+`followup-restart` ferme et rouvre les deux bases SQLite puis reconstruit les
+services Agent. Il couvre l'expiration pendant l'arrêt et la reprise après un
+échec déjà traité : preuves conservées, aucune relance et lectures idempotentes.
+Il simule une reconstruction des services, pas un arrêt brutal du processus.
+
+`local-diagnosis-worker-unavailable` conserve une collecte distante en attente,
+puis exerce un diagnostic DNS déterministe et son retour sain pendant l'absence
+du worker. Les observations et les réponses de sondes sont simulées ; le moteur
+Shikamaru et les équipements réels ne sont pas exécutés.
+
+L'horloge accélérée pilote les délais de la file de jobs. Les décisions Agent
+utilisent encore l'heure système ; les nouvelles observations du scénario de
+diagnostic local sont donc datées à cette même heure, en Europe/Paris.
+
+`followup-evidence-cycle` exerce trois variantes de collecte sans anomalie
+reconnue (zéro ligne, 239 lignes, puis collecte tronquée). Il vérifie la
+conservation du dossier initial, la fidélité des limites de collecte malgré
+un résumé IA contradictoire et l'arrêt après une seule collecte autorisée.
+Les résultats reçus en double et la reconstruction des services depuis SQLite
+ne créent ni événements supplémentaires ni nouveau travail. Les réponses IA
+sont simulées : ce scénario ne mesure pas la qualité d'un modèle réel.

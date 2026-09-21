@@ -1,4 +1,16 @@
 SCENARIOS = {
+    "followup-evidence-cycle": (
+        "scenarios.followup_evidence_cycle",
+        "Conserver les preuves et terminer une réévaluation sans boucle, même après reprise.",
+    ),
+    "local-diagnosis-worker-unavailable": (
+        "scenarios.local_diagnosis_worker_unavailable",
+        "Diagnostiquer et résoudre un incident local pendant l'absence de Katsuyu.",
+    ),
+    "followup-restart": (
+        "scenarios.followup_restart",
+        "Reprendre les suivis persistés sans perte de preuves ni relance après arrêt.",
+    ),
     "terminal-jobs-over-16": (
         "scenarios.terminal_jobs_over_16",
         (

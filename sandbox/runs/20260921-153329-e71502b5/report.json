@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-09-21T15:33:29.507336+02:00",
+  "checks": [
+    [
+      "Worker enregistré par HTTPS avec certificat local vérifié",
+      true
+    ],
+    [
+      "Contrôle des journaux demandé depuis Vision",
+      true
+    ],
+    [
+      "Collecte autorisée et analyse Katsuyu terminées",
+      true
+    ],
+    [
+      "TimeoutError: Locator.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-tsunade-diagnose=\\\"340ccc63-b751-4e57-92a5-6f5423783525\\\"]\")\n",
+      false
+    ]
+  ],
+  "details": {
+    "rapport": "C:\\Users\\cedri\\Documents\\GitHub\\Ohana-Platform\\sandbox\\runs\\20260921-153329-e71502b5\\report.json"
+  },
+  "screenshots": [
+    "vision-before-ai.png"
+  ],
+  "sources": {
+    "agent": "C:\\Users\\cedri\\Documents\\GitHub\\Ohana-Agent",
+    "katsuyu": "C:\\Users\\cedri\\Documents\\GitHub\\Ohana-Katsuyu",
+    "vision": "C:\\Users\\cedri\\Documents\\GitHub\\Ohana-Vision",
+    "model": "C:\\Users\\cedri\\Documents\\GitHub\\Ohana-Katsuyu\\.benchmark-cache\\models\\Ministral-3-14B-Reasoning-2512-Q4_K_M.gguf",
+    "sha256": "fe08ca2158cd7438211ec6a4e5256d31bc980f016e3f5b635fe91fe6848d461c"
+  },
+  "logs_job_id": "4d912730-f96b-478e-ab35-4454f1af4486",
+  "error": "TimeoutError: Locator.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-tsunade-diagnose=\\\"340ccc63-b751-4e57-92a5-6f5423783525\\\"]\")\n",
+  "passed": false,
+  "finished_at": "2026-09-21T15:33:50.261589+02:00"
+}
