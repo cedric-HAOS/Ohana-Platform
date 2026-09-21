@@ -1,6 +1,6 @@
 # Phase 1 — Stabilisation de Tsunade
 
-## État au 15 septembre 2026
+## Cadre initial — 15 septembre 2026
 
 Phase démarrée, validation opérationnelle encore partielle. Référence :
 [roadmap commune](../ROADMAP.md), Platform 1.0.100, Agent 1.29.0, Katsuyu 0.8.7.
@@ -11,6 +11,177 @@ Première campagne : tests locaux et consultation SSH en lecture seule sur INFRA
 service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
+
+### Reprise locale — sondes indisponibles et mode dégradé, 21 septembre
+
+Reprise à partir de la roadmap recentrée et du présent rapport. Agent est en
+1.29.12 dans le checkout. Katsuyu contient déjà le commit local de release
+0.8.14 (`73fc30a`), incluant le correctif HTTP : la mention « non publié » du
+20 septembre ci-dessous décrit l'état de cette passe historique. Les assets
+distants et la version actuellement exécutée n'ont pas été vérifiés ici.
+Les modifications préexistantes de la roadmap et de ce rapport sont conservées.
+
+**Défaut bloquant reproduit localement :** une exception ou un dépassement du
+délai de l'exécuteur était interprété comme une panne déterministe confirmée.
+Une lecture mémoire indisponible pouvait ainsi produire une conclusion de
+pression mémoire avec `confirmed_by_probe`. Huit cas DNS, MQTT, mémoire et
+systemd reproduisent ce défaut ; un neuvième montre qu'une sauvegarde simplement
+désactivée était présentée comme un échec. Aucun de ces défauts n'est affirmé
+comme observé dans un incident de production pendant cette reprise.
+
+Corrections Agent locales :
+
+- Seule une investigation exécutée (`status=OK`) peut fournir une mesure
+  confirmant un défaut. Un résultat métier `success=false`, une unité en échec
+  ou un seuil système dépassé restent exploités. `KO`/`TIMEOUT` de l'exécuteur
+  restent des limites de collecte, conservées dans les preuves.
+- `enabled=false` seul ne confirme plus un échec de sauvegarde ; un véritable
+  statut `FAILED` reste reconnu, même si le plugin est maintenant désactivé.
+- Sans mise en file IA possible, la décision devient `watch` avec
+  `INSUFFICIENT_CONTEXT`, conclusion, justification, prochaine action et date
+  de l'observation examinée. L'incident reste actif ; aucune action corrective
+  n'est autorisée. Les synthèses détail/liste conservent ces champs après reprise.
+- Une exception de sonde n'exporte plus son texte brut : le type suffit à
+  signaler l'indisponibilité. Un test reproduisait la fuite d'identifiants fictifs
+  dans la réponse et le journal applicatif. Ce filtrage ciblé ne constitue pas
+  un audit complet de confidentialité.
+
+**Validation : 171 tests Agent réussis**, couvrant expertise, investigations,
+incidents, suivis, déduplication, corrélations, revue de journaux, jobs, compagnon
+et démarrage. Parmi les nouveaux cas : sept défauts métier confirmés sans worker,
+réouverture SQLite, retour sain par une nouvelle observation, sondes KO/TIMEOUT,
+transmission de leur limite à une IA simulée et exception avec secrets fictifs.
+Ruff et formatage passent sur les quatre fichiers Python modifiés.
+Les sondes et le dispatcher sont simulés dans les tests de diagnostic ; cela
+ne démontre ni une panne exercée sur Konoha ni la valeur d'un modèle IA réel.
+
+**Local, non publié et non déployé.** Aucun nouveau schéma, paramètre de
+configuration, handler Katsuyu ou changement Vision. Les anciens diagnostics
+persistés ne sont pas réécrits ni rétroactivement requalifiés ; une nouvelle
+investigation après mise à jour est nécessaire pour remplacer une conclusion
+historique. Les erreurs déjà stockées ne sont pas nettoyées par ce correctif.
+
+### Prochain point de passage opérationnel
+
+Le lot Agent ci-dessus doit être publié puis déployé avant de valider son effet
+réel. Vérifier également la version Katsuyu exécutée pour le correctif HTTP
+0.8.14 déjà présent dans le dépôt. Aucune publication ni déploiement n'a été
+effectué dans cette reprise. La validation réelle reste nécessaire ; les travaux
+locaux de durcissement ne sont pas déclarés techniquement impossibles.
+
+Ordre proposé après mise à jour, sans incident provoqué automatiquement :
+
+1. Relever les versions installées et un nouveau contrôle manuel lancé par
+   l'opérateur ; vérifier le classement HTTP, les preuves nouvelles, les limites
+   de collecte et le nombre de jobs. Ne pas réutiliser un résultat historique
+   comme validation du nouveau code.
+2. Sur un diagnostic pertinent, vérifier qu'un échec d'exécution de sonde reste
+   une information manquante ; relier une éventuelle conclusion confirmée à un
+   résultat métier effectivement reçu. Examiner la synthèse rendue dans Vision.
+3. Exercer les scénarios autorisés ci-dessous, un à la fois, puis conserver
+   preuves datées, état final, nombre de jobs et contrôle de retour sain.
+
+| Scénario candidat | Préparation et borne avant autorisation | Preuve attendue / retour initial |
+| --- | --- | --- |
+| Katsuyu indisponible (système / Ohana) | Relever les jobs actifs ; choisir une fenêtre sans sauvegarde, arrêter temporairement le worker uniquement après autorisation, fixer la durée et son redémarrage | Shikamaru continue ses observations ; Tsunade conserve les incidents et ses contrôles locaux ; distinguer absence de worker compatible, job réellement en attente et expiration ; redémarrer le worker et vérifier présence et jobs restants |
+| Échec TCP d'une cible de test (réseau) | Choisir un endpoint de test isolé et réellement déclaré ; relever sa santé et prévoir retrait de la perturbation, durée maximale et accès de secours | Échec de connexion mesuré, incident et décision reliés à la cible ; rétablir l'endpoint et attendre une observation saine, sans déduire la résolution du seul succès IA |
+| Service supervisé indisponible (service) | Choisir un service non critique pour l'accès d'administration ; relever l'état initial, l'impact utilisateur, la commande de retour et la durée maximale avant accord | État du service et contrôle fonctionnel concordants ; restauration à l'état initial et retour sain observé ; aucune réparation automatique ajoutée |
+
+Ces trois scénarios sont **préparés, non exercés**. Les cibles précises et les
+durées doivent être fixées avec l'opérateur avant toute perturbation. Ils ne
+cochent aucune case de sortie de phase. Le cas ambigu apportant une valeur IA
+réelle, les investigations représentatives restantes et le rendu Vision
+restent aussi à démontrer sur de nouvelles preuves opérationnelles.
+
+### Contrôle Agent 1.29.12 / Katsuyu 0.8.13 — 20 septembre, 17:35–17:37
+
+Versions confirmées en SSH. Contrôle manuel
+`d9132b7b-86d9-48e3-8421-2134c6f22a2d`, créé à **17:35:34 Europe/Paris**,
+collecte terminée à **17:36:22**. Quatre jobs réussis et traités : le contrôle
+général, deux expertises IA INFRA-01 et une recherche ciblée INFRA-01.
+Dernier job terminé à **17:37:14**, décision à **17:37:14** ; aucun job en attente
+au relevé. Consultation en lecture seule (`mode=ro`, `query_only=ON`).
+
+| Source | Collecte générale | Décision finale |
+| --- | --- | --- |
+| INFRA-01 | 10 000 lignes, 18 groupes datés, tronquée | `investigate`, verdict KO conservé comme hypothèse |
+| HA-01 | 5 535 lignes, 26 groupes dont 14 non datés, tronquée | `watch`, preuves déjà prises en compte, aucune nouvelle IA |
+| LINKY-01 | 9 385 lignes, 16 groupes non datés, tronquée | `watch`, aucune nouvelle IA |
+| ZWAVE-01 | 6 497 lignes, 8 groupes non datés, tronquée | `watch`, aucune nouvelle IA |
+
+**Déduplication HA-01 confirmée en production** à **17:36:23** : la décision
+déterministe explicite que les groupes ont déjà été pris en compte lors d'une
+demande d'expertise. Les groupes restent présents et la troncature reste visible.
+Le déploiement n'a pas provoqué une nouvelle expertise sur ces mêmes preuves.
+La comparaison de fenêtres de durées différentes et l'interruption en plein cycle
+restent des validations locales, non des scénarios exercés ici.
+
+L'escalade INFRA-01 porte notamment sur deux nouveaux groupes : un groupe
+critique associé aux journaux Vision à **17:35:10**, et un groupe d'erreur Agent
+de catégorie Z-Wave à **17:11:14**. La recherche ciblée retourne zéro correspondance,
+zéro groupe et `truncated=false` ; cela ne prouve pas la résolution générale.
+Les deux retours IA sont KO, avec statut d'hypothèse ; Tsunade conserve la décision.
+
+**Faux positif critique confirmé.** Une lecture journald bornée à vingt secondes
+sur `ohana-vision.service` qualifie la ligne de 17:35:10 : niveau INFO (priorité 6),
+accès GET, réponse **HTTP 200**, mot `critical` uniquement dans la cible HTTP.
+Le détecteur interprétait un mot de l'URL comme une criticité du service. L'URL
+et le journal brut n'ont pas été exportés ; seuls méthode, code et booléens de
+qualification ont été affichés. Ce constat ne qualifie pas l'autre erreur Agent.
+
+### Correction locale Katsuyu — qualification des journaux d'accès HTTP
+
+Pour le format d'accès HTTP reconnu (`INFO: client - "METHOD cible HTTP/…" code`),
+les mots contenus dans la cible ne déterminent plus l'anomalie, la catégorie ni
+la criticité. Le niveau du journal et les messages hors cible restent examinés.
+Les réponses **5xx sont reconnues comme erreurs**, y compris sans mot d'erreur
+explicite ; une URL contenant `critical` ne transforme plus une erreur 500 en
+anomalie critique. Une réponse 2xx/3xx/401 ne constitue pas à elle seule un incident
+parce que son chemin contient `error`, `restart` ou `fatal`.
+
+Le même traitement s'applique aux collectes générales et ciblées. Les recherches
+ciblées conservent le nombre de correspondances. Le format non reconnu conserve
+la détection existante ; les erreurs explicites et les suffixes critiques restent
+détectés. Les cibles longues sont retirées de l'échantillon de classement avant
+sa réduction, pour ne pas perdre le code HTTP et recréer une fausse criticité.
+
+Reproduction initiale : **14 échecs sur les 20 cas HTTP ajoutés**. Après correction
+et ajout des cas d'URL longue : **141 tests Katsuyu réussis**, suite complète,
+dont 22 cas HTTP. Ruff, formatage et diff propres. **Local, non publié et non déployé.**
+Agent n'a pas été modifié dans cette reprise. Aucun schéma de job ni configuration
+modifié. Les anciens groupes et diagnostics persistés ne sont pas réécrits :
+la correction s'appliquera aux nouvelles collectes, sans clôture automatique
+fondée uniquement sur l'exclusion de ce message.
+
+### Alignement de la roadmap — état vérifié le 20 septembre
+
+Les cases sont alignées sur les preuves et limites du rapport. Les validations
+cochées sont bornées au périmètre explicitement cité ; les critères globaux ne
+sont pas déduits de la seule réussite d'un cycle.
+
+| Domaine | État retenu dans la roadmap |
+| --- | --- |
+| Investigations ZWAVE-01 et métriques INFRA-01 | Validations bornées déjà acquises ; pannes toujours ouvertes |
+| DNS/TCP/HTTP | Partiel : HTTP 405 réel et sa qualification sont acquis, contrairement à l'ancienne mention ; scénarios de panne restants |
+| Absence de relance sur mêmes groupes | Acquis pour les expertises de journaux HA-01 sous Agent 1.29.12 ; reprise et interruption complétées par tests locaux |
+| Arrivée de nouvelles observations | Validation antérieure conservée ; nouvelles données admises dans ce cycle, qualité du classement distincte |
+| Hypothèses et retours structurés | Acquis sur les cycles de journaux examinés : types de jobs distincts, résultats traités, KO identifié comme hypothèse |
+| Cycle de vie complet, confiance et responsabilité globale | Validation partielle ; aucune case générale cochée sur la seule base des cycles de journaux |
+| Provenance, fraîcheur et secrets | Partiel : champs et `/stok` contrôlés, groupes sans date et audit exhaustif ouverts |
+| Faux positifs et scénarios de panne | Ouverts : correction HTTP locale, `s6-rc` sans date et pannes contrôlées restant à exercer |
+| Sortie de phase 1 | Non acquise ; seul le critère borné de non-relance d'un dossier de journaux inchangé est désormais coché |
+
+### Prochaine validation nécessaire pour ce correctif
+
+Après publication et déploiement **Katsuyu** par l'opérateur, conserver Agent
+1.29.12 et lancer un nouveau contrôle manuel autorisé. Vérifier l'absence du faux
+groupe critique d'accès Vision dans la nouvelle collecte (tant que la ligne est
+encore dans la fenêtre), la conservation des vraies erreurs et le nombre de jobs
+justifiés par de nouvelles preuves. Les anciennes conclusions restent historiques.
+La validation réelle du nouveau classement nécessite cette mise à jour du worker.
+
+Les sections suivantes décrivent les étapes antérieures : leurs mentions
+« local / non déployé » sont datées et ne remplacent pas l'état courant ci-dessus.
 
 ### Contrôle Agent 1.29.11 / Katsuyu 0.8.13 — 20 septembre, 17:04–17:05
 
@@ -85,15 +256,13 @@ et contrôle de diff propres. Aucun schéma de job ni paramètre de configuratio
 modifié. **Corrections locales Agent uniquement, non publiées et non déployées.**
 Katsuyu n'a pas été modifié dans cette reprise.
 
-### Prochaine validation du correctif de relance
+### Validation du correctif de relance — désormais confirmée sur HA-01
 
-Après publication et déploiement **Agent** par l'opérateur, conserver Katsuyu
-0.8.13 et effectuer un nouveau contrôle manuel autorisé. Vérifier que les groupes
-HA-01 déjà pris en compte n'engendrent pas une nouvelle IA sans modification
-utile des preuves, que la raison de surveillance est explicite et que la
-troncature reste visible. Une preuve réellement nouvelle doit rester admissible
-selon la politique existante, ainsi qu'un diagnostic explicitement demandé.
-Cette validation réelle du correctif nécessite sa mise en production.
+Le contrôle Agent 1.29.12 de 17:35 décrit plus haut confirme HA-01 sans nouvelle
+IA, avec raison explicite et troncature visible. Les preuves nouvelles restent
+admissibles selon la politique ; leur qualification fait l'objet du correctif
+HTTP local suivant. Le diagnostic explicitement demandé et les cas d'interruption
+restent couverts par les tests décrits dans le lot précédent.
 
 Les messages `s6-rc` sans date, la comparabilité effective des contenus collectés,
 l'audit exhaustif des secrets et les scénarios de panne contrôlée restent ouverts.

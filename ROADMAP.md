@@ -2,7 +2,9 @@
 
 ## État de référence
 
-Cette roadmap prend **Ohana-Platform 1.0.100** comme baseline fonctionnelle de départ. Les versions indiquées dans les validations de chaque phase peuvent être ultérieures à cette composition.
+Cette roadmap prend **Ohana-Platform 1.0.100** comme baseline fonctionnelle de départ.
+
+Les versions indiquées dans les validations de chaque phase peuvent être ultérieures à cette composition.
 
 Composition de référence :
 
@@ -55,447 +57,516 @@ Les noms fonctionnels décrivent les responsabilités :
 
 ---
 
+# Philosophie générale de la roadmap
+
+Une phase établit une **capacité fonctionnelle minimale fiable**.
+
+Elle n’a pas pour objectif d’épuiser tous les cas possibles liés à cette capacité.
+
+Chaque phase distingue désormais trois catégories.
+
+## Critères de sortie
+
+Les quelques propriétés indispensables qui doivent être démontrées avant de considérer la capacité suffisamment stabilisée pour avancer.
+
+## Durcissement continu
+
+Les améliorations de couverture, robustesse, performance, qualité, sécurité ou lisibilité qui doivent continuer à évoluer mais ne bloquent pas automatiquement la phase suivante.
+
+Un élément de durcissement redevient bloquant lorsqu’il révèle une violation d’un invariant fondamental.
+
+## Évolutions futures
+
+Les capacités supplémentaires qui ne répondent pas encore à un besoin opérationnel suffisamment concret.
+
+L’objectif est d’éviter qu’une phase devienne impossible à terminer parce que chaque nouveau cas limite découvert est ajouté à ses conditions de sortie.
+
+---
+
 # Phase 1 — Stabilisation de Tsunade
 
-Suivi : [campagne de validation et premiers constats](docs/Phase-1-Stabilisation-Tsunade.md).  
-Phase démarrée le 15 septembre 2026 ; validation en production encore partielle.
+Suivi : [campagne de validation et premiers constats](docs/Phase-1-Stabilisation-Tsunade.md).
 
-Checklist rapprochée du rapport le 19 septembre 2026. Les cases cochées correspondent aux validations ci-dessous dans leur périmètre indiqué ; elles ne valent pas validation des scénarios de panne ni de toute la chaîne en production.
+Phase démarrée le 15 septembre 2026.
+
+Le périmètre de cette phase a été recentré le 20 septembre 2026.
+
+L’objectif n’est plus de valider exhaustivement toutes les investigations, tous les protocoles, tous les faux positifs et tous les scénarios de panne possibles avant de poursuivre la roadmap.
+
+La Phase 1 doit établir que **Tsunade possède un socle suffisamment fiable pour diagnostiquer Konoha au quotidien**, sans boucle d’investigation, sans confusion entre faits et hypothèses, sans dépendance critique à Katsuyu et sans décision artificielle lorsque les preuves sont insuffisantes.
+
+Les validations plus fines restent importantes mais deviennent du durcissement continu.
+
+---
 
 ## Objectif
 
-Valider le comportement de Tsunade sur des incidents réels avant d’étendre ses capacités.
+Valider que Tsunade peut prendre en charge de manière fiable le cycle de diagnostic d’un incident avant d’étendre ses responsabilités aux réparations supervisées de la Phase 2.
 
-Tsunade doit pousser l’investigation déterministe aussi loin que possible. Elle peut déléguer à Katsuyu les traitements déterministes trop coûteux pour INFRA-01.
-
-L’expertise IA de Katsuyu n’est sollicitée que lorsque les preuves disponibles, les investigations déterministes et les éventuels traitements lourds ne permettent pas à Tsunade d’établir un diagnostic suffisamment fiable.
-
-Valider la frontière **Tsunade ↔ Katsuyu** : démontrer que Tsunade résout seule les incidents simples et transfère les traitements lourds ou les incidents complexes à Katsuyu avec un dossier de preuves ciblé, suffisant, structuré et exploitable.
-
-Tsunade reste responsable :
-
-- de l’orchestration de l’incident ;
-- de la collecte et de la qualification des preuves ;
-- du choix des investigations déterministes ;
-- de la décision de déléguer un traitement à Katsuyu ;
-- de la décision de solliciter ou non l’expertise IA de Katsuyu ;
-- de l’exploitation du résultat retourné ;
-- de l’état final de l’incident.
-
-Katsuyu peut intervenir selon deux modes distincts :
-
-1. **traitement déterministe lourd**, lorsque le calcul ou le volume de données serait trop coûteux pour INFRA-01 ;
-2. **expertise IA**, lorsqu’une interprétation complexe, une corrélation avancée ou l’élaboration d’hypothèses est nécessaire.
-
-Un appel à Katsuyu ne doit donc pas impliquer automatiquement l’utilisation du LLM.
-
----
-
-## Principes de sûreté
-
-Les investigations de Tsunade doivent respecter les principes suivants :
-
-- privilégier les faits observables et reproductibles ;
-- distinguer clairement observation, preuve, conclusion déterministe et hypothèse ;
-- ne jamais transformer une absence de preuve en preuve d’absence ;
-- ne jamais produire artificiellement une conclusion lorsque le contexte est insuffisant ;
-- conserver explicitement un diagnostic comme indéterminé lorsqu’une cause ne peut pas être démontrée ;
-- ne jamais relancer une analyse coûteuse sans nouvelle information utile ;
-- ne jamais utiliser Katsuyu pour reformuler simplement ce que Tsunade sait déjà ;
-- préserver le fonctionnement essentiel de Konoha même lorsque Bubule ou Katsuyu sont indisponibles.
-
----
-
-## Cycle de vie d’un incident
-
-Tsunade doit maintenir un état explicite pour chaque incident.
-
-Le cycle de diagnostic cible de la Phase 1 est :
+Le comportement cible est :
 
 ```text
-Shikamaru détecte
+Shikamaru observe
         │
         ▼
-     DETECTED
+Tsunade ouvre ou met à jour l'incident
         │
         ▼
-   INVESTIGATING
+Investigation déterministe
         │
-        ├──────── diagnostic déterministe suffisant
-        │                       │
-        │                       ▼
-        │                   DIAGNOSED
+        ├── preuves suffisantes
+        │        │
+        │        ▼
+        │    diagnostic
         │
-        ├──────── traitement lourd nécessaire
-        │                       │
-        │                       ▼
-        │               WAITING_KATSUYU
-        │                       │
-        │                       ▼
-        │                  INVESTIGATING
+        ├── traitement lourd nécessaire
+        │        │
+        │        ▼
+        │     Katsuyu
+        │   déterministe
+        │        │
+        │        ▼
+        │      résultat
         │
-        ├──────── expertise IA nécessaire
-        │                       │
-        │                       ▼
-        │               WAITING_KATSUYU
-        │                       │
-        │                       ▼
-        │                  INVESTIGATING
+        ├── expertise réellement nécessaire
+        │        │
+        │        ▼
+        │     Katsuyu
+        │        IA
+        │        │
+        │        ▼
+        │     hypothèses
         │
-        └──────── preuves insuffisantes
-                                │
-                                ▼
-                     INSUFFICIENT_CONTEXT
+        └── preuves insuffisantes
+                 │
+                 ▼
+        INSUFFICIENT_CONTEXT
 ```
 
-Un retour à `INVESTIGATING` ne doit intervenir que lorsqu’un résultat ou une nouvelle preuve est réellement disponible.
+Dans tous les cas, **Tsunade reste propriétaire de l’incident et de la décision finale**.
 
-Un incident peut également passer à :
+Katsuyu fournit une capacité de calcul ou d’expertise.
 
-- `MONITORING` lorsqu’aucune intervention immédiate n’est requise mais qu’une évolution doit être observée ;
-- `RESOLVED` lorsque Shikamaru confirme que la situation ayant déclenché l’incident n’existe plus ;
-- `INVESTIGATION_BLOCKED` lorsqu’une investigation nécessaire ne peut pas être exécutée, par exemple en raison de l’indisponibilité de Katsuyu.
-
-Les états liés aux réparations (`WAITING_USER`, `REPAIRING`, `VERIFYING`, etc.) seront introduits et validés dans la Phase 2.
-
-### Validation du cycle de vie
-
-- [ ] Vérifier qu’un incident possède toujours un état explicite.
-- [ ] Vérifier qu’aucun incident ne reste bloqué silencieusement entre deux étapes.
-- [ ] Vérifier qu’un passage vers `WAITING_KATSUYU` indique clairement le type de traitement demandé.
-- [ ] Vérifier qu’un retour à `INVESTIGATING` correspond à l’arrivée effective d’une nouvelle information.
-- [ ] Vérifier qu’un contexte réellement insuffisant conduit à `INSUFFICIENT_CONTEXT`.
-- [ ] Vérifier qu’une indisponibilité d’une dépendance d’investigation conduit à un état explicite plutôt qu’à une fausse conclusion.
-- [ ] Vérifier qu’un incident résolu spontanément ou extérieurement peut être correctement clôturé après vérification Shikamaru.
+Il ne devient ni le moteur d’orchestration de l’incident ni la source de vérité sur l’état de Konoha.
 
 ---
 
-## Validation des investigations
+## Invariants fondamentaux
 
-- [ ] Valider les investigations automatiques en lecture seule sur INFRA-01.
-- [ ] Valider les investigations automatiques sur HA-01.
-- [ ] Valider les investigations automatiques sur LINKY-01.
-- [x] Valider les investigations automatiques sur ZWAVE-01 (cycle borné du 19 septembre à 17:50–17:53 : collecte ciblée, DNS/TCP, Supervisor Z-Wave JS UI et réévaluation terminés ; scénarios de panne restant à exercer).
-- [ ] Vérifier les diagnostics MQTT de Mosquitto.
-- [ ] Vérifier les diagnostics `teleinfo2mqtt`.
-- [ ] Vérifier les contrôles Supervisor Home Assistant (sélection Z-Wave JS UI, état et ressources confirmés en production avec Agent 1.29.8 le 19 septembre à 17:51 ; couverture des cas d’échec restante).
-- [ ] Vérifier les investigations DNS, TCP et HTTP (HEAD 302/401/403/503 et absence de redirection vérifiés sur serveur local ; sélection HTTP avant plafond de sondes corrigée et testée localement le 19 septembre, cibles omises explicites ; validation HTTP sur les cibles réelles restante).
-- [x] Vérifier les métriques système collectées sur INFRA-01 (snapshot CPU, mémoire, disque et unités du 15 septembre ; scénario de surcharge restant).
-- [ ] Vérifier que les secrets restent exclus des preuves.
-- [ ] Vérifier que chaque preuve conserve sa provenance, son horodatage et son lien avec l’incident.
-- [ ] Vérifier que les preuves devenues obsolètes ne sont pas utilisées comme si elles représentaient encore l’état courant.
+### 1. Tsunade reste responsable de l’incident
+
+Tsunade doit conserver :
+
+- l’état de l’incident ;
+- les observations ayant conduit à son ouverture ;
+- les preuves collectées ;
+- les investigations réalisées ;
+- les éléments encore manquants ;
+- les éventuelles contributions de Katsuyu ;
+- la décision de poursuivre, surveiller ou arrêter l’investigation.
+
+Une réponse Katsuyu ne modifie jamais directement l’état final d’un incident.
 
 ---
 
-## Qualité des diagnostics
+### 2. Le déterministe reste prioritaire
+
+Tsunade doit pousser les investigations déterministes aussi loin que raisonnablement possible avant de demander une expertise IA.
+
+Katsuyu peut être utilisé pour :
+
+1. un **traitement déterministe lourd**, lorsque le volume ou le coût du traitement n’est pas adapté à INFRA-01 ;
+2. une **expertise IA**, lorsqu’une interprétation complexe ou l’élaboration d’hypothèses apporte réellement une information supplémentaire.
+
+Un appel à Katsuyu ne doit pas impliquer automatiquement l’utilisation du LLM.
+
+Un incident simple doit pouvoir être traité sans réveiller Bubule lorsque Katsuyu n’apporte aucune valeur.
+
+---
+
+### 3. Faits, conclusions et hypothèses restent distincts
 
 Tsunade doit distinguer explicitement :
 
-- les faits établis ;
-- les résultats de contrôles déterministes ;
-- les conclusions déterministes ;
-- les éléments manquants ;
-- les hypothèses éventuelles ;
-- les contributions provenant de Katsuyu ;
+- l’observation Shikamaru ;
+- la preuve collectée ;
+- le résultat d’un contrôle déterministe ;
+- la conclusion déterministe ;
+- les informations manquantes ;
+- les hypothèses ;
+- les contributions de Katsuyu ;
 - les limites du diagnostic.
 
-### Niveau de confiance
+Une expertise IA ne transforme jamais automatiquement une hypothèse en fait établi.
 
-Un diagnostic doit utiliser des catégories simples et explicables, sans produire de pourcentage artificiel.
-
-Les niveaux retenus sont :
-
-- **CONFIRMED** : la conclusion est directement établie par des preuves et des règles déterministes suffisantes ;
-- **PROBABLE** : les preuves convergent vers une explication mais ne permettent pas de la démontrer complètement ;
-- **INSUFFICIENT_CONTEXT** : les informations disponibles sont insuffisantes pour établir une conclusion exploitable.
-
-Le niveau de confiance doit toujours être accompagné de sa justification.
-
-Une expertise IA de Katsuyu ne transforme pas automatiquement une hypothèse en diagnostic `CONFIRMED`.
-
-### Validation
-
-- [ ] Vérifier que Tsunade distingue clairement les faits établis, les conclusions déterministes, les éléments manquants et les points nécessitant éventuellement une expertise Katsuyu.
-- [ ] Vérifier que chaque diagnostic possède un niveau de confiance explicite.
-- [ ] Vérifier qu’un diagnostic `CONFIRMED` repose sur des critères déterministes définis.
-- [ ] Vérifier qu’un diagnostic `PROBABLE` indique clairement ce qui empêche sa confirmation.
-- [ ] Vérifier que `INSUFFICIENT_CONTEXT` déclenche une investigation complémentaire utile lorsqu’une telle investigation est possible.
-- [ ] Vérifier que `INSUFFICIENT_CONTEXT` reste un résultat acceptable lorsqu’aucune preuve supplémentaire ne peut raisonnablement être obtenue.
-- [ ] Vérifier qu’une absence de preuve n’est jamais utilisée comme preuve d’absence.
-- [ ] Vérifier qu’une hypothèse produite par Katsuyu reste identifiable comme telle.
-- [x] Vérifier que les anomalies déjà connues ne déclenchent pas inutilement une nouvelle sollicitation de Katsuyu (Agent 1.29.7 : global → INFRA-01 seul → global validé le 19 septembre à 17:13–17:14, références conservées et aucune nouvelle analyse IA ; répétition des corrélations également validée en rejeu local).
-- [x] Vérifier que l’arrivée de nouvelles observations peut rouvrir correctement une analyse (nouvelles corrélations du 16 septembre, contrôle 09:01–09:03).
-- [x] Vérifier que les diagnostics terminés ne sont pas relancés sans nouvelle information (tests de cycle et rejeu avec réouverture de base ; reprise en production restant à observer).
-- [ ] Vérifier que les faux positifs MQTT, série et télémétrie restent maîtrisés.
-- [ ] Vérifier qu’un diagnostic déterministe suffisant termine l’investigation sans solliciter l’expertise IA de Katsuyu.
-- [ ] Vérifier qu’une situation réellement ambiguë ou complexe provoque correctement une escalade vers l’expertise IA de Katsuyu.
+Une absence de preuve ne constitue jamais une preuve d’absence.
 
 ---
 
-## Maîtrise des cycles d’investigation
+### 4. Une investigation doit toujours pouvoir s’arrêter
 
-Tsunade doit empêcher les investigations de produire des boucles, des réveils inutiles de Bubule ou une consommation excessive de ressources.
+Chaque nouvelle étape doit être justifiée par :
 
-Chaque nouvelle étape d’investigation doit être justifiée par une nouvelle information, une preuve manquante identifiable ou une décision explicite du moteur d’investigation.
+- une nouvelle observation ;
+- une nouvelle preuve ;
+- une information manquante identifiable ;
+- ou une décision explicite du moteur d’investigation.
 
-### Garde-fous
-
-- [ ] Limiter le nombre de réinvestigations successives sans nouvelle preuve.
-- [ ] Ne pas relancer Katsuyu pour un dossier d’investigation inchangé.
-- [ ] Ne pas relancer une expertise IA avec les mêmes preuves et la même question (mémoire des groupes déclencheurs, reprise SQLite et collectes tronquées testées localement le 20 septembre ; validation réelle du correctif Agent restante).
-- [ ] Limiter les réveils successifs de Bubule pour un même incident.
-- [ ] Regrouper lorsque possible plusieurs traitements Katsuyu compatibles dans un même cycle worker.
-- [ ] Conserver la raison ayant déclenché chaque nouvelle investigation.
-- [ ] Conserver la preuve ou l’événement ayant justifié la réouverture d’un incident.
-- [ ] Détecter et interrompre un éventuel cycle `investigation → Katsuyu → réévaluation → Katsuyu`.
-- [ ] Ne pas considérer une reformulation du même résultat comme une nouvelle information.
-- [ ] Prévoir une sortie explicite en `INSUFFICIENT_CONTEXT` ou `INVESTIGATION_BLOCKED` lorsque poursuivre l’investigation n’apporte plus de valeur.
-
-Les limites exactes de tentatives et de réveils doivent rester configurables et adaptées au type d’investigation plutôt qu’être codées de manière arbitraire dans la logique métier.
-
----
-
-## Validation de la frontière Tsunade ↔ Katsuyu
-
-Tsunade doit rester le coordinateur de l’incident.
-
-Katsuyu fournit une capacité d’exécution ou d’expertise et ne devient jamais le propriétaire de l’incident ni le moteur de décision final.
-
-### Dossier transmis à Katsuyu
-
-Avant toute sollicitation de Katsuyu, Tsunade doit constituer un dossier contenant au minimum :
-
-- l’identifiant de l’incident ;
-- la cible concernée ;
-- le type de traitement demandé ;
-- les faits établis ;
-- les résultats des contrôles déjà effectués ;
-- les preuves pertinentes ;
-- leur provenance ;
-- leur horodatage ;
-- les éléments encore manquants ;
-- la question précise à laquelle Katsuyu doit répondre.
-
-### Types de sollicitation
-
-Tsunade doit distinguer explicitement :
+Le même dossier ne doit pas provoquer indéfiniment :
 
 ```text
-Tsunade
-   │
-   ├── traitement déterministe lourd
-   │        │
-   │        ▼
-   │     Katsuyu
-   │     sans IA
-   │        │
-   │        ▼
-   │ résultat structuré
-   │
-   └── expertise complexe
-            │
-            ▼
-         Katsuyu
-           IA
-            │
-            ▼
-      analyse structurée
-
-             │
-             ▼
-          Tsunade
+investigation
+    ↓
+Katsuyu
+    ↓
+réévaluation
+    ↓
+Katsuyu
+    ↓
+...
 ```
 
-### Validation
+Lorsque poursuivre n’apporte plus raisonnablement d’information supplémentaire, Tsunade doit pouvoir terminer en :
 
-- [ ] Vérifier que Tsunade constitue un dossier d’investigation structuré avant toute sollicitation de Katsuyu.
-- [ ] Vérifier que ce dossier contient les preuves nécessaires sans transmettre inutilement des données sans rapport avec l’incident.
-- [ ] Vérifier que le dossier distingue les faits, les résultats des contrôles, les éléments manquants et la question soumise à Katsuyu.
-- [ ] Vérifier que chaque preuve transmise conserve provenance et horodatage.
-- [ ] Vérifier qu’un incident simple ne nécessitant aucun traitement lourd ne provoque aucun réveil de Bubule.
-- [ ] Vérifier qu’un traitement déterministe trop coûteux pour INFRA-01 peut être délégué à Katsuyu sans déclencher d’expertise IA.
-- [ ] Vérifier que l’expertise IA de Katsuyu n’est déclenchée que lorsque l’investigation déterministe et les éventuels traitements lourds ne permettent pas d’établir un diagnostic suffisamment fiable.
-- [ ] Vérifier qu’un incident complexe peut provoquer le réveil de Bubule et l’exécution de Katsuyu.
-- [ ] Vérifier que Katsuyu travaille à partir des preuves fournies par Tsunade plutôt que de recommencer systématiquement toute l’investigation.
-- [ ] Vérifier que Katsuyu ne transforme pas arbitrairement une absence d’information en conclusion.
-- [ ] Vérifier que la réponse de Katsuyu revient à Tsunade sous une forme structurée et exploitable.
-- [ ] Vérifier que le résultat précise s’il provient d’un traitement déterministe ou d’une expertise IA.
-- [ ] Vérifier que Tsunade reste responsable de l’interprétation et de l’état final de l’incident après le retour de Katsuyu.
-- [ ] Vérifier qu’une indisponibilité de Bubule ou de Katsuyu ne bloque pas la supervision ni les investigations déterministes de Tsunade.
-- [ ] Vérifier qu’une expertise impossible reste explicitement en attente ou bloquée plutôt que remplacée par une conclusion artificielle.
+- `MONITORING` ;
+- `INSUFFICIENT_CONTEXT` ;
+- `INVESTIGATION_BLOCKED` ;
+- ou dans un autre état terminal explicitement défini.
+
+`INSUFFICIENT_CONTEXT` constitue un résultat valide lorsqu’aucune preuve supplémentaire raisonnable ne peut être obtenue.
 
 ---
 
-## Tests en production
+### 5. Katsuyu reste optionnel pour le fonctionnement essentiel
 
-Créer progressivement des scénarios réels ou contrôlés :
+L’indisponibilité de Bubule ou de Katsuyu ne doit pas empêcher :
 
-- [ ] indisponibilité DNS ;
-- [ ] Mosquitto indisponible ;
-- [ ] perte de `teleinfo2mqtt` ;
-- [ ] problème de communication LINKY-01 ;
-- [ ] Z-Wave JS indisponible ;
-- [ ] Home Assistant indisponible ;
-- [ ] problème réseau d’un équipement ;
-- [ ] surcharge ou anomalie d’INFRA-01 ;
-- [ ] incident Ohana-Agent ;
-- [ ] incident Ohana-Vision.
+- Shikamaru d’observer Konoha ;
+- Tsunade de recevoir et suivre les incidents ;
+- les investigations déterministes réalisables sur INFRA-01 ;
+- la conservation de l’état de l’incident.
 
-Pour chaque scénario, déterminer explicitement :
+Une expertise impossible doit être explicitement en attente, bloquée ou en échec.
 
-1. ce que Shikamaru a réellement observé ;
-2. quelles preuves Tsunade a collectées ;
-3. si Tsunade peut établir seule un diagnostic fiable ;
-4. si une investigation complémentaire déterministe est nécessaire ;
-5. si un traitement déterministe lourd doit être délégué à Katsuyu ;
-6. si une expertise IA de Katsuyu est réellement justifiée ;
-7. quelles preuves sont transmises à Katsuyu ;
-8. quelle valeur ajoutée réelle apporte Katsuyu ;
-9. quel niveau de confiance est attribué au diagnostic final ;
-10. si l’incident atteint correctement un état terminal ou explicitement bloqué.
+Elle ne doit jamais être remplacée par une conclusion artificielle.
+
+---
+
+### 6. Les preuves restent exploitables et sûres
+
+Les preuves utilisées par Tsunade doivent conserver, lorsque l’information existe :
+
+- leur provenance ;
+- leur cible ;
+- leur fenêtre temporelle ;
+- leur horodatage ;
+- leur état de complétude ou de troncature ;
+- leur relation avec l’incident.
+
+Une preuve ancienne ou incomplète ne doit pas être présentée comme une représentation certaine de l’état actuel.
+
+Les secrets connus et données sensibles techniques ne doivent pas être transmis inutilement dans les dossiers d’investigation ou les demandes Katsuyu.
+
+---
+
+### 7. Le résultat doit être compréhensible
+
+Pour un incident représentatif, Vision doit permettre de comprendre sans consulter directement les bases internes :
+
+1. ce que Shikamaru a observé ;
+2. pourquoi l’incident a été ouvert ;
+3. ce que Tsunade a testé ;
+4. quelles preuves ont été obtenues ;
+5. ce qui est établi ;
+6. ce qui reste hypothétique ;
+7. si Katsuyu a été utilisé ;
+8. pourquoi Katsuyu a été utilisé ;
+9. quel résultat il a retourné ;
+10. pourquoi Tsunade a retenu son état final.
+
+---
+
+## Validation représentative
+
+### Investigations principales
+
+Les quatre nœuds principaux doivent avoir été réellement observés par le moteur :
+
+- [ ] INFRA-01 ;
+- [ ] HA-01 ;
+- [ ] LINKY-01 ;
+- [x] ZWAVE-01.
+
+Une validation complète et exhaustive de tous les protocoles disponibles sur chacun de ces nœuds n’est pas nécessaire pour sortir de Phase 1.
+
+---
+
+### Situations représentatives
+
+- [x] Une situation sans évolution significative peut rester stable ou en surveillance sans déclencher inutilement une expertise IA.
+- [x] Une nouvelle observation matériellement différente peut provoquer une nouvelle analyse.
+- [x] Le même dossier ou les mêmes preuves ne provoquent pas une nouvelle expertise IA automatique.
+- [x] Une conclusion produite par l’IA reste explicitement identifiable comme une hypothèse.
+- [ ] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu.
+- [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu.
+- [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles.
+- [ ] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué.
+
+---
+
+## Scénarios de panne contrôlée
+
+Avant la sortie de phase, exercer **au moins trois scénarios représentatifs appartenant à au moins deux familles différentes**.
+
+Famille réseau :
+
+- DNS indisponible ;
+- problème réseau d’un équipement ;
+- échec TCP.
+
+Famille service :
+
+- Mosquitto indisponible ;
+- `teleinfo2mqtt` indisponible ;
+- Z-Wave JS indisponible ;
+- Home Assistant indisponible ;
+- Ohana-Vision indisponible.
+
+Famille système / Ohana :
+
+- surcharge INFRA-01 ;
+- anomalie Ohana-Agent ;
+- indisponibilité Katsuyu ;
+- interruption d’un traitement.
+
+Critère :
+
+- [ ] Trois scénarios représentatifs appartenant à plusieurs familles ont été exercés avec retour à l’état initial vérifié.
+
+Pour chaque scénario retenu :
+
+1. observation Shikamaru ;
+2. incident ;
+3. preuves collectées ;
+4. investigation Tsunade ;
+5. Katsuyu éventuel ;
+6. justification de cette sollicitation ;
+7. résultat ;
+8. état final ;
+9. absence de boucle ;
+10. retour sain lorsqu’il est applicable.
+
+---
+
+## Niveaux de diagnostic
+
+Les niveaux restent :
+
+- **CONFIRMED** ;
+- **PROBABLE** ;
+- **INSUFFICIENT\_CONTEXT**.
+
+Critères :
+
+- [ ] Les trois niveaux sont utilisés de manière cohérente sur des incidents représentatifs.
+- [ ] `CONFIRMED` peut être relié à ses preuves déterministes.
+- [ ] `PROBABLE` indique ce qui empêche sa confirmation.
+- [ ] `INSUFFICIENT_CONTEXT` peut mettre fin proprement à une investigation.
+
+---
+
+## Frontière Tsunade ↔ Katsuyu
+
+- [ ] Tsunade constitue un dossier suffisamment structuré pour permettre à Katsuyu de comprendre la cible, les preuves et la question posée.
+- [x] Katsuyu retourne un résultat structuré exploitable par Tsunade.
+- [x] Une contribution IA reste identifiable comme telle.
+- [ ] Un traitement déterministe lourd peut être distingué d’une expertise IA.
+- [ ] Tsunade décide de la suite après réception du résultat.
+- [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement.
+
+---
+
+## Classification des anomalies
+
+### Bloquant Phase 1
+
+Un défaut est bloquant s’il peut :
+
+- provoquer une décision incorrecte ;
+- présenter une hypothèse comme un fait ;
+- perdre une preuve nécessaire ;
+- provoquer une boucle ;
+- relancer Katsuyu indéfiniment ;
+- exposer un secret connu ;
+- fermer incorrectement un incident ;
+- laisser un incident silencieusement bloqué ;
+- rendre une fonction essentielle dépendante de Katsuyu.
+
+### Durcissement
+
+Relèvent notamment du durcissement :
+
+- formats supplémentaires de journaux ;
+- nouveaux cas limites HTTP ;
+- optimisation des grosses collectes ;
+- amélioration du classement ;
+- réduction progressive des faux positifs ;
+- amélioration de la fraîcheur ;
+- performance ;
+- ergonomie.
+
+### Évolution future
+
+Relèvent d’une phase ultérieure :
+
+- nouvelles réparations ;
+- nouveaux handlers Katsuyu ;
+- maintenance préventive avancée ;
+- mémoire opérationnelle avancée ;
+- raffinements d’interface non essentiels.
+
+---
+
+## Durcissement continu
+
+Restent notamment à suivre :
+
+- messages `s6-rc` sans date exploitable ;
+- faux positifs de journaux ;
+- codes HTTP supplémentaires ;
+- limites lignes/octets/groupes ;
+- grosses fenêtres de journaux ;
+- comparaison de fenêtres ;
+- audit étendu des secrets ;
+- sondes MQTT, Supervisor et `teleinfo2mqtt` ;
+- scénarios de panne supplémentaires ;
+- reprises rares après interruption ;
+- présentation Vision ;
+- nombre de jobs et réveils Katsuyu.
 
 ---
 
 ## Critères de sortie de la Phase 1
 
-La Phase 1 peut être considérée comme terminée lorsque les conditions suivantes sont remplies :
+- [ ] **Cycle de vie fiable** — un incident représentatif traverse son cycle sans ambiguïté ni blocage silencieux.
+- [ ] **Investigations essentielles** — INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ont été suffisamment exercés.
+- [x] **Absence de boucle sur dossier inchangé**.
+- [x] **Réévaluation sur information nouvelle**.
+- [x] **Hypothèses maîtrisées**.
+- [ ] **Valeur de Katsuyu démontrée** — au moins un cas simple reste chez Tsunade et un cas complexe bénéficie réellement de Katsuyu.
+- [ ] **Mode dégradé démontré**.
+- [ ] **Preuves suffisamment sûres**.
+- [ ] **Pannes représentatives exercées**.
+- [ ] **Vision exploitable**.
 
-- [ ] Les investigations essentielles sur INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ont été validées dans leur périmètre prévu.
-- [ ] Les diagnostics MQTT, `teleinfo2mqtt`, DNS, TCP, HTTP et Supervisor nécessaires à la couverture actuelle de Konoha sont validés.
-- [ ] Les principaux scénarios de panne contrôlée ont été exercés en production ou dans un environnement représentatif.
-- [ ] Le cycle de vie des incidents fonctionne sans état ambigu ou incident silencieusement bloqué.
-- [ ] Les diagnostics distinguent correctement faits, conclusions, hypothèses et éléments manquants.
-- [ ] Les niveaux `CONFIRMED`, `PROBABLE` et `INSUFFICIENT_CONTEXT` sont cohérents et compréhensibles.
-- [ ] Aucun secret n’est exposé dans les preuves ou les dossiers transmis.
-- [ ] Les preuves conservent leur provenance et leur horodatage.
-- [ ] Les cycles d’investigation inutiles ou répétitifs sont maîtrisés.
-- [ ] Un dossier inchangé ne provoque pas de nouvelle expertise IA.
-- [ ] Un incident simple reste traité par Tsunade lorsque Katsuyu n’apporte aucune valeur.
-- [ ] Un traitement déterministe lourd peut être correctement déporté vers Katsuyu sans LLM.
-- [ ] Une expertise IA n’est déclenchée que lorsqu’elle apporte une valeur supplémentaire identifiable.
-- [ ] Une indisponibilité de Katsuyu ou de Bubule laisse Tsunade fonctionner en mode dégradé.
-- [ ] Tsunade reste toujours propriétaire de l’incident et de la décision finale.
-- [ ] Les résultats des investigations sont suffisamment lisibles dans Vision pour comprendre ce qui a été observé, testé, conclu et éventuellement délégué.
+La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.
 
-Une fois ces critères atteints, la Phase 2 peut étendre le moteur stabilisé vers le cycle complet **incident → décision → réparation supervisée → vérification**.
+Elle exige qu’aucun défaut bloquant connu ne remette en cause les invariants fondamentaux de Tsunade.
 
 ---
 
-# Phase 2 — Cycle complet incident → réparation
+# Phase 2 — Cycle complet incident → réparation supervisée
 
 ## Objectif
 
-Faire de Tsunade non seulement un moteur de diagnostic, mais aussi un coordinateur capable de proposer une réparation sûre puis de vérifier son résultat.
-
-Le cycle cible est :
+Faire évoluer Tsunade d’un moteur de diagnostic fiable vers un coordinateur capable de **proposer une réparation déterministe, demander l’autorisation appropriée, exécuter l’action et vérifier son résultat**.
 
 ```text
 Shikamaru détecte
         │
         ▼
-Tsunade ouvre l'incident
+Tsunade diagnostique
         │
         ▼
-Investigation déterministe
+Réparation connue possible ?
         │
-        ├── diagnostic suffisant ───────────────────────┐
-        │                                               │
-        ├── traitement lourd requis                     │
-        │          │                                    │
-        │          ▼                                    │
-        │       Katsuyu                                 │
-        │   déterministe                                │
-        │          │                                    │
-        │          ▼                                    │
-        │       résultat                                │
-        │                                               │
-        └── expertise nécessaire                        │
-                   │                                    │
-                   ▼                                    │
-                Katsuyu                                 │
-                   IA                                   │
-                   │                                    │
-                   ▼                                    │
-              expertise                                 │
-                   │                                    │
-                   └────────────────┬───────────────────┘
-                                    ▼
-                             Décision Tsunade
-                                    │
-                          ┌─────────┴─────────┐
-                          │                   │
-                       Surveiller          Réparer
-                                              │
-                                              ▼
-                                     Autorisation requise
-                                              │
-                                              ▼
-                                         Exécution
-                                              │
-                                              ▼
-                                   Vérification Shikamaru
-                                              │
-                                     ┌────────┴────────┐
-                                     │                 │
-                                   Succès            Échec
+        ├── non ──────► surveillance / décision humaine
+        │
+        └── oui
+              │
+              ▼
+      Proposition d'action
+              │
+              ▼
+       Autorisation humaine
+              │
+              ▼
+          Exécution
+              │
+              ▼
+      Vérification Shikamaru
+          │           │
+       succès       échec
 ```
 
-### Réparations supervisées
+---
 
-Le redémarrage de `dnsmasq.service` constitue le premier modèle.
+## Portée de la phase
 
-Étendre progressivement ce mécanisme à des actions simples, déterministes et réversibles.
+La Phase 2 n’a pas pour objectif de construire immédiatement un catalogue complet de réparations.
+
+Elle doit démontrer que **le mécanisme lui-même est sûr et reproductible**.
+
+Le redémarrage de `dnsmasq.service` reste le modèle de référence.
+
+Une deuxième réparation suffisamment différente doit compléter cette validation.
 
 Candidats :
 
-- [ ] redémarrage supervisé de Mosquitto ;
-- [ ] redémarrage supervisé d’un composant Ohana ;
-- [ ] redémarrage supervisé d’un add-on Home Assistant lorsque l’API le permet ;
-- [ ] reprise contrôlée d’un service de télémétrie ;
-- [ ] renouvellement ou correction d’une configuration réseau connue ;
-- [ ] autres réparations identifiées à partir d’incidents réellement rencontrés.
+- Mosquitto ;
+- composant Ohana ;
+- add-on Home Assistant ;
+- service de télémétrie.
 
-Chaque réparation doit définir :
+---
 
-- le symptôme associé ;
-- les préconditions ;
-- l’action autorisée ;
-- les risques ;
-- les conséquences possibles ;
-- le mécanisme de retour arrière lorsque nécessaire ;
-- la vérification Shikamaru ;
-- le délai avant vérification ;
-- le résultat attendu.
+## Principes
 
-### Politique d’autorisation
+Toute réparation doit définir :
 
-- [ ] Conserver une autorisation humaine pour toute action corrective modifiant l’état de Konoha, hors opérations techniques explicitement préautorisées du cycle worker Katsuyu telles que Wake-on-LAN, exécution d’un job autorisé et arrêt après traitement.
-- [ ] En dehors des opérations techniques explicitement préautorisées du cycle worker Katsuyu, autoriser automatiquement uniquement les investigations strictement en lecture seule.
-- [ ] Afficher clairement dans Shizune la conséquence d’une action avant validation.
-- [ ] Conserver la provenance Vision ou Shizune de chaque autorisation.
-- [ ] Conserver l’historique de l’action et de son résultat.
+- symptôme ;
+- préconditions ;
+- action ;
+- cible ;
+- risques ;
+- conséquences possibles ;
+- résultat attendu ;
+- délai de vérification ;
+- vérification Shikamaru ;
+- comportement en cas d’échec.
 
+Toute action modifiant Konoha nécessite une autorisation humaine, hors opérations techniques explicitement préautorisées du cycle worker Katsuyu.
 
-## Critères de validation de la Phase 2
+Une réparation refusée ou différée ne peut pas être exécutée.
 
-La Phase 2 peut être considérée comme validée lorsque :
+Une réparation ayant échoué ne doit pas être répétée automatiquement sans nouvelle preuve ou nouvelle décision.
 
-- [ ] Au moins une réparation supervisée a été exercée de bout en bout en conditions réelles ou représentatives.
-- [ ] Le cycle `diagnostic → décision → autorisation → exécution → vérification` fonctionne sans état ambigu.
-- [ ] Toute action corrective modifiant Konoha nécessite une autorisation humaine, hors opérations techniques explicitement préautorisées du cycle Katsuyu.
-- [ ] Shizune et Vision affichent clairement l’action proposée, sa cible, ses conséquences et son niveau de risque avant validation.
-- [ ] La provenance de chaque autorisation est conservée.
-- [ ] Chaque réparation est associée à des préconditions, un résultat attendu et un mécanisme de vérification Shikamaru.
-- [ ] Une réparation refusée, différée ou non autorisée ne peut pas être exécutée.
-- [ ] Une réparation déjà échouée n’est pas répétée automatiquement sans nouvelle preuve ou nouvelle décision explicite.
-- [ ] Un échec de réparation laisse l’incident dans un état explicite et exploitable.
-- [ ] Les résultats de vérification sont conservés dans l’historique de l’incident.
-- [ ] Le redémarrage de `dnsmasq.service` sert de procédure de référence documentée et reproductible.
-- [ ] Au moins un autre type de réparation supervisée a été validé ou préparé selon le même contrat.
-- [ ] Shikamaru reste responsable de la vérification du retour à l’état attendu.
-- [ ] Tsunade reste responsable de la décision et de l’état final de l’incident.
+---
 
-Une fois ces critères atteints, la Phase 3 peut capitaliser les réparations validées sans transformer cette mémoire en apprentissage autonome.
+## Critères de sortie de la Phase 2
+
+- [ ] Une première réparation supervisée de référence fonctionne de bout en bout.
+- [ ] Une deuxième réparation suffisamment différente utilise le même mécanisme.
+- [ ] Le cycle `diagnostic → proposition → autorisation → exécution → vérification` ne contient aucun état ambigu.
+- [ ] Une action non autorisée ne peut pas être exécutée.
+- [ ] Une action refusée ou différée reste explicitement dans cet état.
+- [ ] Shikamaru vérifie le résultat réel de la réparation.
+- [ ] Un échec laisse l’incident dans un état explicite et exploitable.
+- [ ] Une réparation échouée n’est pas répétée automatiquement sans nouvelle décision.
+- [ ] Vision et/ou Shizune permettent de comprendre l’action proposée et son résultat.
+- [ ] Tsunade reste propriétaire de la décision finale.
+
+---
+
+## Durcissement continu
+
+- enrichissement du catalogue de réparations ;
+- rollback lorsque nécessaire ;
+- meilleure présentation des risques ;
+- politiques spécifiques par type d’action ;
+- délais adaptatifs de vérification ;
+- réparations Home Assistant supplémentaires ;
+- gestion de réparations plus complexes.
 
 ---
 
@@ -503,21 +574,31 @@ Une fois ces critères atteints, la Phase 3 peut capitaliser les réparations va
 
 ## Objectif
 
-Permettre à Tsunade de réutiliser ce qui a déjà fonctionné sans transformer sa mémoire opérationnelle en système d’apprentissage autonome ni déléguer la décision à Katsuyu.
+Permettre à Tsunade de **réutiliser une expérience déjà validée**, sans apprentissage autonome et sans transformer une corrélation en causalité.
 
-### Réparations connues
+La mémoire opérationnelle conserve les réparations connues et leurs résultats.
 
-- [ ] Consolider les réparations déjà validées.
-- [ ] Associer une réparation connue aux symptômes et preuves qui l’ont justifiée.
-- [ ] Conserver le nombre de tentatives.
-- [ ] Conserver le nombre de réussites.
-- [ ] Conserver les échecs.
-- [ ] Conserver la date de dernière réussite.
-- [ ] Présenter le taux de réussite dans Vision.
+---
 
-### Capitalisation des réparations manuelles
+## Cas minimal A — réparation connue
 
-Lorsqu’un incident est résolu manuellement :
+Une réparation validée possède :
+
+- symptômes associés ;
+- preuves nécessaires ;
+- procédure ;
+- nombre de tentatives ;
+- nombre de réussites ;
+- nombre d’échecs ;
+- dernière réussite.
+
+Tsunade peut la proposer lorsqu’un nouveau cas suffisamment comparable apparaît.
+
+La politique d’autorisation de Phase 2 reste applicable.
+
+---
+
+## Cas minimal B — résolution manuelle
 
 ```text
 Incident
@@ -526,40 +607,43 @@ Incident
 Action manuelle utilisateur
    │
    ▼
-Shikamaru observe le retour à la normale
+Shikamaru observe un retour sain
    │
    ▼
 Tsunade propose :
-« Cette action semble avoir résolu l'incident.
-Souhaitez-vous l'enregistrer comme réparation connue ? »
+« Cette action semble avoir participé à la résolution.
+Souhaitez-vous la conserver comme piste de réparation connue ? »
 ```
 
-- [ ] Permettre à l’utilisateur d’indiquer l’action manuelle réalisée.
-- [ ] Corréler cette action avec le retour à l’état sain.
-- [ ] Demander confirmation avant enregistrement comme réparation connue.
-- [ ] Ne jamais transformer automatiquement une commande libre en action exécutable.
-- [ ] Transformer uniquement les cas retenus en procédures déterministes implémentées explicitement.
-- [ ] Ne jamais considérer la simple proximité temporelle entre une action et un retour à la normale comme une preuve suffisante de causalité.
+La proximité temporelle ne constitue pas à elle seule une preuve de causalité.
 
+Aucune commande libre saisie par l’utilisateur ne devient automatiquement une action exécutable.
 
-## Critères de validation de la Phase 3
+---
 
-La Phase 3 peut être considérée comme validée lorsque :
+## Critères de sortie de la Phase 3
 
-- [ ] Une réparation connue peut être associée à un ensemble explicite de symptômes et de preuves.
-- [ ] Les tentatives, réussites, échecs et date de dernière réussite sont correctement historisés.
-- [ ] Vision affiche un historique compréhensible des réparations connues.
-- [ ] Le taux de réussite est calculé à partir de données réellement observées et non estimées.
-- [ ] Une action manuelle peut être déclarée par l’utilisateur et corrélée au retour à l’état sain.
-- [ ] La simple proximité temporelle entre une action manuelle et un retour à la normale n’est jamais considérée comme une preuve suffisante de causalité.
-- [ ] Tsunade demande une confirmation explicite avant d’enregistrer une action comme réparation connue.
-- [ ] Une commande libre ou une action textuelle n’est jamais transformée automatiquement en commande exécutable.
-- [ ] Toute réparation exécutable reste une procédure déterministe implémentée explicitement.
-- [ ] Une réparation connue peut être retirée, désactivée ou déclarée obsolète sans perdre son historique.
-- [ ] La mémoire opérationnelle ne permet pas à Katsuyu de devenir le moteur autonome de décision.
-- [ ] La réutilisation d’une réparation connue respecte toujours la politique d’autorisation définie en Phase 2.
+- [ ] Au moins une réparation connue peut être retrouvée à partir de symptômes et preuves explicites.
+- [ ] Tentatives, réussites, échecs et dernière réussite sont historisés.
+- [ ] Tsunade peut proposer une réparation connue sans l’exécuter automatiquement.
+- [ ] Une résolution manuelle peut être déclarée par l’utilisateur.
+- [ ] Shikamaru peut confirmer le retour à l’état sain après cette action.
+- [ ] Tsunade demande une confirmation avant de capitaliser cette expérience.
+- [ ] La proximité temporelle n’est jamais présentée comme preuve suffisante de causalité.
+- [ ] Une commande libre ne devient jamais automatiquement exécutable.
+- [ ] Une réparation connue peut être désactivée ou rendue obsolète.
+- [ ] La mémoire opérationnelle respecte toujours les autorisations de Phase 2.
 
-Une fois ces critères atteints, la Phase 4 peut exploiter l’historique et les observations pour détecter des tendances avant qu’elles ne deviennent des incidents critiques.
+---
+
+## Durcissement continu
+
+- statistiques supplémentaires ;
+- taux de réussite détaillés ;
+- classement des réparations ;
+- obsolescence automatique assistée ;
+- comparaison plus fine entre incidents ;
+- historique avancé dans Vision.
 
 ---
 
@@ -567,90 +651,79 @@ Une fois ces critères atteints, la Phase 4 peut exploiter l’historique et les
 
 ## Objectif
 
-Passer progressivement d’une logique uniquement réactive à une logique de détection précoce.
+Permettre à Tsunade de signaler **quelques dérives réellement utiles avant qu’elles ne deviennent des incidents**, sans chercher artificiellement des problèmes.
 
-Tsunade ne doit pas chercher artificiellement des problèmes.
+Shikamaru continue de produire les observations.
 
-Elle doit exploiter les observations déjà produites par Shikamaru et les contrôles planifiés existants.
+Tsunade applique des règles simples et explicables.
 
-Shikamaru produit les mesures. Tsunade planifie et interprète les règles déterministes simples. Katsuyu peut être utilisé pour les traitements historiques ou les analyses de journaux trop coûteux pour INFRA-01.
+Katsuyu n’est utilisé que lorsqu’un traitement historique ou volumineux justifie réellement le déport.
 
-```text
-Shikamaru
-   │
-   │ observations
-   ▼
-Tsunade
-   │
-   ├── tendance simple ──────► diagnostic/règle
-   │
-   └── données volumineuses
-              │
-              ▼
-           Katsuyu
-              │
-              ▼
-        résultat structuré
-              │
-              ▼
-           Tsunade
-```
+---
 
-### Analyse des tendances
+## Périmètre initial
 
-- [ ] Détecter l’évolution inhabituelle de l’utilisation disque.
-- [ ] Détecter une croissance anormale de la mémoire.
-- [ ] Détecter des redémarrages répétés.
-- [ ] Détecter une augmentation progressive des erreurs.
-- [ ] Détecter des pertes réseau répétitives.
-- [ ] Détecter une dégradation progressive des temps de réponse.
-- [ ] Détecter les anomalies récurrentes de journaux.
+Valider seulement quelques familles de tendance.
 
-### Synthèse préventive
+Exemples retenus :
 
-Produire une synthèse courte du type :
+- croissance anormale du disque INFRA-01 ;
+- redémarrages répétés ;
+- interruptions réseau répétitives.
+
+D’autres tendances pourront être ajoutées ensuite :
+
+- mémoire ;
+- erreurs croissantes ;
+- temps de réponse ;
+- anomalies récurrentes de journaux.
+
+---
+
+## Synthèse
+
+Exemple :
 
 ```text
 Konoha est stable.
 
 À surveiller :
-- INFRA-01 : espace disque en augmentation depuis 7 jours.
-- ZWAVE-01 : 4 interruptions courtes cette semaine.
+- INFRA-01 : espace disque en hausse depuis plusieurs jours.
+- ZWAVE-01 : plusieurs interruptions courtes cette semaine.
 
 Aucune intervention nécessaire.
 ```
 
-Cette synthèse doit être adaptée :
+Vision fournit le détail.
 
-- à Vision pour le détail technique ;
-- à Shizune pour l’essentiel.
+Shizune fournit l’essentiel.
 
 ---
 
-# Chantiers transverses
+## Critères de sortie de la Phase 4
 
-Les sections suivantes ne constituent pas nécessairement des étapes séquentielles. Elles évoluent en parallèle des phases fonctionnelles 1 à 4 selon les besoins rencontrés en production.
-
-
-## Critères de validation de la Phase 4
-
-La Phase 4 peut être considérée comme validée lorsque :
-
-- [ ] Au moins plusieurs tendances simples sont détectées de manière reproductible à partir des observations existantes.
+- [ ] Au moins trois tendances simples peuvent être détectées de manière reproductible.
 - [ ] Une évolution normale n’est pas systématiquement transformée en anomalie.
-- [ ] Les seuils, fenêtres d’observation ou règles utilisées sont explicables et configurables lorsque nécessaire.
-- [ ] Les tendances simples restent interprétées par des règles déterministes dans Tsunade.
-- [ ] Les traitements historiques ou volumineux peuvent être déportés vers Katsuyu sans rendre Bubule critique pour la supervision.
-- [ ] Une analyse lourde Katsuyu retourne un résultat structuré exploitable par Tsunade.
-- [ ] L’indisponibilité de Katsuyu n’empêche pas les contrôles préventifs essentiels.
-- [ ] Les anomalies récurrentes de journaux peuvent être distinguées d’événements isolés.
-- [ ] Les redémarrages répétés, pertes réseau répétitives et dégradations de temps de réponse peuvent être détectés sans créer de boucle d’incidents.
-- [ ] Une synthèse préventive courte et compréhensible est disponible dans Shizune.
-- [ ] Le détail technique correspondant est disponible dans Vision.
-- [ ] Une synthèse indiquant « aucune intervention nécessaire » reste possible lorsque Konoha est stable.
-- [ ] La maintenance préventive ne déclenche pas automatiquement une réparation non autorisée.
+- [ ] Les règles ou seuils utilisés restent explicables.
+- [ ] Les données déjà disponibles sont privilégiées.
+- [ ] Un traitement historique lourd peut être déporté vers Katsuyu lorsqu’il le justifie.
+- [ ] L’indisponibilité de Katsuyu n’empêche pas les contrôles préventifs simples.
+- [ ] Une synthèse courte est disponible dans Shizune.
+- [ ] Le détail correspondant est disponible dans Vision.
+- [ ] Une situation stable peut produire explicitement « aucune intervention nécessaire ».
+- [ ] Aucune réparation n’est déclenchée automatiquement par la seule maintenance préventive.
 
-La Phase 4 est validée lorsque Tsunade peut signaler des dérives utiles sans chercher artificiellement des problèmes ni surcharger INFRA-01.
+---
+
+## Durcissement continu
+
+- nouvelles tendances ;
+- fenêtres adaptatives ;
+- détection saisonnière ;
+- analyse de journaux longue durée ;
+- tendances Home Assistant ;
+- corrélations plus complexes ;
+- réduction des alertes inutiles.
 
 ---
 
@@ -658,9 +731,21 @@ La Phase 4 est validée lorsque Tsunade peut signaler des dérives utiles sans c
 
 ## Objectif
 
-Faire des composants Ohana eux-mêmes des capacités supervisées.
+Faire des composants Ohana eux-mêmes des éléments observables de Konoha, **sans construire immédiatement une introspection complète de chaque processus interne**.
 
-### Agent
+Le minimum attendu est de savoir :
+
+- si le composant est vivant ;
+- s’il répond ;
+- s’il travaille encore ;
+- quand il a fonctionné pour la dernière fois ;
+- et si sa défaillance empêche ou non l’observation des autres.
+
+---
+
+## Agent
+
+Déjà disponible :
 
 - [x] état systemd ;
 - [x] uptime ;
@@ -668,62 +753,82 @@ Faire des composants Ohana eux-mêmes des capacités supervisées.
 - [x] mémoire ;
 - [x] disque ;
 - [x] température ;
-- [x] erreurs systemd ;
-- [ ] qualité du scheduler ;
-- [ ] longueur des files internes ;
-- [ ] âge de la dernière observation ;
-- [ ] état du stockage Tsunade ;
-- [ ] état de la file Katsuyu.
+- [x] erreurs systemd.
 
-### Vision
+Minimum restant :
+
+- [ ] dernière activité utile ;
+- [ ] état synthétique des composants internes critiques.
+
+---
+
+## Vision
+
+Déjà disponible :
 
 - [x] supervision du service ;
-- [x] base SQLite sauvegardée ;
-- [ ] temps de réponse HTTP ;
-- [ ] état WebSocket ;
-- [ ] retard d’ingestion ;
-- [ ] taille et croissance de la base ;
-- [ ] état de la rétention.
+- [x] base SQLite sauvegardée.
 
-### Katsuyu
+Minimum restant :
+
+- [ ] disponibilité HTTP ;
+- [ ] dernière ingestion ou activité utile.
+
+---
+
+## Katsuyu
+
+Déjà disponible :
 
 - [x] présence du worker ;
 - [x] dernière connexion ;
 - [x] capacités annoncées ;
 - [x] Wake-on-LAN ;
-- [x] état des jobs ;
-- [ ] santé du runtime IA ;
-- [ ] espace disponible du workspace ;
-- [ ] dernière exécution réussie ;
-- [ ] version disponible.
+- [x] état des jobs.
 
-### Shizune
+Minimum restant :
 
-- [ ] état de la passerelle compagnon ;
-- [ ] dernière synchronisation ;
-- [ ] version installée ;
-- [ ] état de l’association compagnon.
+- [ ] dernier job réussi ;
+- [ ] disponibilité synthétique du runtime nécessaire au job demandé.
 
+---
 
-## Critères de validation de la Phase 5
+## Shizune
 
-La Phase 5 peut être considérée comme satisfaisante lorsque :
+Minimum attendu :
 
-- [ ] Agent expose un état exploitable de son service, de ses ressources et de ses composants internes critiques.
-- [ ] L’âge de la dernière observation permet de détecter une supervision figée ou silencieuse.
-- [ ] Les files internes importantes possèdent un état ou une longueur observable.
-- [ ] Le stockage Tsunade possède un état de santé vérifiable.
-- [ ] La file Katsuyu possède un état exploitable.
-- [ ] Vision expose son état HTTP, WebSocket, ingestion et rétention.
-- [ ] La croissance de la base Vision peut être suivie dans le temps.
-- [ ] Katsuyu expose l’état du worker, des jobs, du workspace et du runtime IA.
-- [ ] Une dernière exécution réussie Katsuyu est identifiable.
-- [ ] Shizune expose l’état de sa passerelle, de sa synchronisation, de sa version et de son association.
-- [ ] Une défaillance d’un composant Ohana peut elle-même générer une observation ou un incident exploitable.
-- [ ] La supervision d’Ohana ne crée pas de dépendance circulaire critique entre ses propres composants.
-- [ ] L’indisponibilité d’un composant n’empêche pas d’observer les autres composants lorsqu’ils restent accessibles.
+- [ ] passerelle disponible ;
+- [ ] dernière synchronisation connue.
 
-La phase est satisfaisante lorsque les composants Ohana deviennent eux-mêmes des éléments observables de Konoha sans créer un système d’auto-surveillance fragile.
+---
+
+## Critères de sortie de la Phase 5
+
+- [ ] Agent expose un état vital exploitable.
+- [ ] Vision expose un état vital exploitable.
+- [ ] Katsuyu expose un état vital exploitable.
+- [ ] Shizune expose un état vital exploitable.
+- [ ] La dernière activité significative d’un composant permet de repérer un composant silencieusement figé.
+- [ ] Une défaillance Ohana peut elle-même produire une observation exploitable.
+- [ ] L’indisponibilité d’un composant n’empêche pas d’observer les autres composants accessibles.
+- [ ] La supervision d’Ohana ne crée pas de dépendance circulaire critique.
+- [ ] La charge de cette auto-supervision reste compatible avec INFRA-01.
+
+---
+
+## Durcissement continu
+
+- scheduler ;
+- longueurs de files ;
+- état du stockage Tsunade ;
+- WebSocket Vision ;
+- retard d’ingestion ;
+- croissance SQLite ;
+- rétention ;
+- workspace Katsuyu ;
+- diagnostic détaillé du runtime IA ;
+- version disponible ;
+- association Shizune.
 
 ---
 
@@ -731,13 +836,15 @@ La phase est satisfaisante lorsque les composants Ohana deviennent eux-mêmes de
 
 ## Objectif
 
-Conserver Bubule comme capacité de calcul optionnelle et non critique.
+Conserver Bubule comme **capacité de calcul optionnelle, robuste et non critique**.
 
-Une panne ou une extinction de Bubule ne doit jamais empêcher les fonctions essentielles de Konoha.
+Une extinction de Bubule ne doit jamais empêcher les fonctions essentielles de Konoha.
 
-Une indisponibilité de Katsuyu doit laisser Tsunade poursuivre les investigations déterministes. Une expertise impossible reste explicitement en attente et ne doit jamais être remplacée par une conclusion artificielle.
+Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes compatibles.
 
-### Cycle worker
+---
+
+## Cycle worker déjà présent
 
 - [x] appairage sécurisé ;
 - [x] worker Windows ;
@@ -751,37 +858,31 @@ Une indisponibilité de Katsuyu doit laisser Tsunade poursuivre les investigatio
 - [x] vérification du modèle ;
 - [x] mise à jour manuelle assistée.
 
-### Évolutions
+---
 
-- [ ] améliorer les métriques de performance des jobs ;
-- [ ] afficher dans Vision la consommation réelle par traitement ;
-- [ ] mesurer les gains obtenus en déportant les traitements depuis INFRA-01 ;
-- [ ] vérifier régulièrement l’intégrité du workspace ;
-- [ ] améliorer le diagnostic du runtime IA ;
-- [ ] envisager d’autres handlers uniquement lorsqu’un besoin réel apparaît.
+## Critères de sortie de la Phase 6
 
-
-## Critères de validation de la Phase 6
-
-La Phase 6 peut être considérée comme satisfaisante lorsque :
-
-- [ ] Bubule reste une capacité optionnelle et non critique.
-- [ ] Le Wake-on-LAN fonctionne de manière fiable lorsque Katsuyu est nécessaire.
+- [ ] Bubule reste optionnel pour les fonctions essentielles de Konoha.
+- [ ] Wake-on-LAN fonctionne de manière suffisamment fiable lorsque Katsuyu est réellement nécessaire.
 - [ ] Un worker déjà disponible est réutilisé sans réveil inutile.
-- [ ] Plusieurs jobs compatibles peuvent être regroupés dans un même cycle worker.
-- [ ] L’arrêt après traitement n’intervient que lorsque les conditions prévues sont réunies.
-- [ ] Bubule n’est pas arrêté par Ohana lorsqu’un usage utilisateur actif ou un état bloquant est détecté.
-- [ ] Un job interrompu peut être repris ou marqué explicitement comme échoué.
-- [ ] Les traitements déterministes lourds fonctionnent indépendamment du runtime IA lorsqu’ils n’en ont pas besoin.
-- [ ] Une indisponibilité du runtime IA n’empêche pas les handlers déterministes compatibles de fonctionner.
-- [ ] Une expertise IA impossible reste explicitement en attente ou en échec sans produire de conclusion artificielle.
-- [ ] Le workspace peut être contrôlé et son intégrité vérifiée.
-- [ ] Les métriques de durée, ressources et résultat des jobs sont disponibles.
-- [ ] Vision permet d’identifier les traitements réellement déportés depuis INFRA-01.
-- [ ] Le bénéfice du déport de traitements peut être mesuré sans rendre Katsuyu systématique.
-- [ ] L’ajout d’un nouveau handler reste motivé par un besoin réel identifié.
+- [ ] Plusieurs jobs compatibles peuvent partager un même cycle.
+- [ ] L’arrêt après traitement respecte les conditions prévues.
+- [ ] Bubule n’est pas arrêté lorsqu’un usage utilisateur ou un état bloquant est détecté.
+- [ ] Un job interrompu peut être repris ou explicitement échouer.
+- [ ] Les traitements déterministes lourds peuvent fonctionner sans runtime IA lorsqu’ils n’en ont pas besoin.
+- [ ] Une expertise IA impossible ne produit pas de conclusion artificielle.
+- [ ] Vision permet de comprendre au minimum pourquoi Katsuyu a été réveillé et ce qu’il a exécuté.
 
-La phase est satisfaisante lorsque Katsuyu apporte puissance de calcul et expertise complexe sans devenir une dépendance essentielle du fonctionnement de Konoha.
+---
+
+## Durcissement continu
+
+- métriques détaillées de durée et ressources ;
+- estimation du gain par rapport à INFRA-01 ;
+- intégrité périodique du workspace ;
+- diagnostic approfondi du runtime IA ;
+- optimisation énergétique ;
+- nouveaux handlers uniquement lorsqu’un besoin réel apparaît.
 
 ---
 
@@ -789,11 +890,13 @@ La phase est satisfaisante lorsque Katsuyu apporte puissance de calcul et expert
 
 ## Objectif
 
-Conserver Shizune comme interface personnelle simple entre Tsunade et l’utilisateur.
+Conserver Shizune comme **interface personnelle simple entre Tsunade et l’utilisateur**.
 
 Shizune ne doit pas devenir un second Vision.
 
-### Fonctionnalités déjà présentes
+---
+
+## Fonctionnalités déjà présentes
 
 - [x] PWA installable sur iPhone ;
 - [x] état général de Konoha ;
@@ -805,37 +908,30 @@ Shizune ne doit pas devenir un second Vision.
 - [x] demandes de diagnostic ;
 - [x] suivi des investigations complémentaires.
 
-### Évolutions à décider par l’usage
+---
 
-- [ ] améliorer uniquement les informations qui manquent réellement au quotidien ;
-- [ ] conserver une interface très synthétique ;
-- [ ] éviter toute topologie détaillée ;
-- [ ] éviter les paramètres techniques ;
-- [ ] éviter l’administration de l’infrastructure ;
-- [ ] étudier les notifications uniquement si l’usage montre qu’elles sont nécessaires.
+## Critères de sortie de la Phase 7
 
-Les notifications Home Assistant et les notifications push natives restent hors priorité tant que la PWA suffit à l’usage.
+- [ ] Shizune reste utilisable comme PWA sans application native obligatoire.
+- [ ] L’état général de Konoha est compréhensible sans détails techniques excessifs.
+- [ ] Les incidents importants sont clairement identifiés.
+- [ ] Une demande de décision Tsunade est compréhensible.
+- [ ] L’utilisateur peut autoriser, refuser ou reporter sans ambiguïté.
+- [ ] Le résultat de la décision peut être suivi.
+- [ ] Les informations viennent des contrats Agent et ne recréent pas une logique métier parallèle.
+- [ ] Une perte de synchronisation est explicitement visible.
+- [ ] Shizune n’introduit pas d’administration technique directe.
+- [ ] Toute nouvelle fonctionnalité répond à un besoin réellement observé dans l’usage quotidien.
 
+---
 
-## Critères de validation de la Phase 7
+## Durcissement continu
 
-La Phase 7 peut être considérée comme satisfaisante lorsque :
-
-- [ ] Shizune reste installable et utilisable comme PWA sur iPhone sans dépendance à une application native.
-- [ ] L’état général de Konoha est compréhensible sans afficher la complexité technique de Vision.
-- [ ] Les incidents prioritaires sont présentés de manière synthétique.
-- [ ] Les décisions demandées par Tsunade sont clairement identifiables.
-- [ ] L’utilisateur peut autoriser, refuser ou reporter une décision sans ambiguïté.
-- [ ] Le contexte nécessaire à une décision est visible sans exposer des détails techniques inutiles.
-- [ ] Les investigations complémentaires peuvent être suivies sans transformer Shizune en cockpit d’administration.
-- [ ] Les informations présentées proviennent des contrats Agent et ne recréent pas une logique métier parallèle.
-- [ ] L’association compagnon reste contrôlée et réversible.
-- [ ] Une perte de synchronisation ou une passerelle indisponible est explicitement signalée.
-- [ ] Aucune administration technique directe de Konoha n’est introduite dans Shizune.
-- [ ] L’absence de notifications push natives n’empêche pas l’usage quotidien prévu.
-- [ ] De nouvelles fonctions ne sont ajoutées qu’en réponse à un besoin réellement constaté.
-
-La phase est satisfaisante lorsque Shizune remplit son rôle d’interface personnelle sans devenir un second Vision.
+- ergonomie ;
+- informations manquantes constatées à l’usage ;
+- meilleure synthèse ;
+- notifications uniquement si l’usage le justifie ;
+- fonctionnement hors ligne partiel si un besoin concret apparaît.
 
 ---
 
@@ -843,47 +939,73 @@ La phase est satisfaisante lorsque Shizune remplit son rôle d’interface perso
 
 ## Objectif
 
-Conserver Vision comme cockpit technique complet de Konoha.
+Faire de Vision le cockpit permettant de **comprendre ce qu’Ohana a observé, décidé et exécuté sans ouvrir SQLite ni se connecter en SSH**.
 
-Vision doit rester l’endroit où l’on comprend précisément :
+La perfection visuelle ou l’exposition de toutes les données internes ne constitue pas l’objectif de la phase.
 
-- ce qui existe ;
-- ce qui fonctionne ;
-- ce qui ne fonctionne pas ;
-- ce que Tsunade a diagnostiqué ;
-- ce qui a été exécuté ;
-- ce que Shikamaru a vérifié.
+---
 
-### Priorités
+## Chaîne minimale à rendre lisible
 
-- [ ] continuer à améliorer la lisibilité du centre d’incidents ;
-- [ ] rendre les investigations Tsunade facilement exploitables ;
-- [ ] mieux distinguer constat, diagnostic, décision, intervention et résultat ;
-- [ ] afficher clairement les limites d’une analyse ;
-- [ ] afficher clairement si un diagnostic est entièrement déterministe, complété par un traitement Katsuyu ou issu d’une expertise IA Katsuyu ;
-- [ ] rendre l’historique des réparations réellement utile ;
-- [ ] conserver Vision sans logique métier dupliquée depuis Agent.
+Pour un incident représentatif :
 
+```text
+Observation
+    ↓
+Incident
+    ↓
+Investigation
+    ↓
+Preuves
+    ↓
+Diagnostic
+    ↓
+Katsuyu éventuel
+    ↓
+Décision
+    ↓
+Action éventuelle
+    ↓
+Vérification
+```
 
-## Critères de validation de la Phase 8
+Vision doit distinguer clairement :
 
-La Phase 8 peut être considérée comme satisfaisante lorsque :
+- faits ;
+- preuves ;
+- diagnostic ;
+- hypothèses ;
+- contribution Katsuyu ;
+- limites ;
+- décision ;
+- résultat.
 
-- [ ] Le centre d’incidents permet de comprendre rapidement l’état actuel d’un incident.
-- [ ] Observation, diagnostic, décision, intervention et résultat sont visuellement distincts.
-- [ ] Les investigations Tsunade sont lisibles sans consulter directement les données internes d’Agent.
-- [ ] Les faits, preuves, conclusions et hypothèses sont clairement distingués.
-- [ ] Le niveau de diagnostic et les limites d’une analyse sont visibles.
-- [ ] Vision indique clairement si un résultat est déterministe, issu d’un traitement Katsuyu ou d’une expertise IA Katsuyu.
-- [ ] Les contributions Katsuyu restent attribuées à Katsuyu et ne sont pas présentées comme des faits établis lorsqu’elles sont hypothétiques.
-- [ ] L’historique d’une réparation permet de retrouver la décision, l’autorisation, l’exécution et la vérification.
-- [ ] Les informations de supervision de Shikamaru restent accessibles sans dupliquer sa logique dans Vision.
-- [ ] Vision ne reconstruit pas le cycle de vie des incidents à partir d’heuristiques locales.
-- [ ] Les états affichés proviennent des contrats d’Agent.
-- [ ] Les performances de l’interface restent acceptables avec l’historique et les investigations activés.
-- [ ] L’ajout d’informations techniques ne dégrade pas la lisibilité générale du cockpit.
+---
 
-La phase est satisfaisante lorsque Vision permet d’expliquer ce qui s’est passé dans Konoha sans devenir une seconde implémentation de Tsunade ou Shikamaru.
+## Critères de sortie de la Phase 8
+
+- [ ] L’état actuel d’un incident est compréhensible rapidement.
+- [ ] Observation, investigation, diagnostic, décision et résultat sont distincts.
+- [ ] Les principales preuves sont accessibles sans consulter directement les bases Agent.
+- [ ] Les hypothèses sont visuellement distinguées des faits.
+- [ ] Une contribution Katsuyu indique clairement sa nature.
+- [ ] Les limites principales d’une analyse sont visibles.
+- [ ] Une réparation affiche décision, autorisation, exécution et vérification lorsqu’elles existent.
+- [ ] Vision représente les états fournis par Agent au lieu de reconstruire sa propre logique.
+- [ ] Les performances restent suffisantes pour l’usage réel.
+- [ ] Un incident représentatif peut être compris intégralement depuis Vision.
+
+---
+
+## Durcissement continu
+
+- ergonomie ;
+- historique plus riche ;
+- filtrage ;
+- performances avec très grandes bases ;
+- affichage avancé des preuves ;
+- comparaisons temporelles ;
+- optimisation mobile éventuelle.
 
 ---
 
@@ -891,11 +1013,15 @@ La phase est satisfaisante lorsque Vision permet d’expliquer ce qui s’est pa
 
 ## Objectif
 
-Continuer à renforcer la qualité des observations plutôt que multiplier les plugins.
+Continuer à renforcer la **qualité des observations** plutôt que multiplier les capacités.
 
-Une nouvelle capacité doit correspondre à une fonction réellement importante de Konoha.
+Shikamaru observe.
 
-### Capacités existantes
+Il ne remplace pas Tsunade dans le diagnostic.
+
+---
+
+## Capacités existantes
 
 - [x] DNS ;
 - [x] DHCP ;
@@ -909,33 +1035,29 @@ Une nouvelle capacité doit correspondre à une fonction réellement importante 
 - [x] santé INFRA-01 ;
 - [x] surveillance systemd.
 
-### Évolutions
+---
 
-- [ ] réduire les faux positifs ;
-- [ ] améliorer la détection des états transitoires ;
-- [ ] améliorer la contextualisation et la qualification des observations entre capacités ;
-- [ ] exploiter les groupes de disponibilité pour les services redondants ;
-- [ ] ajouter une capacité uniquement lorsqu’elle garantit une fonction réelle de Konoha.
+## Critères de sortie de la Phase 9
 
+- [ ] Les capacités essentielles produisent des observations suffisamment stables pour être exploitées.
+- [ ] Les principaux faux positifs connus sont réduits ou documentés.
+- [ ] Les états transitoires sont distingués des pannes réelles lorsqu’une règle raisonnable le permet.
+- [ ] L’âge d’une observation permet de savoir si elle est encore exploitable.
+- [ ] Une panne du collecteur est distinguée autant que possible de la panne de ce qu’il observe.
+- [ ] Les dépendances objectives peuvent être représentées sans inventer de causalité.
+- [ ] Les changements d’état sont historisés.
+- [ ] La charge globale reste adaptée à INFRA-01.
+- [ ] Une nouvelle capacité n’est ajoutée que lorsqu’elle garantit une fonction réellement utile de Konoha.
 
-## Critères de validation de la Phase 9
+---
 
-La Phase 9 peut être considérée comme satisfaisante lorsque :
+## Durcissement continu
 
-- [ ] Les capacités existantes produisent des observations stables et exploitables.
-- [ ] Les faux positifs connus sont réduits ou explicitement documentés.
-- [ ] Les états transitoires sont distingués d’une indisponibilité réelle lorsque les données disponibles le permettent.
-- [ ] La contextualisation entre capacités améliore les observations sans produire de diagnostic à la place de Tsunade.
-- [ ] Les dépendances objectives entre capacités peuvent être représentées sans introduire d’interprétation causale non démontrée.
-- [ ] Les groupes de disponibilité peuvent représenter correctement les services redondants lorsqu’ils existent.
-- [ ] Une capacité nouvelle n’est ajoutée que lorsqu’elle correspond à une fonction réellement importante de Konoha.
-- [ ] Chaque capacité possède des critères de santé explicites.
-- [ ] L’âge de l’observation permet d’identifier une donnée devenue obsolète.
-- [ ] Les changements d’état sont historisés de manière exploitable par Tsunade.
-- [ ] Une panne de Shikamaru ou d’un de ses collecteurs est distinguée de la panne de la capacité observée.
-- [ ] La charge de supervision reste adaptée à INFRA-01.
-
-La phase est satisfaisante lorsque Shikamaru fournit des observations fiables, contextualisées et suffisamment neutres pour permettre à Tsunade de raisonner sans dupliquer les rôles.
+- faux positifs résiduels ;
+- contexte inter-capacités ;
+- groupes de disponibilité ;
+- meilleure gestion des états transitoires ;
+- enrichissement des métriques existantes.
 
 ---
 
@@ -943,9 +1065,13 @@ La phase est satisfaisante lorsque Shikamaru fournit des observations fiables, c
 
 ## Objectif
 
-Considérer une sauvegarde comme valide uniquement lorsqu’elle peut réellement être restaurée.
+Considérer une sauvegarde comme fiable uniquement lorsqu’elle peut **réellement être restaurée**.
 
-### Déjà livré
+L’existence du fichier de sauvegarde n’est pas une validation suffisante.
+
+---
+
+## Déjà livré
 
 - [x] sauvegarde HAOS ;
 - [x] sauvegarde INFRA-01 ;
@@ -956,395 +1082,198 @@ Considérer une sauvegarde comme valide uniquement lorsqu’elle peut réellemen
 - [x] restauration INFRA-01 ;
 - [x] inventaire des versions.
 
-### À renforcer
+---
 
-- [ ] automatiser davantage la validation de restauration ;
-- [ ] conserver la date du dernier test de restauration ;
-- [ ] signaler une sauvegarde jamais restaurée/testée ;
-- [ ] vérifier l’intégrité des archives anciennes ;
-- [ ] intégrer l’état des sauvegardes à la maintenance préventive Tsunade.
+## Critères de sortie de la Phase 10
 
-
-## Critères de validation de la Phase 10
-
-La Phase 10 peut être considérée comme satisfaisante lorsque :
-
-- [ ] Une sauvegarde HAOS peut être restaurée dans une procédure documentée et vérifiée.
-- [ ] Une sauvegarde INFRA-01 peut être restaurée dans une procédure documentée et vérifiée.
+- [ ] Une sauvegarde HAOS peut être restaurée selon une procédure documentée et réellement vérifiée.
+- [ ] Une sauvegarde INFRA-01 peut être restaurée selon une procédure documentée et réellement vérifiée.
 - [ ] La date du dernier test de restauration est conservée.
-- [ ] Une sauvegarde jamais restaurée ou jamais testée est explicitement signalée.
-- [ ] L’intégrité des archives peut être vérifiée indépendamment de leur date de création.
-- [ ] Les archives anciennes font l’objet d’un contrôle périodique.
-- [ ] Le chiffrement `age` reste vérifiable sans exposer les secrets.
-- [ ] La sauvegarde vers iCloud est considérée comme réussie uniquement lorsque l’archive attendue est réellement disponible.
-- [ ] Le streaming évite bien le stockage permanent inutile sur la microSD d’INFRA-01.
-- [ ] Katsuyu réalise les traitements lourds prévus sans rendre la sauvegarde impossible lorsque Bubule est temporairement indisponible.
-- [ ] Les versions nécessaires à la restauration sont inventoriées.
-- [ ] Une restauration incomplète ou échouée produit un état explicite.
-- [ ] L’état des sauvegardes et restaurations est exploitable par la maintenance préventive Tsunade.
-- [ ] Une alerte est produite lorsque l’ancienneté du dernier test de restauration dépasse la politique définie.
-
-La phase est satisfaisante lorsqu’une sauvegarde n’est plus considérée comme fiable parce qu’elle existe, mais parce qu’elle a été vérifiée et peut réellement être restaurée.
+- [ ] L’intégrité d’une archive peut être vérifiée indépendamment de sa création.
+- [ ] Une sauvegarde jamais testée est explicitement identifiable.
+- [ ] Les versions nécessaires à la restauration sont disponibles.
+- [ ] Une restauration échouée ou incomplète produit un état explicite.
+- [ ] Le chiffrement reste vérifiable sans exposer les secrets.
+- [ ] Une sauvegarde distante n’est déclarée réussie que lorsque l’archive attendue est réellement disponible.
+- [ ] L’état sauvegarde/restauration peut être exploité par Tsunade.
 
 ---
 
-# Phase 11 — Documentation et cohérence de l’écosystème
+## Durcissement continu
+
+- validation périodique automatique ;
+- contrôle d’anciennes archives ;
+- politiques d’ancienneté ;
+- alertes sur dernier test trop ancien ;
+- simulations régulières ;
+- tests plus complets de restauration HAOS ;
+- intégration à la maintenance préventive.
+
+---
+
+# Chantiers transverses
+
+Les chantiers suivants ne sont plus considérés comme des phases séquentielles.
+
+Ils évoluent pendant toute la roadmap.
+
+Ils peuvent produire ponctuellement un blocage de release ou de phase lorsqu’une incohérence majeure est découverte, mais ils n’ont pas de date de « fin » propre.
+
+---
+
+# Chantier transverse A — Documentation et cohérence de l’écosystème
 
 ## Objectif
 
-Faire correspondre en permanence la documentation, les contrats techniques et les compositions de releases avec le logiciel réellement livré.
+Faire correspondre la documentation, les contrats et les compositions de releases avec le logiciel réellement livré.
 
-La documentation ne doit pas décrire une architecture théorique différente de celle exécutée en production.
-
-Les échanges entre composants doivent rester explicites, versionnés et compatibles afin qu’une évolution d’un dépôt ne puisse pas casser silencieusement un autre composant d’Ohana.
-
-Cette phase est transverse : elle accompagne les autres phases fonctionnelles et doit être mise à jour au fur et à mesure des évolutions réellement validées.
+La documentation doit être une conséquence du comportement réel d’Ohana, et non une architecture théorique parallèle.
 
 ---
 
-## Documentation fonctionnelle
+## Documentation fonctionnelle essentielle
 
-La documentation doit décrire le rôle réel de chaque composant et les frontières entre responsabilités.
+Maintenir à jour :
 
-- [ ] Maintenir `ROADMAP.md` à chaque évolution fonctionnelle importante.
-- [ ] Supprimer ou archiver les éléments historiques devenus faux, obsolètes ou redondants.
-- [ ] Maintenir le diagramme d’architecture global.
-- [ ] Documenter clairement les responsabilités de Shikamaru, Tsunade, Katsuyu, Vision et Shizune.
-- [ ] Documenter explicitement la frontière Tsunade ↔ Katsuyu.
-- [ ] Documenter la distinction entre traitement déterministe lourd et expertise IA Katsuyu.
-- [ ] Documenter le cycle de vie des incidents Tsunade.
-- [ ] Documenter les niveaux de diagnostic `CONFIRMED`, `PROBABLE` et `INSUFFICIENT_CONTEXT`.
-- [ ] Documenter le comportement attendu lorsqu’une investigation est bloquée ou qu’une dépendance est indisponible.
-- [ ] Documenter les garde-fous empêchant les boucles d’investigation inutiles.
-- [ ] Maintenir la documentation de la PWA Shizune et de son rôle limité à l’interaction personnelle.
-- [ ] Maintenir Vision comme référence du cockpit technique sans dupliquer la logique métier d’Agent.
+- `ROADMAP.md` ;
+- architecture globale ;
+- responsabilités Shikamaru / Tsunade / Katsuyu / Vision / Shizune ;
+- frontière Tsunade ↔ Katsuyu ;
+- cycle de vie des incidents ;
+- politique d’autorisation ;
+- comportements essentiels en mode dégradé.
 
 ---
 
-## Documentation des investigations Tsunade
+## Investigations
 
-Chaque type d’investigation doit préciser :
+Documenter progressivement les investigations réellement utilisées :
 
-- le déclencheur ;
-- la cible ;
-- les préconditions ;
-- les contrôles effectués ;
-- les preuves collectées ;
-- leur provenance ;
-- leur durée de validité lorsqu’elle est pertinente ;
-- les conclusions déterministes possibles ;
-- les situations conduisant à `INSUFFICIENT_CONTEXT` ;
-- les conditions pouvant justifier un traitement Katsuyu ;
-- les conditions pouvant justifier une expertise IA ;
-- les limites connues de l’investigation.
+- INFRA-01 ;
+- HA-01 ;
+- LINKY-01 ;
+- ZWAVE-01 ;
+- DNS ;
+- TCP ;
+- HTTP ;
+- MQTT ;
+- `teleinfo2mqtt` ;
+- Supervisor ;
+- métriques système.
 
-### Validation
+La documentation d’une investigation doit préciser au minimum :
 
-- [ ] Documenter les investigations INFRA-01.
-- [ ] Documenter les investigations HA-01.
-- [ ] Documenter les investigations LINKY-01.
-- [ ] Documenter les investigations ZWAVE-01.
-- [ ] Documenter les investigations DNS.
-- [ ] Documenter les investigations TCP.
-- [ ] Documenter les investigations HTTP.
-- [ ] Documenter les investigations MQTT.
-- [ ] Documenter les investigations `teleinfo2mqtt`.
-- [ ] Documenter les investigations Supervisor Home Assistant.
-- [ ] Documenter les investigations système et métriques INFRA-01.
-- [ ] Documenter les limites et les cas connus de faux positifs.
+- déclencheur ;
+- cible ;
+- contrôles exécutés ;
+- preuves obtenues ;
+- conclusions possibles ;
+- principales limites.
+
+Il n’est pas nécessaire de documenter exhaustivement une capacité qui n’est pas encore utilisée.
 
 ---
 
-## Documentation des réparations supervisées
+## Réparations supervisées
 
-Chaque réparation disponible dans Tsunade doit être documentée comme une procédure explicite.
+Toute réparation réellement disponible doit avoir une procédure correspondante précisant :
 
-Pour chaque réparation, conserver :
+- symptôme ;
+- préconditions ;
+- action ;
+- autorisation ;
+- résultat attendu ;
+- vérification ;
+- comportement en cas d’échec.
 
-- le symptôme associé ;
-- les preuves nécessaires ;
-- les préconditions ;
-- l’action exécutée ;
-- le niveau d’autorisation requis ;
-- les conséquences possibles ;
-- les risques ;
-- le retour arrière éventuel ;
-- le délai avant vérification ;
-- la vérification Shikamaru attendue ;
-- les conditions de réussite ;
-- les conditions d’échec ;
-- le comportement après échec.
-
-### Validation
-
-- [ ] Documenter chaque réparation au moment où elle est introduite.
-- [ ] Vérifier qu’aucune action modifiant Konoha n’existe uniquement dans le code sans documentation correspondante.
-- [ ] Documenter les actions explicitement préautorisées.
-- [ ] Documenter les actions nécessitant une autorisation utilisateur.
-- [ ] Documenter les limites du nombre de tentatives.
-- [ ] Documenter le comportement lorsqu’une réparation échoue.
+Aucune action modifiant Konoha ne doit exister uniquement dans le code sans documentation minimale correspondante.
 
 ---
 
 ## Contrat Tsunade ↔ Katsuyu
 
-Le contrat Tsunade ↔ Katsuyu doit être considéré comme une interface majeure de l’architecture.
+Le contrat constitue une interface majeure.
 
-Tsunade reste propriétaire de l’incident.
-
-Katsuyu reçoit une demande structurée et retourne un résultat structuré sans devenir responsable de la décision finale.
-
-### Dossier d’entrée Katsuyu
-
-Le contrat doit permettre de transmettre au minimum :
-
-- l’identifiant de l’incident ;
-- l’identifiant de la demande ;
-- la cible ;
-- le type de traitement demandé ;
-- le contexte utile ;
-- les faits établis ;
-- les contrôles déjà exécutés ;
-- les preuves pertinentes ;
-- la provenance de chaque preuve ;
-- l’horodatage de chaque preuve ;
-- les éléments manquants ;
-- la question ou le traitement demandé ;
-- les limites éventuellement imposées au traitement.
-
-Le type de traitement doit distinguer explicitement au minimum :
+Il doit distinguer au minimum :
 
 ```text
 DETERMINISTIC_HEAVY
 AI_EXPERTISE
 ```
 
-Un traitement `DETERMINISTIC_HEAVY` ne doit pas provoquer implicitement l’utilisation du LLM.
+Le dossier Tsunade → Katsuyu doit permettre de transmettre :
 
-### Résultat Katsuyu
+- incident ;
+- cible ;
+- type de traitement ;
+- contexte ;
+- faits ;
+- preuves ;
+- provenance ;
+- temporalité ;
+- éléments manquants ;
+- question ou traitement demandé.
 
-La réponse doit permettre de distinguer :
+Le résultat doit permettre de distinguer :
 
-- le statut du traitement ;
-- le type de traitement réellement exécuté ;
-- les résultats déterministes produits ;
-- les éléments analysés ;
-- les hypothèses éventuelles ;
-- les limites de l’analyse ;
-- les éléments manquants ;
-- les erreurs éventuelles ;
-- la valeur produite pour Tsunade.
+- statut ;
+- type de traitement réalisé ;
+- résultats déterministes ;
+- hypothèses ;
+- limites ;
+- erreurs ;
+- informations manquantes.
 
-Une réponse Katsuyu ne doit pas modifier directement l’état final de l’incident.
-
-Tsunade interprète le résultat et reste responsable de la suite.
-
-### Validation
-
-- [ ] Documenter le schéma d’entrée Tsunade → Katsuyu.
-- [ ] Documenter le schéma de sortie Katsuyu → Tsunade.
-- [ ] Documenter la distinction `DETERMINISTIC_HEAVY` / `AI_EXPERTISE`.
-- [ ] Documenter le comportement en cas de timeout.
-- [ ] Documenter le comportement lorsque Bubule est indisponible.
-- [ ] Documenter le comportement lorsque le runtime IA est indisponible mais que les traitements déterministes restent disponibles.
-- [ ] Documenter le comportement lorsque Katsuyu retourne un résultat incomplet.
-- [ ] Documenter le comportement lorsqu’une demande est rejouée.
-- [ ] Garantir l’idempotence lorsque le traitement s’y prête.
-- [ ] Documenter les informations qui ne doivent jamais être transmises à Katsuyu.
+Katsuyu ne modifie pas directement l’état final d’un incident.
 
 ---
 
-## Versionnement des contrats inter-composants
+## Versionnement des contrats
 
-Les échanges structurés entre dépôts doivent être explicitement versionnés.
+Les contrats partagés critiques doivent progressivement posséder une version identifiable.
 
 Sont notamment concernés :
 
-- les observations Shikamaru ;
-- les incidents Tsunade ;
-- les preuves ;
-- les dossiers d’investigation ;
-- les demandes Katsuyu ;
-- les résultats Katsuyu ;
-- les décisions Tsunade ;
-- les demandes d’autorisation ;
-- les réparations ;
-- les résultats de vérification ;
-- les données exposées à Vision ;
-- les données exposées à Shizune.
+- observations ;
+- incidents ;
+- preuves ;
+- demandes Katsuyu ;
+- résultats Katsuyu ;
+- décisions ;
+- autorisations ;
+- réparations ;
+- données Vision ;
+- données Shizune.
 
-Chaque contrat partagé doit posséder une version identifiable.
-
-Une modification incompatible doit être considérée comme un changement de contrat et ne doit pas être introduite silencieusement.
-
-### Règles
-
-- [ ] Versionner les schémas partagés.
-- [ ] Documenter les champs obligatoires.
-- [ ] Documenter les champs optionnels.
-- [ ] Documenter les valeurs d’énumération.
-- [ ] Définir le comportement face à un champ inconnu.
-- [ ] Définir le comportement face à une version non supportée.
-- [ ] Maintenir la compatibilité ascendante lorsque cela reste raisonnable.
-- [ ] Introduire une migration explicite lorsqu’une rupture de compatibilité est nécessaire.
-- [ ] Ajouter des tests de contrat entre producteurs et consommateurs.
-
----
-
-## Cycle de vie des incidents
-
-Les états d’incident doivent être partagés entre Agent, Vision, Shizune et, lorsqu’il est concerné, Katsuyu.
-
-Les états introduits par Tsunade doivent être documentés dans une source de référence unique.
-
-Les transitions autorisées doivent également être explicites.
-
-Exemples d’états de diagnostic :
-
-```text
-DETECTED
-INVESTIGATING
-WAITING_KATSUYU
-DIAGNOSED
-MONITORING
-INSUFFICIENT_CONTEXT
-INVESTIGATION_BLOCKED
-RESOLVED
-```
-
-Les états liés à la réparation peuvent notamment compléter ce cycle :
-
-```text
-WAITING_USER
-REPAIRING
-VERIFYING
-```
-
-### Validation
-
-- [ ] Documenter chaque état.
-- [ ] Documenter les transitions autorisées.
-- [ ] Documenter l’acteur responsable de chaque transition.
-- [ ] Interdire les états ou transitions connus uniquement de Vision ou de Shizune.
-- [ ] Garantir que Vision et Shizune représentent l’état fourni par Agent plutôt que de reconstruire leur propre logique.
-- [ ] Documenter les états terminaux.
-- [ ] Documenter les états bloquants et leur mécanisme de reprise.
-
----
-
-## Documentation réseau et dépendances
-
-La documentation doit permettre de comprendre rapidement comment communiquent les composants.
-
-- [ ] Documenter les ports réseau réellement utilisés.
-- [ ] Documenter les protocoles utilisés.
-- [ ] Documenter les flux entrants et sortants.
-- [ ] Documenter les dépendances entre services.
-- [ ] Documenter les communications locales entre Agent, Vision et les autres services d’INFRA-01.
-- [ ] Documenter les communications INFRA-01 ↔ Bubule.
-- [ ] Documenter les communications nécessaires à Shizune.
-- [ ] Documenter les dépendances Home Assistant.
-- [ ] Documenter les dépendances MQTT.
-- [ ] Documenter les dépendances DNS et NTP.
-- [ ] Identifier clairement les dépendances critiques et les dépendances optionnelles.
-
-Les éléments d’authentification, clés, tokens et autres secrets ne doivent jamais apparaître dans cette documentation.
+Une rupture incompatible ne doit pas être introduite silencieusement.
 
 ---
 
 ## Troubleshooting
 
-Créer et maintenir un guide de diagnostic destiné à permettre une intervention humaine lorsque l’automatisation ne suffit pas.
+Maintenir un guide minimal et réellement testable couvrant :
 
-Le guide doit privilégier des procédures courtes et reproductibles.
+- Agent ;
+- Vision ;
+- Katsuyu ;
+- Shizune ;
+- files et jobs ;
+- communications principales ;
+- Wake-on-LAN ;
+- MQTT ;
+- Home Assistant ;
+- Téléinformation ;
+- incidents Tsunade ;
+- versions installées ;
+- récupération après mise à jour défaillante.
 
-### Contenu attendu
-
-- état d’Ohana-Agent ;
-- état de Vision ;
-- état de Katsuyu ;
-- état de Shizune ;
-- vérification des processus ;
-- état des files internes ;
-- diagnostic des erreurs de communication ;
-- diagnostic du Wake-on-LAN ;
-- diagnostic du cycle Katsuyu ;
-- vérification des jobs en attente ;
-- diagnostic des problèmes MQTT ;
-- diagnostic des problèmes Home Assistant ;
-- diagnostic de la télémétrie ;
-- consultation des incidents Tsunade ;
-- consultation des preuves ;
-- récupération après une mise à jour défaillante ;
-- vérification des versions installées.
-
-### Validation
-
-- [ ] Créer ou finaliser le guide Troubleshooting.
-- [ ] Tester périodiquement les commandes et procédures documentées.
-- [ ] Retirer les procédures devenues obsolètes.
-- [ ] Préférer des commandes reproductibles aux explications dépendant d’un état historique du système.
-
----
-
-## Documentation du cycle Katsuyu
-
-Documenter complètement :
-
-```text
-Tsunade
-   │
-   ▼
-Besoin Katsuyu
-   │
-   ▼
-Vérification présence
-   │
-   ├── worker disponible
-   │
-   └── worker indisponible
-               │
-               ▼
-          Wake-on-LAN
-               │
-               ▼
-       attente disponibilité
-               │
-               ▼
-         envoi du job
-               │
-               ▼
-          traitement
-               │
-               ▼
-       résultat Tsunade
-               │
-               ▼
-      autres jobs en attente ?
-         │             │
-        oui           non
-         │             │
-         ▼             ▼
-    traitement        arrêt
-                     Bubule
-```
-
-- [ ] Documenter le Wake-on-LAN.
-- [ ] Documenter le délai d’attente de disponibilité.
-- [ ] Documenter le regroupement des jobs.
-- [ ] Documenter les conditions autorisant l’arrêt de Bubule.
-- [ ] Documenter les cas empêchant l’arrêt.
-- [ ] Documenter la reprise après interruption.
-- [ ] Documenter les timeouts.
-- [ ] Documenter les jobs échoués.
-- [ ] Documenter les jobs abandonnés.
-- [ ] Documenter le comportement lorsqu’un utilisateur a démarré Bubule indépendamment d’Ohana.
+Les procédures courtes et reproductibles sont préférées aux descriptions historiques.
 
 ---
 
 ## Cohérence inter-dépôts
 
-Avant toute évolution majeure, vérifier conjointement :
+Lors d’une évolution importante, vérifier si elle impacte :
 
 - Ohana-Agent ;
 - Ohana-Vision ;
@@ -1354,169 +1283,76 @@ Avant toute évolution majeure, vérifier conjointement :
 - Ohana-Platform ;
 - Ohana-House.
 
-Les contrats partagés, configurations, manifestes et documentations doivent rester cohérents entre ces dépôts.
+---
 
-### Responsabilités principales
+## Minimum obligatoire avant release importante
 
-**Ohana-Agent**
+Une release fonctionnelle importante doit vérifier :
 
-Source de vérité pour :
+- [ ] versions cohérentes ;
+- [ ] contrats modifiés identifiés ;
+- [ ] migrations nécessaires disponibles ;
+- [ ] principaux tests inter-dépôts concernés réussis ;
+- [ ] documentation correspondant au comportement livré ;
+- [ ] aucun secret ajouté dans la documentation ;
+- [ ] composition Platform cohérente.
 
-- Shikamaru ;
-- Tsunade ;
-- cycle des incidents ;
-- investigations ;
-- décisions ;
-- réparations supervisées ;
-- orchestration Katsuyu.
-
-**Ohana-Vision**
-
-Consommateur des états et contrats Agent pour :
-
-- affichage technique ;
-- historique ;
-- configuration ;
-- administration ;
-- diagnostics détaillés.
-
-Vision ne doit pas réimplémenter la logique métier de Tsunade.
-
-**Ohana-Katsuyu**
-
-Implémente :
-
-- les handlers lourds ;
-- les traitements déterministes déportés ;
-- l’expertise IA locale ;
-- le runtime worker Bubule.
-
-Katsuyu ne doit pas devenir un moteur autonome de décision ou d’administration de Konoha.
-
-**Ohana-Shizune**
-
-Consomme uniquement les informations nécessaires à l’interaction personnelle :
-
-- état synthétique ;
-- incidents prioritaires ;
-- décisions ;
-- demandes d’autorisation ;
-- résultats utiles.
-
-Shizune ne doit pas devenir un second Vision.
-
-**Ohana-Installer**
-
-Doit connaître :
-
-- les versions compatibles ;
-- les migrations nécessaires ;
-- les dépendances d’installation ;
-- les opérations de mise à jour.
-
-**Ohana-Platform**
-
-Doit maintenir :
-
-- les compositions de releases ;
-- les contrats communs ;
-- les versions compatibles ;
-- la documentation d’architecture partagée.
-
-**Ohana-House**
-
-Décrit Konoha réellement déployé sans devenir une copie de la configuration opérationnelle Agent.
+Le reste du chantier documentaire évolue continuellement et n’empêche pas de poursuivre la roadmap lorsqu’il ne compromet ni sécurité ni compréhension opérationnelle.
 
 ---
 
-## Validation avant release
-
-Une release fonctionnelle importante doit vérifier au minimum :
-
-1. la compatibilité des contrats ;
-2. la cohérence des versions ;
-3. les migrations nécessaires ;
-4. les changements de configuration ;
-5. les impacts sur Agent ;
-6. les impacts sur Vision ;
-7. les impacts sur Katsuyu ;
-8. les impacts sur Shizune ;
-9. les impacts sur Installer ;
-10. les impacts sur Platform ;
-11. les impacts éventuels sur Ohana-House ;
-12. la documentation associée.
-
-### Checklist
-
-- [ ] Les versions déclarées sont cohérentes.
-- [ ] Les contrats modifiés sont versionnés.
-- [ ] Les tests inter-dépôts concernés passent.
-- [ ] Les migrations sont disponibles.
-- [ ] Les anciennes configurations compatibles restent supportées ou disposent d’une migration.
-- [ ] Les notes de release décrivent les changements importants.
-- [ ] La documentation correspond au comportement réellement livré.
-- [ ] Aucun secret ou exemple sensible n’est ajouté à la documentation.
-- [ ] La composition Platform référence les versions réellement compatibles.
-
----
-
-## Critères de validation de la Phase 11
-
-La cohérence documentaire de l’écosystème peut être considérée comme satisfaisante lorsque :
-
-- [ ] les rôles des composants sont clairement documentés ;
-- [ ] les frontières Shikamaru / Tsunade / Katsuyu sont explicites ;
-- [ ] le cycle de vie des incidents possède une documentation de référence ;
-- [ ] le contrat Tsunade ↔ Katsuyu est documenté et versionné ;
-- [ ] les traitements déterministes lourds sont clairement distingués de l’expertise IA ;
-- [ ] les contrats inter-composants critiques sont versionnés ;
-- [ ] les états consommés par Vision et Shizune proviennent des sources métier appropriées ;
-- [ ] les ports et flux réseau sont documentés ;
-- [ ] le cycle Wake-on-LAN / jobs / arrêt Katsuyu est documenté ;
-- [ ] les réparations supervisées sont documentées ;
-- [ ] le guide Troubleshooting couvre les incidents opérationnels essentiels ;
-- [ ] la documentation des différents dépôts ne contient pas de contradictions majeures ;
-- [ ] les releases importantes incluent systématiquement une vérification de cohérence inter-dépôts.
-
-La documentation doit rester une conséquence du logiciel réellement validé, et non devenir une spécification théorique indépendante de l’implémentation.
-
----
-
-# Phase 12 — Konoha de référence
+# Chantier transverse B — Konoha de référence
 
 ## Objectif
 
-Faire d’Ohana-House la description fidèle de l’infrastructure Konoha réellement déployée.
+Faire d’Ohana-House une **photographie fidèle, lisible et maintenable de l’infrastructure réellement déployée**, sans en faire une seconde source de configuration.
 
-- [ ] aligner le vocabulaire Ohana-House avec Konoha ;
-- [ ] maintenir l’inventaire matériel ;
-- [ ] maintenir les liaisons réseau ;
-- [ ] maintenir les équipements supervisés ;
-- [ ] maintenir les capacités réellement garanties ;
-- [ ] documenter les dépendances entre les services critiques.
+Une personne extérieure au développement doit pouvoir comprendre les grandes lignes de Konoha à partir de ce dépôt.
 
-Le dépôt reste une description de l’installation de référence et ne doit pas dupliquer la configuration opérationnelle détenue par Agent.
+---
 
+## Contenu minimal
 
-## Critères de validation de la Phase 12
+Ohana-House doit maintenir :
 
-La Phase 12 peut être considérée comme satisfaisante lorsque :
+- les machines principales ;
+- leur rôle ;
+- les services essentiels ;
+- les grandes liaisons réseau ;
+- les équipements supervisés ;
+- les capacités réellement garanties ;
+- les dépendances critiques importantes.
 
-- [ ] Le vocabulaire d’Ohana-House est aligné avec Konoha et les rôles fonctionnels actuels.
-- [ ] L’inventaire matériel reflète l’infrastructure réellement déployée.
-- [ ] Les liaisons réseau documentées correspondent aux connexions réellement utilisées.
-- [ ] Les équipements supervisés sont correctement identifiés.
-- [ ] Les capacités annoncées comme garanties correspondent à des fonctions réellement observées et maintenues.
-- [ ] Les dépendances entre services critiques sont documentées.
-- [ ] Les informations de réseau, rôle et dépendance permettent de comprendre l’architecture sans consulter plusieurs sources contradictoires.
-- [ ] Les données historiques ou anciennes sont clairement distinguées de l’état actuel.
-- [ ] Ohana-House ne contient pas de secrets ou de configuration opérationnelle sensible inutile.
-- [ ] Ohana-House ne duplique pas la configuration dynamique détenue par Agent.
-- [ ] Une modification importante de Konoha entraîne une mise à jour correspondante d’Ohana-House.
-- [ ] Les informations utilisées par la documentation, la roadmap et les schémas restent cohérentes entre elles.
-- [ ] L’infrastructure de référence peut être comprise par une personne extérieure au développement sans dépendre d’informations implicites.
+---
 
-La phase est satisfaisante lorsqu’Ohana-House constitue une description fidèle, lisible et maintenable de Konoha, sans devenir une seconde source de configuration opérationnelle.
+## Principes
+
+Ohana-House :
+
+- ne contient pas de secrets ;
+- ne duplique pas la configuration dynamique d’Agent ;
+- distingue clairement état actuel et éléments historiques ;
+- utilise le vocabulaire Konoha actuel ;
+- est mis à jour lors d’une évolution importante de l’infrastructure.
+
+---
+
+## Critères permanents
+
+- [ ] Inventaire matériel globalement fidèle.
+- [ ] Rôles des machines à jour.
+- [ ] Principales liaisons réseau compréhensibles.
+- [ ] Services importants identifiables.
+- [ ] Capacités garanties cohérentes avec la réalité.
+- [ ] Dépendances critiques documentées.
+- [ ] Aucun secret inutile.
+- [ ] Pas de duplication de la configuration opérationnelle dynamique.
+- [ ] Mise à jour après modification significative de Konoha.
+- [ ] Cohérence générale avec la roadmap et l’architecture documentée.
+
+Ce chantier n’a pas vocation à être « terminé ».
+
+Il doit rester suffisamment fidèle pour constituer une référence utile.
 
 ---
 
@@ -1538,35 +1374,84 @@ Les sujets suivants ne doivent pas être développés sans besoin concret :
 
 ---
 
-# Priorité immédiate
-
-La priorité actuelle est :
+# Ordre fonctionnel de la roadmap
 
 ```text
-1. Stabiliser Agent 1.29 / Katsuyu 0.8.7
-             │
-             ▼
-2. Tester Tsunade sur de vrais incidents
-             │
-             ▼
-3. Identifier les preuves qui lui manquent
-             │
-             ▼
-4. Ajouter des investigations déterministes ciblées
-             │
-             ▼
-5. Étendre progressivement les réparations supervisées
-             │
-             ▼
-6. Vérifier systématiquement le résultat avec Shikamaru
-             │
-             ▼
-7. Construire la mémoire opérationnelle de Tsunade
-             │
-             ▼
-8. Introduire progressivement la maintenance préventive
+Phase 1
+Tsunade sait diagnostiquer de manière fiable
+        │
+        ▼
+Phase 2
+Tsunade sait coordonner une réparation supervisée
+        │
+        ▼
+Phase 3
+Tsunade sait réutiliser une expérience validée
+        │
+        ▼
+Phase 4
+Tsunade sait détecter quelques dérives utiles
+        │
+        ▼
+Phase 5
+Ohana sait observer ses propres composants
+        │
+        ▼
+Phase 6
+Katsuyu est un worker robuste et optionnel
+        │
+        ▼
+Phase 7
+Shizune rend Ohana utilisable simplement au quotidien
+        │
+        ▼
+Phase 8
+Vision rend Ohana compréhensible techniquement
+        │
+        ▼
+Phase 9
+Shikamaru fournit des observations suffisamment fiables
+        │
+        ▼
+Phase 10
+Konoha est réellement sauvegardable et restaurable
 ```
 
-La prochaine étape d’Ohana n’est donc pas d’ajouter un nouveau composant.
+En parallèle :
 
-Elle consiste à rendre **Tsunade suffisamment fiable pour exploiter Konoha au quotidien**, en utilisant Shikamaru pour observer et vérifier, Katsuyu pour les traitements lourds et l’expertise complexe, Vision pour le cockpit technique et Shizune pour les interactions personnelles.
+```text
+Toutes les phases
+        │
+        ├── Documentation / contrats / cohérence
+        │
+        └── Konoha de référence
+```
+
+---
+
+# Priorité immédiate
+
+La priorité actuelle reste :
+
+```text
+1. Terminer la stabilisation essentielle de Tsunade
+             │
+             ▼
+2. Exercer quelques incidents et pannes représentatifs
+             │
+             ▼
+3. Démontrer clairement la frontière Tsunade / Katsuyu
+             │
+             ▼
+4. Vérifier le fonctionnement dégradé sans Katsuyu
+             │
+             ▼
+5. Rendre le résultat exploitable dans Vision
+             │
+             ▼
+6. Passer à la première réparation supervisée
+```
+
+La prochaine étape d’Ohana n’est pas d’ajouter un nouveau composant ni d’atteindre une couverture parfaite.
+
+Elle consiste à rendre chaque capacité **suffisamment fiable pour être utilisée**, puis à la durcir progressivement à partir des problèmes réellement rencontrés dans Konoha.
