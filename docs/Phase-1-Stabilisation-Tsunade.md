@@ -80,11 +80,13 @@ Tsunade
   ↓
 Vision
 
-Le passage final a généré 718 tokens et validé le rendu desktop/mobile, sans
-erreur JavaScript ni réponse HTTP serveur en erreur.
-Le message asyncio WinError 995 observé lors de la fermeture du serveur Vision
-sous Windows reste un bruit de teardown du laboratoire. Il survient après les
-contrôles fonctionnels et ne remet pas en cause le PASS.
+Le dernier passage full-stack propre a généré 628 tokens et validé le rendu
+desktop/mobile, sans erreur JavaScript ni réponse HTTP serveur en erreur.
+
+Le teardown Vision sous Windows a également été corrigé : l'arrêt réveille
+désormais proprement l'accept() du socket avant sa fermeture. Le scénario se
+termine sans `WinError 995` ni exception asyncio non récupérée.
+
 Le critère de sortie « Preuves suffisamment sûres » est donc acquis.
 La sanitation globale de toutes les données internes du protocole générique des
 jobs distribués reste un sujet de durcissement possible. Elle n'est pas requise
@@ -94,11 +96,25 @@ dossier de preuve Tsunade passe désormais par la frontière de sanitation.
 
 ### Où nous en sommes réellement
 
-La partie **développement pur de la Phase 1 est désormais presque épuisée**. Les quatre cases restantes demandent surtout d’exercer Ohana sur Konoha.
+Le développement de stabilisation locale nécessaire à la Phase 1 est désormais
+terminé.
 
-Je ferais néanmoins **une dernière petite correction de développement avant ces essais : supprimer proprement le `WinError 995` du full-stack**. Il est non bloquant, mais maintenant que ce laboratoire devient notre outil de référence, il serait préférable qu’un `PASS` soit totalement propre.
+Les validations locales sont vertes :
 
-Ensuite, on pourra attaquer méthodiquement **INFRA-01, HA-01 et LINKY-01**, et profiter de ces validations pour construire nos trois pannes contrôlées.
+- 1557 tests Agent PASS, 1 skipped ;
+- 9/9 scénarios Sandbox PASS ;
+- full-stack réel PASS avec worker HTTPS, llama.cpp, Ministral et Vision ;
+- teardown du laboratoire propre sous Windows.
+
+Six critères de sortie sur dix sont acquis.
+
+Les quatre critères encore ouverts nécessitent maintenant principalement une
+validation opérationnelle sur Konoha :
+
+1. exercer suffisamment INFRA-01, HA-01 et LINKY-01 ;
+2. vérifier réellement le mode dégradé sans Katsuyu ;
+3. exercer trois pannes contrôlées appartenant à plusieurs familles ;
+4. démontrer la valeur de Katsuyu sur un incident Konoha réellement ambigu.
 
 ### État consolidé après validation full-stack — 21 septembre 2026
 
@@ -137,7 +153,7 @@ scénarios simulés précédents :
 - vérification du cycle réseau worker
   register → next → source → heartbeat → complete.
 
-Lors de l'exécution finale, le modèle a généré 867 tokens.
+Lors de l'exécution finale, le modèle a généré 628 tokens.
 Cette validation démontre donc réellement le chemin :
 
 ```text brut
@@ -169,18 +185,18 @@ Le test reste toutefois un laboratoire local contrôlé :
 La valeur technique de la chaîne IA est donc validée, mais le critère de valeur
 ajoutée de Katsuyu reste ouvert tant qu'un incident réel ambigu de Konoha n'a pas
 bénéficié de manière identifiable de cette expertise.
-Le teardown du laboratoire sous Windows peut encore produire un message asyncio
-WinError 995 lors de la fermeture du socket Vision. Ce message apparaît après
-les contrôles fonctionnels et n'a pas fait échouer le scénario final. Il est
-classé comme bruit de fermeture du laboratoire à durcir, pas comme défaut
-fonctionnel de la chaîne Ohana.
+
+Le teardown du laboratoire Vision sous Windows est désormais propre. La
+fermeture du serveur ne provoque plus l'exception asyncio `WinError 995`
+précédemment observée.
+
 À ce stade, les principaux critères encore ouverts pour la sortie de Phase 1
 sont donc opérationnels :
 - exercer suffisamment INFRA-01, HA-01 et LINKY-01 ;
 - réaliser trois pannes contrôlées représentatives dans plusieurs familles ;
 - vérifier réellement la continuité de Shikamaru/Konoha sans Katsuyu ;
 - démontrer la valeur de Katsuyu sur un incident réel ambigu ;
-- terminer l'audit de sûreté des preuves nécessaire à la sortie de phase.
+
 La frontière technique Tsunade ↔ Katsuyu et l'exploitation du résultat dans
 Vision ne constituent plus des inconnues fondamentales.
 

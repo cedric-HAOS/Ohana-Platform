@@ -326,10 +326,11 @@ local vérifié, le cycle réseau
 via llama.cpp avec le modèle Ministral, puis la restitution du résultat dans
 Vision avec Chromium.
 
-Le passage final a généré 867 tokens, vérifié les vues desktop et mobile sans
-débordement horizontal et n'a détecté aucune erreur JavaScript ni réponse HTTP
-serveur en erreur. Les bases, le journal déclencheur et l'infrastructure de ce
-laboratoire restent locaux et temporaires : ce PASS ne constitue pas une panne
+Le dernier passage full-stack propre a généré 628 tokens, vérifié les vues
+desktop et mobile sans débordement horizontal et n'a détecté aucune erreur
+JavaScript ni réponse HTTP serveur en erreur. Le teardown Vision sous Windows
+se termine désormais sans exception asyncio.
+Les bases, le journal déclencheur et l'infrastructure de ce laboratoire restent locaux et temporaires : ce PASS ne constitue pas une panne
 réellement exercée sur Konoha.
 
 Les **9 scénarios locaux** couvrent notamment les niveaux de diagnostic,
@@ -510,7 +511,6 @@ Restent notamment à suivre :
 - reprises rares après interruption ;
 - raffinements de présentation Vision ;
 - nombre de jobs et réveils Katsuyu ;
-- bruit de fermeture asyncio/Windows du laboratoire full-stack.
 
 ---
 

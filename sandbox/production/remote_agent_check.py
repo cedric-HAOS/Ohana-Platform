@@ -3,10 +3,8 @@ from __future__ import annotations
 
 import json
 import socket
-import sqlite3
 import subprocess
 import sys
-from pathlib import Path
 
 
 SERVICE = sys.argv[1]

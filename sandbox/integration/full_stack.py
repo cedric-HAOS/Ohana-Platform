@@ -76,24 +76,39 @@ def _wait(label, predicate, *, timeout, worker=None, page=None):
             page.wait_for_timeout(200)
     raise TimeoutError(f"Délai dépassé ({timeout}s) : {label}")
 
-
 def _stop_vision(server, thread, listener):
+    """Stop Uvicorn without cancelling a pending Windows Proactor accept."""
+
     server.should_exit = True
 
-    # Fermer le socket d'écoute aide Uvicorn à sortir proprement
-    # sous Windows lorsqu'il utilise un socket fourni explicitement.
+    # Sous Windows, fermer directement le socket pendant qu'un accept()
+    # Proactor est en attente provoque WinError 995.
+    #
+    # Une connexion locale très brève réveille proprement l'accept() sans
+    # invalider le socket. Uvicorn peut alors observer should_exit et terminer
+    # son cycle normalement.
     try:
-        listener.close()
+        address = listener.getsockname()
+        with socket.create_connection(address, timeout=1):
+            pass
     except OSError:
         pass
 
     thread.join(timeout=10)
 
     if thread.is_alive():
-        # Dernier recours : abandonner l'attente des connexions/tâches
-        # restantes sans laisser le laboratoire bloqué.
+        # Dernier recours : demander l'arrêt forcé, mais toujours réveiller
+        # l'accept() plutôt que fermer son socket depuis un autre thread.
         server.force_exit = True
         server.should_exit = True
+
+        try:
+            address = listener.getsockname()
+            with socket.create_connection(address, timeout=1):
+                pass
+        except OSError:
+            pass
+
         thread.join(timeout=5)
 
     if thread.is_alive():
