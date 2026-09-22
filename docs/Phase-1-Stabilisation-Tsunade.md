@@ -12,6 +12,29 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Panne contrôlée #1 — Service — teleinfo2mqtt
+
+**Statut : validée le 22 septembre 2026 avec Ohana-Agent 1.29.18.**
+
+- arrêt volontaire de `teleinfo2mqtt` sur LINKY-01 à 14:38 ;
+- incident `teleinformation.freshness`
+  `21b9c111-e1e3-407f-bd36-d337ebd5615a` ouvert à 14:39:19 ;
+- les observations répétées ont alimenté le même incident sans doublon ;
+- l'inspection Supervisor a identifié
+  `6fc079ce_teleinfo2mqtt_ohana` avec `state=error` ;
+- Tsunade a produit une décision déterministe :
+  `diagnostic_level=CONFIRMED`,
+  `epistemic_status=confirmed_by_supervisor`,
+  `confidence=1.0` ;
+- aucun job `ai.inference` n'a été créé pour expliquer une panne déjà
+  confirmée par le Supervisor ;
+- `teleinfo2mqtt` a été redémarré à 14:41 ;
+- le même incident a été automatiquement résolu à 14:42:20 dès le retour
+  d'une trame saine ;
+- aucun nouvel incident Téléinformation n'a été créé après récupération.
+
+Cette panne valide le scénario contrôlé de la famille **Service**.
+
 ### Investigation de l'écart Supervisor et traçabilité locale — 22 septembre
 
 Après le retour sain, les contrôles en lecture seule confirment que la fonction
