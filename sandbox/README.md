@@ -75,6 +75,7 @@ Depuis la racine d'Ohana-Platform :
 
 ```powershell
 .\sandbox\run.ps1 run all
+.\sandbox\run.ps1 run teleinformation-supervisor-cycle
 .\sandbox\run.ps1 run followup-restart
 .\sandbox\run.ps1 run local-diagnosis-worker-unavailable
 .\sandbox\run.ps1 run followup-evidence-cycle
@@ -87,6 +88,19 @@ Avec un environnement déjà prêt :
 ```powershell
 python -X utf8 .\sandbox\runner.py run all
 ```
+
+`teleinformation-supervisor-cycle` exerce le cycle Téléinformation `direct_http`
+avec des observations et une inspection Supervisor simulées sur LINKY-01. Ses
+27 vérifications couvrent l'add-on `teleinfo2mqtt` arrêté : diagnostic `CONFIRMED`
+par Supervisor, décision déterministe `investigate` et aucun appel IA.
+La preuve Supervisor doit être persistée dans le dossier avant le diagnostic.
+Trois observations dont seul l'âge des trames augmente conservent le même diagnostic.
+La reprise SQLite conserve intégralement le dossier. Un changement du seuil de
+fraîcheur invalide l'analyse ; une réévaluation explicite la confirme à nouveau.
+Une observation saine résout le même incident, y compris après une seconde
+reprise, sans job IA ni collecte complémentaire. Aucune sonde réelle ni aucun
+arrêt/redémarrage d'add-on n'est effectué. Ce scénario ne remplace pas la
+requalification de la panne contrôlée sur Konoha après déploiement.
 
 `followup-restart` ferme et rouvre les deux bases SQLite puis reconstruit les
 services Agent. Il couvre l'expiration pendant l'arrêt et la reprise après un

@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "teleinformation-supervisor-cycle": (
+        "scenarios.teleinformation_supervisor_cycle",
+        "Confirmer l'arrêt Téléinformation sans IA, conserver le diagnostic et résoudre l'incident.",
+    ),
     "followup-evidence-cycle": (
         "scenarios.followup_evidence_cycle",
         "Conserver les preuves et terminer une réévaluation sans boucle, même après reprise.",

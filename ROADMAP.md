@@ -333,12 +333,16 @@ se termine désormais sans exception asyncio.
 Les bases, le journal déclencheur et l'infrastructure de ce laboratoire restent locaux et temporaires : ce PASS ne constitue pas une panne
 réellement exercée sur Konoha.
 
-Les **9 scénarios locaux** couvrent notamment les niveaux de diagnostic,
+Les **10 scénarios locaux** couvrent notamment les niveaux de diagnostic,
 les échecs de sondes, l'absence de Katsuyu, la reprise des suivis persistés
 et le diagnostic local pendant l'attente d'un worker. Le scénario
 `followup-evidence-cycle` couvre aussi une collecte autorisée suivie d'une
 réévaluation : preuves initiales conservées, limites factuelles respectées et
 terminaison sans relance après livraison répétée des résultats et reprise.
+Le scénario `teleinformation-supervisor-cycle` vérifie la confirmation Supervisor
+d'un add-on arrêté sans IA, la stabilité sur observations répétées et après
+reprise SQLite, l'invalidation lors d'un changement de seuil et la résolution
+sur retour de trames fraîches. Observations et Supervisor restent simulés.
 
 La recette distante contrôle la version, le service, le port d'administration,
 la file de jobs et les erreurs récentes du journal Agent. L'option

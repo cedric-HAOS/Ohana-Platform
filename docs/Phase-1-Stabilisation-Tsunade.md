@@ -12,6 +12,113 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Investigation de l'écart Supervisor et traçabilité locale — 22 septembre
+
+Après le retour sain, les contrôles en lecture seule confirment que la fonction
+déployée en 1.29.16 contient la branche `confirmed_by_supervisor`. L'inspection
+authentifiée, puis le snapshot complet utilisant l'architecture et la configuration
+de production, sélectionnent bien `6fc079ce_teleinfo2mqtt_ohana` sur LINKY-01 et
+retournent `started` (snapshot à 11:54:11 Europe/Paris). Ce résultat après remise
+en service ne permet pas de reconstituer l'état retourné pendant la panne.
+
+Le résultat Supervisor utilisé à 11:46 n'était ni persisté dans l'incident ni
+transmis à Katsuyu. La cause de l'escalade reste donc indéterminée : aucun élément
+ne permet de trancher entre une limite de collecte et un état inattendu.
+
+Correction locale Agent : chaque tentative d'inspection Téléinformation conserve
+désormais une preuve `supervisor.teleinformation` avant la décision. Elle contient
+la cible, l'observation de référence, les dates disponibles et le résultat ou la
+limite de collecte. Les données sont filtrées et bornées ; une exception conserve
+uniquement son type, sans son message ni sa trace potentiellement sensibles.
+Si une expertise reste nécessaire, la même preuve rejoint le dossier IA.
+
+Sept tests traversent l'inspection, le snapshot, le diagnostic et la relecture
+SQLite avec un transport simulé : add-on arrêté, démarré, statistiques indisponibles,
+authentification refusée, timeout, exception de snapshot et saturation. Ils vérifient
+la confirmation uniquement sur preuve d'arrêt, la transmission des limites à l'IA
+et l'absence de secrets. La Sandbox Téléinformation vérifie aussi que la preuve
+Supervisor est persistée avant le diagnostic (**27 vérifications**).
+
+Validation locale : **96 tests ciblés PASS**, **10/10 scénarios Sandbox PASS**,
+Ruff propre. Aucun déploiement, publication ou nouvelle panne. Ce lot corrige la
+traçabilité manquante ; il ne constitue pas une correction démontrée de la cause
+de l'escalade de 11:46. La requalification opérationnelle reste ouverte.
+
+### Rejeu Téléinformation sous Agent 1.29.16 — 22 septembre, 11:44
+
+L'opérateur signale l'arrêt de `teleinfo2mqtt` à 11:44 Europe/Paris.
+Le suivi SSH/SQLite est effectué en lecture seule (`mode=ro`, `query_only=ON`).
+
+- À 11:45:41, Shikamaru ouvre l'incident `teleinformation.freshness`
+  `da780e1c-c221-4554-9af9-c70fd7009e0c` sur LINKY-01, en mode `direct_http`.
+- Le contrôle `logs.health_check` `d726eaaf-c53a-4828-b494-d5a409651885`
+  est suivi d'une escalade automatique : job IA
+  `b82fc95a-5a3e-45a8-a587-d0d16841186f`, créé à 11:46:04.
+- À 11:46:33, le résultat IA produit `PROBABLE`, `hypothesis`, décision
+  `investigate`. La confirmation déterministe Supervisor attendue n'est pas obtenue.
+- À 11:46:42, une deuxième observation alimente le même incident, toujours actif.
+- Le dossier IA contient architecture, observation, historique et analyse des
+  journaux ; aucune entrée de preuve Supervisor n'y figure. Cela ne suffit pas
+  à établir pourquoi l'inspection n'a pas fourni la confirmation attendue.
+
+Le critère « arrêt confirmé sans IA » échoue sur ce passage réel malgré le PASS
+Sandbox. L'opérateur confirme le redémarrage à **11:46:43**. Le relevé en lecture
+seule de 11:49 confirme la résolution automatique du même incident à
+**11:47:42**, sur observation `healthy`, environ 59 secondes après le redémarrage.
+L'observation suivante à 11:48:43 reste saine ; aucun incident de fraîcheur
+Téléinformation actif ne subsiste sur LINKY-01. Le contrôle des journaux et
+l'unique job IA associés sont `SUCCEEDED`, avec `completion_processed=1`.
+La détection, la déduplication et le retour sain sont donc vérifiés ; la
+confirmation Supervisor sans IA reste en échec. Aucune action de production n'est
+effectuée par l'assistant. Cette panne n'est pas comptabilisée comme validée.
+La cause de l'écart entre l'inspection simulée et le parcours réel reste à établir.
+
+### Déploiement Agent 1.29.16 vérifié — 22 septembre 2026
+
+Après confirmation du déploiement par l'opérateur, la recette en lecture seule
+`.\sandbox\run.ps1 post-deploy agent 1.29.16` est **PASS** sur INFRA-01 :
+
+- version installée 1.29.16 confirmée ;
+- service `active/running`, démarré le 22 septembre à 11:37:33 Europe/Paris ;
+- `NRestarts=0`, port d'administration 8765 accessible ;
+- base des jobs accessible en lecture seule, aucun job actif et aucun résultat
+  terminal non traité ;
+- aucune erreur Agent dans la fenêtre de journal des 15 dernières minutes.
+
+Aucun job ni aucune panne n'a été déclenché pendant cette recette. Les derniers
+jobs affichés précèdent le démarrage du service : ils ne constituent pas une
+validation du cycle Katsuyu sous la 1.29.16. La requalification réelle de la
+panne Téléinformation reste à effectuer pour vérifier la confirmation Supervisor,
+la stabilité du diagnostic sur observations répétées et la résolution au retour
+des trames. Les critères de sortie restent à **8/10**.
+
+### Scénario Sandbox Téléinformation — 22 septembre 2026
+
+Le scénario `teleinformation-supervisor-cycle` couvre désormais le cycle de
+régression issu de la panne réelle, depuis les sources Agent locales et des
+bases SQLite temporaires. Les observations Shikamaru et l'inspection Supervisor
+sont simulées ; aucun équipement ni service de Konoha n'est contacté.
+
+Ses **26 vérifications passent** :
+
+- `teleinfo2mqtt` explicitement `stopped` sur LINKY-01 produit un diagnostic
+  `CONFIRMED` / `confirmed_by_supervisor`, sans appel IA ;
+- la décision reste `investigate` : la cause immédiate est confirmée, la raison
+  de l'arrêt reste à examiner, sans réparation automatique ;
+- trois observations répétées augmentent l'âge des trames et le compteur
+  d'occurrences sans invalider ni recréer le diagnostic ;
+- une reprise SQLite conserve intégralement le dossier et sa décision courante ;
+- un changement du seuil de fraîcheur invalide correctement le diagnostic,
+  puis une réévaluation explicite enregistre une nouvelle base confirmée ;
+- le retour de trames fraîches résout automatiquement le même incident ;
+- une seconde reprise conserve la résolution et l'historique ; aucun job IA ni
+  collecte complémentaire n'est créé pendant le cycle.
+
+Validation : **10/10 scénarios Sandbox PASS**. Le runtime Agent n'est pas modifié.
+Cette validation locale ne comptabilise pas une nouvelle panne contrôlée réelle :
+les deux critères opérationnels restent ouverts, avec **8 critères acquis sur 10**.
+Aucune publication ni aucun déploiement n'a été effectué pour ce scénario.
+
 ### Panne contrôlée Téléinformation et qualification Agent 1.29.16 — 21–22 septembre 2026
 
 Une première panne contrôlée réelle a été provoquée sur Konoha en arrêtant
@@ -274,7 +381,7 @@ terminé.
 Les validations sont désormais :
 
 - 1559 tests Agent PASS pour la qualification locale de la 1.29.16 ;
-- 9/9 scénarios Sandbox PASS ;
+- 10/10 scénarios Sandbox PASS au 22 septembre, dont le cycle Téléinformation ;
 - full-stack réel précédemment validé avec worker HTTPS, llama.cpp, Ministral
   et Vision ;
 - investigations réelles validées sur INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ;
