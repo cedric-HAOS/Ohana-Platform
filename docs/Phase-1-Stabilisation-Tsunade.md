@@ -12,6 +12,99 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Panne contrôlée Téléinformation et qualification Agent 1.29.16 — 21–22 septembre 2026
+
+Une première panne contrôlée réelle a été provoquée sur Konoha en arrêtant
+l'add-on `teleinfo2mqtt` de LINKY-01.
+
+Shikamaru a correctement détecté la perte de fraîcheur des trames
+Téléinformation et a ouvert puis alimenté un unique incident critique
+`teleinformation.freshness`.
+
+La panne réelle a confirmé plusieurs propriétés déjà attendues :
+
+- l'arrêt de `teleinfo2mqtt` provoque bien la perte de fraîcheur du chemin
+  direct `teleinfo2mqtt → Ohana-Agent` ;
+- les observations suivantes mettent à jour le même incident sans en créer un
+  nouveau ;
+- les dernières valeurs TIC restent conservées comme contexte historique sans
+  être présentées comme des mesures fraîches ;
+- après redémarrage de `teleinfo2mqtt`, de nouvelles trames ont été reçues ;
+- Shikamaru a alors constaté le retour sain et le même incident a été résolu
+  automatiquement, sans fermeture manuelle.
+
+Cette campagne a toutefois révélé deux défauts dans le diagnostic Tsunade.
+
+Premièrement, alors que l'état de l'add-on était déterminable par l'inspection
+Supervisor déjà disponible, Tsunade ne consultait pas cette preuve avant
+d'escalader vers Katsuyu. L'analyse restait donc `PROBABLE` et proposait des
+investigations supplémentaires alors que la cause immédiate — add-on arrêté —
+était déterministement observable.
+
+Deuxièmement, chaque nouvelle observation de la même perte de fraîcheur
+actualisait `last_observed_at` et rendait immédiatement le diagnostic précédent
+obsolète, même lorsque seule la durée de la panne avait changé.
+
+Ohana-Agent 1.29.16 corrige ces deux comportements.
+
+Pour un incident `teleinformation.freshness` en mode `direct_http`, Tsunade
+consulte désormais l'état Supervisor avant toute expertise IA. Si
+`teleinfo2mqtt` est explicitement `stopped`, cette preuve produit un diagnostic
+`CONFIRMED` déterministe et aucune analyse Katsuyu n'est déclenchée.
+
+Les décisions Téléinformation mémorisent également une empreinte sémantique de
+leur base diagnostique. Les éléments purement évolutifs comme l'âge de la
+dernière trame ne modifient pas cette empreinte. Une observation répétée du même
+défaut conserve donc le diagnostic courant, tandis qu'un changement matériel du
+contexte invalide correctement l'analyse précédente.
+
+Deux tests de régression reproduisent ces deux situations.
+
+Qualification locale de la 1.29.16 :
+
+```text
+Ohana-Agent
+1559 passed
+
+Ohana Sandbox
+9/9 scénarios PASS
+```
+
+La correction est donc qualifiée localement avant publication.
+La panne Téléinformation n'est toutefois pas encore comptabilisée comme l'un
+des trois scénarios de panne contrôlée définitivement validés : le scénario
+doit être rejoué après déploiement de la 1.29.16 afin de vérifier sur Konoha
+le diagnostic Supervisor CONFIRMED, sa stabilité lors d'observations répétées
+et la résolution automatique après redémarrage de teleinfo2mqtt.
+
+### Mode dégradé réel sans Katsuyu — 21 septembre 2026
+
+Le mode dégradé a été exercé directement sur Konoha en maintenant Katsuyu
+indisponible sur Bubule.
+
+Le worker `katsuyu-bubule` a été observé `UNAVAILABLE` pendant toute la
+validation.
+
+Pendant cette absence :
+
+- les investigations locales `cpu.status`, `memory.status`, `disk.usage` et
+  `service.status` sont restées opérationnelles ;
+- les investigations `dns.query`, `mqtt.status` et `network.ping` ont continué
+  à produire leurs résultats déterministes ;
+- Shikamaru a poursuivi ses observations planifiées ;
+- le plugin Téléinformation a effectué un nouveau cycle et son compteur
+  d'exécution a progressé ;
+- Katsuyu est resté `UNAVAILABLE` pendant le contrôle et n'a donc pas participé
+  à ces résultats.
+
+Après redémarrage du worker Windows, Katsuyu est revenu `AVAILABLE` normalement.
+
+Cette validation démontre sur Konoha que l'absence réelle de Katsuyu n'empêche
+ni Shikamaru d'observer l'infrastructure, ni Tsunade de poursuivre les
+investigations réalisables localement.
+
+Le critère de sortie « Mode dégradé démontré » est acquis.
+
 ### Validation opérationnelle des investigations essentielles — 21 septembre 2026
 
 Les quatre nœuds représentatifs prévus pour la sortie de Phase 1 ont désormais
@@ -178,22 +271,28 @@ dossier de preuve Tsunade passe désormais par la frontière de sanitation.
 Le développement de stabilisation locale nécessaire à la Phase 1 est désormais
 terminé.
 
-Les validations locales sont vertes :
+Les validations sont désormais :
 
-- 1557 tests Agent PASS, 1 skipped ;
+- 1559 tests Agent PASS pour la qualification locale de la 1.29.16 ;
 - 9/9 scénarios Sandbox PASS ;
-- full-stack réel PASS avec worker HTTPS, llama.cpp, Ministral et Vision ;
-- teardown du laboratoire propre sous Windows.
+- full-stack réel précédemment validé avec worker HTTPS, llama.cpp, Ministral
+  et Vision ;
+- investigations réelles validées sur INFRA-01, HA-01, LINKY-01 et ZWAVE-01 ;
+- mode dégradé réel sans Katsuyu validé sur Konoha.
 
-Six critères de sortie sur dix sont acquis.
+Huit critères de sortie sur dix sont acquis.
 
-Les quatre critères encore ouverts nécessitent maintenant principalement une
-validation opérationnelle sur Konoha :
+Les deux critères encore ouverts sont désormais :
 
-1. exercer suffisamment INFRA-01, HA-01 et LINKY-01 ;
-2. vérifier réellement le mode dégradé sans Katsuyu ;
-3. exercer trois pannes contrôlées appartenant à plusieurs familles ;
-4. démontrer la valeur de Katsuyu sur un incident Konoha réellement ambigu.
+1. exercer et valider trois pannes contrôlées représentatives appartenant à au
+   moins deux familles différentes ;
+2. démontrer une valeur ajoutée identifiable de Katsuyu sur un incident Konoha
+   réellement ambigu.
+
+La panne contrôlée `teleinfo2mqtt` a déjà permis d'exercer la détection,
+l'incident et le retour sain, mais son premier passage a révélé deux défauts de
+diagnostic corrigés dans Agent 1.29.16. Elle sera comptabilisée après
+requalification post-déploiement.
 
 ### État consolidé après validation full-stack — 21 septembre 2026
 

@@ -4,6 +4,24 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## [1.0.115] - 2026-09-22
+
+### Corrigé
+
+- Ohana-Agent 1.29.16 privilégie désormais la preuve déterministe Supervisor
+  pour une perte de Téléinformation directe lorsque `teleinfo2mqtt` est arrêté.
+- Une observation répétée du même défaut Téléinformation ne rend plus son
+  diagnostic immédiatement obsolète ; une modification matérielle du contexte
+  continue en revanche à imposer une réévaluation.
+- Vision 1.22.14, Katsuyu 0.8.15 et Shizune 0.3.0 restent compatibles.
+
+### Validation
+
+- Ohana-Agent : 1 559 tests réussis.
+- Ohana Sandbox : 9 scénarios sur 9 PASS.
+- La requalification du scénario réel `teleinfo2mqtt` reste prévue après
+  déploiement de cette composition.
+
 ## [1.0.100] - 2026-09-15
 
 - Agent 1.29.0 enrichit les investigations avec la configuration MQTT et les

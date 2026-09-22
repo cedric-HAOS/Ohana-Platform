@@ -377,7 +377,7 @@ Une validation complète et exhaustive de tous les protocoles disponibles sur ch
 - [x] Une conclusion produite par l’IA reste explicitement identifiable comme une hypothèse.
 - [x] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu (Sandbox `probe-confirmed-failure` : observation DNS, deux contrôles déterministes, panne confirmée par `dns.query`, réseau sain, décision `action_required`, aucune IA, puis résolution sur observation saine).
 - [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu. **Le full-stack du 21 septembre valide le chemin réel jusqu'au LLM, l'acceptation du résultat par Tsunade et son rendu dans Vision ; le journal déclencheur reste synthétique, donc la valeur opérationnelle sur un incident réel ambigu reste à démontrer.**
-- [ ] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Tsunade validé fonctionnellement en Sandbox le 21 septembre (`UNAVAILABLE` → `WAITING_WORKER` → `TIMEOUT`, incident conservé, aucune relance) ; continuité réelle de Shikamaru/Konoha encore à exercer.**
+- [x] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Validé réellement sur Konoha le 21 septembre : Katsuyu maintenu `UNAVAILABLE`, investigations locales Tsunade opérationnelles, cycle Shikamaru Téléinformation poursuivi et aucune reconnexion du worker pendant le test.**
 - [x] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué (contrôle du 21 septembre à 09:11 : quatre décisions `watch`, job traité, aucun job restant).
 
 ---
@@ -450,7 +450,7 @@ Critères :
 - [x] Une contribution IA reste identifiable comme telle.
 - [x] Un traitement déterministe lourd peut être distingué d’une expertise IA (contrôle du 21 septembre : `logs.health_check` Katsuyu réussi, décisions Tsunade déterministes, aucun `ai.inference`).
 - [x] Tsunade décide de la suite après réception du résultat (Sandbox `diagnostic-levels` : un résultat Katsuyu `KO` reste une hypothèse, devient `PROBABLE` avec décision `investigate` et ne produit jamais `action_required`).
-- [ ] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement. **Validé fonctionnellement en Sandbox le 21 septembre (`local-diagnosis-worker-unavailable`) : diagnostic DNS déterministe et retour sain pendant qu'une collecte distante reste en attente. Les sondes et observations sont simulées ; la validation pendant une indisponibilité réelle de Katsuyu reste à démontrer.**
+- [x] L’absence de Katsuyu n’empêche pas Tsunade de poursuivre les investigations réalisables localement. **Validé réellement sur Konoha le 21 septembre : avec Katsuyu `UNAVAILABLE`, `cpu.status`, `memory.status`, `disk.usage`, `service.status`, `dns.query`, `mqtt.status` et `network.ping` restent opérationnels, tandis que Shikamaru poursuit ses observations planifiées.**
 
 ---
 
@@ -528,9 +528,9 @@ Restent notamment à suivre :
 - [x] **Réévaluation sur information nouvelle**.
 - [x] **Hypothèses maîtrisées**.
 - [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis ; le full-stack valide également une vraie inférence Ministral, son traitement par Tsunade et son rendu Vision. Il reste à démontrer qu'une expertise Katsuyu apporte une information réellement utile sur un incident ambigu effectivement observé dans Konoha.
-- [ ] **Mode dégradé démontré** — comportement Tsunade validé en Sandbox face à Katsuyu indisponible ; continuité opérationnelle réelle de Shikamaru/Konoha encore à exercer.
-- [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint 1557 tests PASS (1 skipped), les 9 scénarios Sandbox restent PASS et le full-stack avec inférence Ministral réelle et rendu Vision reste PASS.
-- [ ] **Pannes représentatives exercées** — les simulations Sandbox sécurisent les invariants mais ne remplacent pas les scénarios de panne contrôlée réellement exercés sur Konoha.
+- [x] **Mode dégradé démontré** — Katsuyu a été rendu réellement indisponible sur Bubule. Pendant cette absence, les investigations déterministes locales de Tsunade sont restées opérationnelles, Shikamaru a poursuivi ses observations planifiées et le worker est resté `UNAVAILABLE` pendant toute la validation.
+- [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint 1559 tests PASS (1 skipped), les 9 scénarios Sandbox restent PASS et le full-stack avec inférence Ministral réelle et rendu Vision reste PASS.
+- [ ] **Pannes représentatives exercées** — les simulations Sandbox sécurisent les invariants mais ne remplacent pas les scénarios de panne contrôlée réellement exercés sur Konoha. Un premier scénario réel `teleinfo2mqtt` a exercé détection, incident et retour sain mais a révélé deux défauts de diagnostic corrigés dans Agent 1.29.16 ; sa requalification post-déploiement reste nécessaire avant de le comptabiliser.
 - [x] **Vision exploitable** — le full-stack local pilote Vision dans Chromium, ouvre le dossier d'incident, vérifie l'analyse Katsuyu et le résumé IA, contrôle les vues desktop et mobile sans débordement horizontal et ne détecte aucune erreur JavaScript ni réponse HTTP serveur en erreur.
 
 La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.
