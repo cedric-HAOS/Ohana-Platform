@@ -12,6 +12,198 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Préparation de la release Agent 1.29.19 — 22 septembre 2026
+
+La campagne locale suivant les pannes contrôlées a conduit à un nouveau lot
+Agent destiné à la prochaine release.
+
+Qualification du checkout Ohana-Agent :
+
+```text
+1569 passed, 1 skipped
+Ruff : PASS
+```
+
+Le scénario Sandbox `tsunade-observation-wiring` est également **PASS** avec
+sept vérifications.
+
+Ce lot corrige le défaut révélé par la panne réseau `SHE-04` : un nouvel incident
+portant sur un équipement sans source de journaux configurée ouvrait correctement
+un dossier Tsunade mais ne déclenchait aucune expertise.
+
+Le câblage de production applique désormais la règle suivante :
+
+```text
+première occurrence
+       │
+       ├── source de logs configurée
+       │       ↓
+       │  logs.health_check
+       │
+       └── pas de source de logs
+               ↓
+          expertise Tsunade directe
+```
+
+Une occurrence suivante du même incident ne redémarre aucune expertise.
+
+Le cas symétrique reste également protégé : lorsqu'une source de journaux est
+disponible, Tsunade privilégie la collecte et ne lance pas simultanément une
+expertise directe.
+
+La correction est qualifiée localement mais n'est pas encore comptabilisée comme
+validée en production. Elle doit être publiée, déployée sur INFRA-01 puis
+requalifiée par un nouveau rejeu de `SHE-04`.
+
+### Panne contrôlée #2 — Réseau — SHE-04
+
+**Statut : cycle de vie validé, investigation Tsunade à requalifier après
+déploiement de la prochaine release.**
+
+Une coupure volontaire de `SHE-04` a exercé la famille **Réseau**.
+
+État initial :
+
+- équipement présent ;
+- IP `192.168.1.73` ;
+- DNS `she-04.ohana.lan` ;
+- contrôle `network.reachable` par ICMP ;
+- seuil de panne : trois échecs consécutifs.
+
+L'incident
+`3f20f519-ec68-4ed5-b474-2d2ff3892140`
+a été ouvert après exactement trois échecs consécutifs.
+
+Les observations suivantes ont alimenté le même incident :
+
+```text
+opened   : SHE-04 absent après 3 échecs
+observed : SHE-04 absent après 4 échecs
+observed : SHE-04 absent après 5 échecs
+resolved : SHE-04 de nouveau présent
+```
+
+Le retour sain a automatiquement résolu le même dossier après remise sous
+tension.
+
+Les propriétés suivantes sont donc déjà démontrées sur Konoha :
+
+- seuil de trois échecs respecté ;
+- un seul incident ;
+- occurrences répétées rattachées au même dossier ;
+- aucune duplication ;
+- résolution automatique du même incident sur retour ICMP sain.
+
+Le test a toutefois révélé un défaut de câblage : `SHE-04` ne faisant pas partie
+des sources de journaux Katsuyu, le handler d'observation quittait le traitement
+sans lancer l'expertise directe Tsunade.
+
+Ce défaut est corrigé localement et couvert à deux niveaux :
+
+1. tests Agent ciblés puis suite complète :
+   **1569 passed, 1 skipped**, Ruff propre ;
+2. scénario Sandbox `tsunade-observation-wiring` :
+   **7 vérifications PASS**.
+
+La panne #2 ne sera comptabilisée comme validée qu'après déploiement et rejeu,
+avec vérification du déclenchement automatique de Tsunade, de l'absence de boucle
+et de la résolution au retour sain.
+
+### Panne contrôlée #3 — Incident ambigu nécessitant Katsuyu
+
+**Statut : comportement Agent et vrai LLM validés en laboratoire ; reproduction
+réelle sur Konoha encore requise.**
+
+Un scénario représentatif a été construit autour d'un incident `logs.health`
+Home Assistant dont les journaux contiennent plusieurs erreurs de template liées
+à une valeur d'entité non numérique ou `unavailable`.
+
+Ce cas est volontairement ambigu :
+
+- les journaux prouvent l'existence de l'erreur ;
+- ils identifient une entité concernée ;
+- ils ne démontrent pas pourquoi cette entité était indisponible ;
+- une conclusion déterministe sur la cause serait donc excessive.
+
+Le scénario Sandbox `ambiguous-katsuyu-cycle` exerce le cycle suivant :
+
+```text
+logs.health KO
+      ↓
+incident HA-01
+      ↓
+preuves déterministes insuffisantes
+      ↓
+ai.inference automatique
+      ↓
+hypothèse Katsuyu
+      ↓
+PROBABLE / investigate
+```
+
+Résultat : **PASS**.
+
+Les vérifications démontrent notamment :
+
+- l'incident `logs.health` est actif ;
+- les anomalies nouvelles sont conservées ;
+- Tsunade demande automatiquement Katsuyu ;
+- l'escalade est marquée `automatic_escalation` ;
+- aucune action corrective n'est autorisée avant ou après l'IA ;
+- le dossier IA contient les journaux bornés ;
+- le résultat reste `epistemic_status=hypothesis` ;
+- le niveau final reste `PROBABLE` ;
+- `confirmation_gap` expose les preuves encore manquantes ;
+- une investigation concrète en lecture seule est proposée ;
+- rejouer la même preuve ne crée pas un second job IA ;
+- le même incident est conservé.
+
+Une deuxième validation a ensuite utilisé le véritable laboratoire full-stack,
+sans résultat IA simulé.
+
+Le parcours exerce réellement :
+
+- worker Katsuyu HTTPS ;
+- collecte et analyse déterministe des journaux ;
+- escalade automatique par Agent ;
+- job `ai.inference` réel ;
+- llama.cpp ;
+- modèle `Ministral-3-14B-Reasoning-2512-Q4_K_M.gguf` ;
+- réception et traitement du résultat par Tsunade ;
+- restitution dans Vision avec Chromium.
+
+Résultat : **PASS**.
+
+Le modèle a généré **615 tokens**.
+
+Il a :
+
+- classé l'anomalie `KO` ;
+- produit au moins une hypothèse ;
+- indiqué le contexte restant à vérifier.
+
+Tsunade a conservé cette contribution comme :
+
+- `diagnostic_level=PROBABLE` ;
+- `epistemic_status=hypothesis` ;
+- décision `investigate` ;
+- jamais `action_required`.
+
+Une vérification Home Assistant explicite et en lecture seule a été construite à
+partir de l'entité citée dans les journaux.
+
+Cette validation démontre que Katsuyu apporte techniquement une capacité
+d'interprétation utile lorsqu'Agent ne dispose pas de preuve déterministe
+suffisante, tout en respectant la frontière faits / hypothèses.
+
+Elle ne clôt toutefois pas encore le critère de sortie « Valeur de Katsuyu
+démontrée », car le journal et l'infrastructure du full-stack restent synthétiques.
+
+La prochaine étape est de reproduire volontairement une anomalie de template
+équivalente sur HA-01 réel, après publication et déploiement de la prochaine
+release Agent, puis de vérifier que le même cycle se produit sans déclenchement
+manuel de l'expertise IA.
+
 ### Panne contrôlée #1 — Service — teleinfo2mqtt
 
 **Statut : validée le 22 septembre 2026 avec Ohana-Agent 1.29.18.**

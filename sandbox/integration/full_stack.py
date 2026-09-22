@@ -32,6 +32,7 @@ from ohana_vision.web.bootstrap import build_application
 from playwright.sync_api import expect, sync_playwright
 from starlette.staticfiles import StaticFiles
 from scenarios._support import NoProbes
+from ohana_agent.tsunade.incident_summary import incident_assessment
 
 from integration.lifecycle import certificate, stop_worker
 
@@ -179,7 +180,14 @@ def run(*, args):
             # Only the physical journal source is supplied by the lab. Job-bound
             # authorization, HTTP transport and analysis use production code.
             log_time = datetime.now(ZoneInfo("Europe/Paris")).isoformat()
-            journal = f"{log_time} ERROR Connection timeout to local test service\n" * 2
+            journal = (
+                f"{log_time} ERROR TemplateError: ValueError: "
+                "Template error: float got invalid input 'unavailable' "
+                "when rendering template for sensor.pool_temperature\n"
+                f"{log_time} ERROR Error rendering template: "
+                "sensor.pool_temperature cannot be converted with float "
+                "because its state is unavailable\n"
+            )
 
             def read_journal(_start, _end, limit):
                 payload = journal.encode("utf-8")
@@ -367,20 +375,19 @@ def run(*, args):
             )
             page.screenshot(path=str(output / "vision-before-ai.png"), full_page=True)
             report["screenshots"].append("vision-before-ai.png")
-            # Fresh deterministic watch has no diagnosis button. Exercise explicit
-            # operator intent through Vision's API without altering incident state.
-            diagnosis = page.request.post(
-                vision_url + f"/api/administration/tsunade/incidents/{incident_id}/diagnose",
-                data={},
-            )
-            outcome = diagnosis.json()
+            incident = incidents.get(incident.incident_id)
+
+            automatic_escalations = [
+                event
+                for event in incident.events
+                if event.kind == "diagnostic"
+                and event.payload.get("cycle_status") == "ai_queued"
+                and event.payload.get("trigger") == "automatic_escalation"
+            ]
+
             check(
-                "Diagnostic opérateur transmis par l'API Vision à Tsunade",
-                diagnosis.ok,
-            )
-            check(
-                "Tsunade a demandé une inférence IA",
-                outcome.get("status") == "AI_QUEUED",
+                "Tsunade a automatiquement demandé Katsuyu sur l'incident ambigu",
+                len(automatic_escalations) == 1,
             )
             ai_job = _wait(
                 "inférence IA locale réelle",
@@ -410,6 +417,70 @@ def run(*, args):
                 timeout=20,
                 worker=worker,
                 page=page,
+            )
+            diagnosed = incidents.get(incident.incident_id)
+            assessment = incident_assessment(diagnosed)
+
+            ai_diagnostics = [
+                event
+                for event in diagnosed.events
+                if event.kind == "diagnostic"
+                and event.payload.get("cycle_status") == "ai_completed"
+            ]
+
+            check(
+                "Le vrai Katsuyu classe l'anomalie comme KO",
+                ai_job.result.get("verdict") == "KO",
+            )
+
+            check(
+                "Le vrai Katsuyu produit au moins une hypothèse",
+                bool(ai_job.result.get("hypotheses")),
+            )
+
+            check(
+                "Le vrai Katsuyu indique le contexte restant à vérifier",
+                bool(ai_job.result.get("missing_context")),
+            )
+
+            check(
+                "Tsunade conserve le résultat Katsuyu comme hypothèse PROBABLE",
+                (
+                    len(ai_diagnostics) == 1
+                    and ai_diagnostics[0].payload.get("epistemic_status") == "hypothesis"
+                    and ai_diagnostics[0].payload.get("diagnostic_level") == "PROBABLE"
+                    and assessment["diagnostic_level"] == "PROBABLE"
+                ),
+            )
+
+            check(
+                "L'hypothèse Katsuyu demande une investigation sans autoriser d'action",
+                (
+                    assessment["decision"] == "investigate"
+                    and assessment["decision"] != "action_required"
+                ),
+            )
+
+            actions = [
+                event
+                for event in diagnosed.events
+                if event.kind == "action"
+                and event.payload.get("origin") == "katsuyu_ai"
+            ]
+
+            investigation_commands = (
+                actions[-1].payload.get("investigation_commands", [])
+                if actions
+                else []
+            )
+
+            check(
+                "Katsuyu conduit à une vérification concrète en lecture seule",
+                any(
+                    command.get("safety") == "Lecture seule"
+                    and "sensor.pool_temperature" in command.get("command", "")
+                    for command in investigation_commands
+                ),
             )
             page.reload(wait_until="networkidle")
             page.locator('[data-navigation-target="incidents"]').click()

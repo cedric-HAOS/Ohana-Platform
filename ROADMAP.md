@@ -319,21 +319,54 @@ temporaires. `--logs-file` et `--window-end` permettent de rejouer un journal
 historique. Ce parcours ne pilote pas à lui seul le navigateur, la boucle réseau
 réelle du worker ni le runtime LLM.
 
-Ces dimensions sont désormais couvertes par `run --full-stack`. La validation
-du 21 septembre 2026 exerce un worker Katsuyu réel par HTTPS avec certificat
-local vérifié, le cycle réseau
-`register → next → source → heartbeat → complete`, une inférence locale réelle
-via llama.cpp avec le modèle Ministral, puis la restitution du résultat dans
-Vision avec Chromium.
+Ces dimensions sont désormais couvertes par `run --full-stack`.
 
-Le dernier passage full-stack propre a généré 628 tokens, vérifié les vues
-desktop et mobile sans débordement horizontal et n'a détecté aucune erreur
-JavaScript ni réponse HTTP serveur en erreur. Le teardown Vision sous Windows
-se termine désormais sans exception asyncio.
-Les bases, le journal déclencheur et l'infrastructure de ce laboratoire restent locaux et temporaires : ce PASS ne constitue pas une panne
-réellement exercée sur Konoha.
+Le dernier passage full-stack propre du **22 septembre 2026** exerce un worker
+Katsuyu réel par HTTPS avec certificat local vérifié, le cycle réseau
 
-Les **10 scénarios locaux** couvrent notamment les niveaux de diagnostic,
+`register → next → source → heartbeat → complete`,
+
+une analyse déterministe réelle des journaux, puis une inférence locale réelle
+via llama.cpp avec le modèle Ministral.
+
+Contrairement au parcours précédent, l'expertise IA n'est plus déclenchée par
+une demande explicite de l'opérateur. Le journal de laboratoire contient un
+incident volontairement ambigu : deux erreurs de template Home Assistant liées
+à une valeur `unavailable`.
+
+Agent traite d'abord les journaux, ouvre l'incident `logs.health`, constate que
+les éléments déterministes justifient une analyse complémentaire et crée
+**automatiquement** un unique job `ai.inference`.
+
+Le vrai modèle Katsuyu :
+
+- classe l'anomalie `KO` ;
+- produit au moins une hypothèse ;
+- indique explicitement le contexte restant à vérifier ;
+- ne transforme pas cette hypothèse en fait établi.
+
+Tsunade conserve le résultat avec :
+
+- `diagnostic_level=PROBABLE` ;
+- `epistemic_status=hypothesis` ;
+- décision `investigate` ;
+- aucune décision `action_required` fondée sur la seule IA.
+
+Une investigation concrète en lecture seule est proposée pour l'entité Home
+Assistant concernée.
+
+L'exécution finale a généré **615 tokens**. Vision restitue l'analyse Katsuyu et
+le résumé IA dans Chromium, en desktop et mobile, sans débordement horizontal,
+erreur JavaScript ni réponse HTTP serveur en erreur.
+
+Les bases, le journal déclencheur et l'infrastructure de ce laboratoire restent
+locaux et temporaires. Ce PASS démontre la valeur technique et fonctionnelle du
+LLM Katsuyu sur un cas ambigu, mais **ne constitue pas encore un incident ambigu
+réellement observé sur Konoha**.
+
+Les bases, le journal déclencheur et l'infrastructure de ce laboratoire restent locaux et temporaires : ce PASS ne constitue pas une panne réellement exercée sur Konoha.
+
+Les **scénarios locaux de la Sandbox** couvrent notamment les niveaux de diagnostic,
 les échecs de sondes, l'absence de Katsuyu, la reprise des suivis persistés
 et le diagnostic local pendant l'attente d'un worker. Le scénario
 `followup-evidence-cycle` couvre aussi une collecte autorisée suivie d'une
@@ -380,7 +413,7 @@ Une validation complète et exhaustive de tous les protocoles disponibles sur ch
 - [x] Le même dossier ou les mêmes preuves ne provoquent pas une nouvelle expertise IA automatique.
 - [x] Une conclusion produite par l’IA reste explicitement identifiable comme une hypothèse.
 - [x] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu (Sandbox `probe-confirmed-failure` : observation DNS, deux contrôles déterministes, panne confirmée par `dns.query`, réseau sain, décision `action_required`, aucune IA, puis résolution sur observation saine).
-- [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu. **Le full-stack du 21 septembre valide le chemin réel jusqu'au LLM, l'acceptation du résultat par Tsunade et son rendu dans Vision ; le journal déclencheur reste synthétique, donc la valeur opérationnelle sur un incident réel ambigu reste à démontrer.**
+- [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu. **Le scénario `ambiguous-katsuyu-cycle` valide l'escalade automatique, le niveau `PROBABLE`, le `confirmation_gap`, l'absence d'`action_required` et l'absence de boucle sur preuve identique. Le full-stack du 22 septembre reproduit ensuite ce cycle avec le vrai worker Katsuyu, llama.cpp et Ministral : Agent sollicite automatiquement l'IA, le modèle produit une hypothèse exploitable et Tsunade propose une vérification concrète en lecture seule. Il reste à reproduire ce comportement sur un incident ambigu réellement observé dans Konoha.**
 - [x] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Validé réellement sur Konoha le 21 septembre : Katsuyu maintenu `UNAVAILABLE`, investigations locales Tsunade opérationnelles, cycle Shikamaru Téléinformation poursuivi et aucune reconnexion du worker pendant le test.**
 - [x] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué (contrôle du 21 septembre à 09:11 : quatre décisions `watch`, job traité, aucun job restant).
 
@@ -534,8 +567,8 @@ Restent notamment à suivre :
 - [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis ; le full-stack valide également une vraie inférence Ministral, son traitement par Tsunade et son rendu Vision. Il reste à démontrer qu'une expertise Katsuyu apporte une information réellement utile sur un incident ambigu effectivement observé dans Konoha.
 - [x] **Mode dégradé démontré** — Katsuyu a été rendu réellement indisponible sur Bubule. Pendant cette absence, les investigations déterministes locales de Tsunade sont restées opérationnelles, Shikamaru a poursuivi ses observations planifiées et le worker est resté `UNAVAILABLE` pendant toute la validation.
 - [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint 1559 tests PASS (1 skipped), les 9 scénarios Sandbox restent PASS et le full-stack avec inférence Ministral réelle et rendu Vision reste PASS.
-- [ ] **Pannes représentatives exercées** — les simulations Sandbox sécurisent les invariants mais ne remplacent pas les scénarios de panne contrôlée réellement exercés sur Konoha. Un premier scénario réel `teleinfo2mqtt` a exercé détection, incident et retour sain mais a révélé deux défauts de diagnostic corrigés dans Agent 1.29.16 ; sa requalification post-déploiement reste nécessaire avant de le comptabiliser.
-- [x] **Vision exploitable** — le full-stack local pilote Vision dans Chromium, ouvre le dossier d'incident, vérifie l'analyse Katsuyu et le résumé IA, contrôle les vues desktop et mobile sans débordement horizontal et ne détecte aucune erreur JavaScript ni réponse HTTP serveur en erreur.
+- [ ] **Valeur de Katsuyu démontrée** — le routage automatique vers Katsuyu est désormais démontré sur un incident ambigu reproductible. Le scénario `ambiguous-katsuyu-cycle` valide qu'Agent crée lui-même un unique `ai.inference`, conserve le résultat comme hypothèse `PROBABLE`, expose les éléments manquants et ne boucle pas sur les mêmes preuves. Le full-stack du 22 septembre reproduit ce cycle avec le vrai worker HTTPS, llama.cpp et Ministral : verdict `KO`, hypothèse structurée, contexte manquant, décision Tsunade `investigate` et proposition de vérification en lecture seule. Il reste uniquement à démontrer cette valeur sur un incident ambigu effectivement observé dans Konoha.
+- [ ] **Pannes représentatives exercées** — la panne contrôlée #1 `teleinfo2mqtt` est validée réellement sur Konoha avec Agent 1.29.18 : détection, incident unique, preuve Supervisor `state=error`, diagnostic `CONFIRMED`, aucune IA inutile et résolution automatique au retour des trames. La panne réseau #2 `SHE-04` a validé son cycle de vie mais révélé l'absence de déclenchement Tsunade pour les équipements sans source de journaux. Le correctif est qualifié localement par 1569 tests Agent, Ruff et le scénario `tsunade-observation-wiring`; un rejeu réel après déploiement de la prochaine release reste nécessaire. La panne #3 est préparée par `ambiguous-katsuyu-cycle` et le full-stack avec vrai LLM, mais doit encore être reproduite sur Konoha. Le critère sera acquis lorsque trois scénarios réels appartenant à au moins deux familles auront été validés avec retour à l'état initial.
 
 La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.
 

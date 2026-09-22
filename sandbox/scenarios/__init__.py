@@ -58,4 +58,20 @@ SCENARIOS = {
             "et INSUFFICIENT_CONTEXT."
         ),
     ),
+    "tsunade-observation-wiring": (
+        "scenarios.tsunade_observation_wiring",
+        (
+            "Vérifier qu'un nouvel incident sans source de logs "
+            "déclenche Tsunade une seule fois, tandis qu'une "
+            "source de logs collecte d'abord ses preuves."
+        ),
+    ),
+    "ambiguous-katsuyu-cycle": (
+        "scenarios.ambiguous_katsuyu_cycle",
+        (
+            "Vérifier qu'un incident logs.health ambigu "
+            "déclenche Katsuyu, reste PROBABLE et ne "
+            "boucle pas sur les mêmes preuves."
+        ),
+    ),
 }
