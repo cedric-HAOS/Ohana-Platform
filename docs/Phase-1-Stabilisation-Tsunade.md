@@ -12,6 +12,198 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### État de reprise — 22 septembre 2026, après validation Agent 1.29.19
+
+**Phase 1 : 9 critères de sortie acquis sur 10.**
+
+La prochaine session ne doit pas reprendre la campagne depuis le début.
+
+Le seul critère de sortie encore ouvert est :
+
+> exercer au moins trois pannes contrôlées représentatives appartenant à
+> plusieurs familles, avec retour à l'état initial vérifié.
+
+Deux pannes sont désormais définitivement validées.
+
+#### #1 — Service — teleinfo2mqtt — VALIDÉE
+
+- famille : Service ;
+- Agent : 1.29.18 ;
+- arrêt volontaire du service ;
+- observation Shikamaru ;
+- incident unique `teleinformation.freshness` ;
+- preuve Supervisor `state=error` ;
+- diagnostic `CONFIRMED` / `confirmed_by_supervisor` ;
+- aucune expertise IA inutile ;
+- observations répétées rattachées au même incident ;
+- redémarrage du service ;
+- résolution automatique du même incident sur retour des trames fraîches.
+
+#### #2 — Réseau — SHE-04 — VALIDÉE
+
+Rejeu définitif réalisé sous **Ohana-Agent 1.29.19**.
+
+SHE-04 a été arrêté à 17:29 Europe/Paris.
+
+L'incident :
+
+`ec7f3bf2-d3de-474d-b3f0-cf44c4134fde`
+
+a été ouvert à 17:50:35 après exactement trois contrôles consécutifs échoués.
+
+Tsunade a immédiatement exécuté une investigation déterministe.
+
+Le contrôle `network.ping` enregistré `OK` ne ciblait pas SHE-04 : il ciblait
+explicitement la FreeBox `router-01`, adresse `192.168.1.1`.
+
+Cette preuve établit donc que le réseau local de référence restait accessible
+pendant l'absence de SHE-04 ; elle ne constitue pas un faux positif sur
+l'équipement arrêté.
+
+Les éléments déterministes restant insuffisants pour expliquer l'absence de
+SHE-04, Tsunade a créé automatiquement le job IA :
+
+`6541bd04-8112-40b9-99ef-5d111f1deab4`
+
+avec :
+
+- `trigger=automatic_escalation` ;
+- résultat `SUCCEEDED` ;
+- `completion_processed=1` ;
+- `diagnostic_level=PROBABLE` ;
+- `epistemic_status=hypothesis` ;
+- décision `investigate`.
+
+Aucun `logs.health_check` n'a été créé pour SHE-04.
+
+Les observations suivantes, jusqu'au treizième échec consécutif, ont toutes
+alimenté le même incident sans créer une nouvelle expertise ni un second job IA.
+
+SHE-04 a été remis sous tension à 18:54.
+
+Le contrôle suivant, à 18:56:39, a observé :
+
+`SHE-04 is present on the network.`
+
+Le même incident a alors été automatiquement résolu avec :
+
+`La capacité est revenue à un état sain.`
+
+Le défaut de routage découvert lors du premier essai SHE-04 est donc
+**corrigé et validé en production par Agent 1.29.19**.
+
+#### Valeur de Katsuyu sur Konoha réel — VALIDÉE
+
+Le critère « Valeur de Katsuyu démontrée » est désormais acquis sans avoir
+besoin de provoquer artificiellement des erreurs supplémentaires dans
+Home Assistant.
+
+L'incident réel HA-01 :
+
+`c5bf1f49-0b0e-4e4a-985c-24631c0f69a8`
+
+est un incident `logs.health` long et ambigu contenant plusieurs familles
+d'anomalies réellement observées : erreurs de connexion, exceptions,
+automatisations et erreurs de template.
+
+Les preuves déterministes permettent d'établir les erreurs mais ne permettent
+pas toujours d'en établir la cause.
+
+Katsuyu apporte alors une interprétation supplémentaire en :
+
+- formulant plusieurs causes possibles comme hypothèses ;
+- associant les éléments favorables à chacune ;
+- conservant les preuves contradictoires ;
+- indiquant explicitement le contexte manquant ;
+- proposant des investigations complémentaires ;
+- générant, lorsque les journaux citent une entité Home Assistant, une
+  vérification concrète en lecture seule.
+
+Un exemple réel concerne
+`sensor.micro_inverter_roof_grid_current`.
+
+Les journaux contenaient une erreur de template de type
+`float got invalid input 'unavailable'`.
+
+Katsuyu a proposé comme hypothèse qu'une valeur indisponible fournie par un
+capteur en amont puisse être à l'origine de l'erreur, tout en indiquant
+l'absence de preuve suffisante pour confirmer cette cause.
+
+Tsunade a conservé ces résultats comme `PROBABLE` / `hypothesis` et non comme
+faits établis ou autorisations d'action.
+
+La valeur fonctionnelle de Katsuyu sur un incident réellement observé dans
+Konoha est donc démontrée.
+
+Le grand nombre d'expertises accumulées par cet incident HA-01 historique
+reste un sujet de durcissement sur la fréquence et le coût des analyses
+`logs.health`, mais ne bloque plus la sortie de Phase 1.
+
+#### Qualification Agent 1.29.19
+
+Avant publication :
+
+- 1569 tests Agent PASS ;
+- 1 test skipped ;
+- Ruff PASS ;
+- Ohana Sandbox 12/12 PASS ;
+- `ambiguous-katsuyu-cycle` PASS ;
+- `tsunade-observation-wiring` PASS ;
+- full-stack vrai worker Katsuyu + llama.cpp + Ministral + Vision : PASS.
+
+Après déploiement :
+
+`.\sandbox\run.ps1 post-deploy agent 1.29.19`
+
+résultat : **PASS**.
+
+Contrôles :
+
+- version 1.29.19 ;
+- service actif ;
+- `NRestarts=0` ;
+- port administration 8765 accessible ;
+- base jobs accessible ;
+- aucun job actif ;
+- aucun résultat terminal non traité ;
+- aucune erreur Agent récente.
+
+#### Prochaine reprise — panne contrôlée #3
+
+**Ne pas reprendre les validations précédentes.**
+
+Il reste uniquement à choisir puis exercer une troisième panne contrôlée
+réelle et réversible.
+
+Objectif du scénario #3 :
+
+1. état initial sain ;
+2. provoquer volontairement la panne ;
+3. observation Shikamaru ;
+4. ouverture ou mise à jour correcte d'un incident ;
+5. investigation Tsunade ;
+6. Katsuyu uniquement si justifié ;
+7. absence de boucle ou de duplication ;
+8. restauration volontaire du service ou équipement ;
+9. observation saine ;
+10. résolution automatique du même incident.
+
+Un candidat possible est **Ohana-Vision indisponible**, à condition de vérifier
+avant le test que sa supervision Shikamaru actuelle permet déjà de produire
+l'observation et l'incident nécessaires.
+
+Si ce candidat exige du nouveau développement uniquement pour réaliser la
+recette, choisir plutôt un autre service déjà supervisé, simple à arrêter et à
+restaurer.
+
+Lorsque #3 sera validée :
+
+- `Pannes représentatives exercées` passera à `[x]` ;
+- la Phase 1 passera de **9/10 à 10/10** ;
+- la Phase 1 pourra être clôturée ;
+- le développement pourra passer à la Phase 2 sans rouvrir les validations
+  précédentes sauf nouvelle preuve contradictoire.
+
 ### Préparation de la release Agent 1.29.19 — 22 septembre 2026
 
 La campagne locale suivant les pannes contrôlées a conduit à un nouveau lot
@@ -57,8 +249,10 @@ requalifiée par un nouveau rejeu de `SHE-04`.
 
 ### Panne contrôlée #2 — Réseau — SHE-04
 
-**Statut : cycle de vie validé, investigation Tsunade à requalifier après
-déploiement de la prochaine release.**
+**Statut : VALIDÉE le 22 septembre 2026 sous Ohana-Agent 1.29.19.
+Le premier passage ayant révélé le défaut de routage est conservé ci-dessous
+comme historique de découverte ; le rejeu définitif est décrit dans
+« État de reprise ».**
 
 Une coupure volontaire de `SHE-04` a exercé la famille **Réseau**.
 
@@ -111,8 +305,9 @@ et de la résolution au retour sain.
 
 ### Panne contrôlée #3 — Incident ambigu nécessitant Katsuyu
 
-**Statut : comportement Agent et vrai LLM validés en laboratoire ; reproduction
-réelle sur Konoha encore requise.**
+**Statut : validation de la valeur de Katsuyu acquise séparément sur un incident
+HA-01 réel. Ce scénario synthétique n'est plus retenu comme panne contrôlée #3.
+La troisième panne contrôlée reste à choisir et à exercer.**
 
 Un scénario représentatif a été construit autour d'un incident `logs.health`
 Home Assistant dont les journaux contiennent plusieurs erreurs de template liées

@@ -413,7 +413,7 @@ Une validation complète et exhaustive de tous les protocoles disponibles sur ch
 - [x] Le même dossier ou les mêmes preuves ne provoquent pas une nouvelle expertise IA automatique.
 - [x] Une conclusion produite par l’IA reste explicitement identifiable comme une hypothèse.
 - [x] Au moins un incident représentatif est diagnostiqué suffisamment loin par Tsunade sans expertise IA Katsuyu (Sandbox `probe-confirmed-failure` : observation DNS, deux contrôles déterministes, panne confirmée par `dns.query`, réseau sain, décision `action_required`, aucune IA, puis résolution sur observation saine).
-- [ ] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu. **Le scénario `ambiguous-katsuyu-cycle` valide l'escalade automatique, le niveau `PROBABLE`, le `confirmation_gap`, l'absence d'`action_required` et l'absence de boucle sur preuve identique. Le full-stack du 22 septembre reproduit ensuite ce cycle avec le vrai worker Katsuyu, llama.cpp et Ministral : Agent sollicite automatiquement l'IA, le modèle produit une hypothèse exploitable et Tsunade propose une vérification concrète en lecture seule. Il reste à reproduire ce comportement sur un incident ambigu réellement observé dans Konoha.**
+- [x] Au moins un incident réellement ambigu démontre une valeur ajoutée identifiable de l’expertise IA Katsuyu. **Validé sur l'incident réel `logs.health` de HA-01 : les preuves déterministes établissent les anomalies sans en établir la cause ; Katsuyu formule des hypothèses bornées, tient compte des preuves contradictoires, identifie le contexte manquant et propose des vérifications ciblées en lecture seule. Des cas réels incluent notamment les erreurs de template liées à `sensor.micro_inverter_roof_grid_current`, pour lesquelles Katsuyu relie prudemment `float got invalid input 'unavailable'` à l'état possible d'un capteur en amont sans transformer cette interprétation en fait établi.**
 - [x] Une indisponibilité de Katsuyu démontre que Tsunade et Shikamaru continuent leurs fonctions essentielles. **Validé réellement sur Konoha le 21 septembre : Katsuyu maintenu `UNAVAILABLE`, investigations locales Tsunade opérationnelles, cycle Shikamaru Téléinformation poursuivi et aucune reconnexion du worker pendant le test.**
 - [x] Au moins un incident atteint correctement un état terminal ou de surveillance sans rester silencieusement bloqué (contrôle du 21 septembre à 09:11 : quatre décisions `watch`, job traité, aucun job restant).
 
@@ -447,6 +447,25 @@ Famille système / Ohana :
 Critère :
 
 - [ ] Trois scénarios représentatifs appartenant à plusieurs familles ont été exercés avec retour à l’état initial vérifié.
+
+État au 22 septembre 2026 :
+
+- **#1 Service — `teleinfo2mqtt` : VALIDÉE.**
+  Incident unique, preuve Supervisor `state=error`, diagnostic déterministe
+  `CONFIRMED`, aucune IA inutile et résolution automatique après redémarrage.
+
+- **#2 Réseau — `SHE-04` : VALIDÉE sous Ohana-Agent 1.29.19.**
+  Incident ouvert après trois échecs consécutifs, expertise Tsunade automatique,
+  réseau de référence FreeBox confirmé sain, un seul job IA, aucune relance sur
+  les occurrences suivantes et résolution automatique du même incident après
+  remise sous tension.
+
+- **#3 : À RÉALISER.**
+  Choisir une panne simple, isolée et réversible. `Ohana-Vision` indisponible
+  est un candidat intéressant si sa supervision Shikamaru permet déjà un cycle
+  complet observation → incident → diagnostic → retour sain. Sinon choisir un
+  autre service déjà supervisé sans développer de nouvelle capacité pour les
+  besoins du test.
 
 Pour chaque scénario retenu :
 
@@ -548,6 +567,9 @@ Restent notamment à suivre :
 - reprises rares après interruption ;
 - raffinements de présentation Vision ;
 - nombre de jobs et réveils Katsuyu ;
+- fréquence des expertises Katsuyu sur les incidents `logs.health` très longs :
+  l'incident HA-01 ouvert depuis août totalise de nombreux cycles IA ; optimiser
+  ce coût sans réintroduire de boucle ni masquer les nouvelles preuves ;
 
 ---
 
@@ -564,11 +586,10 @@ Restent notamment à suivre :
 - [x] **Absence de boucle sur dossier inchangé** — également couverte par `followup-evidence-cycle` : deux résultats IA simulés et une collecte autorisée, sans nouveau travail après doublons et reprise SQLite.
 - [x] **Réévaluation sur information nouvelle**.
 - [x] **Hypothèses maîtrisées**.
-- [ ] **Valeur de Katsuyu démontrée** — le cas simple restant entièrement chez Tsunade est acquis ; le full-stack valide également une vraie inférence Ministral, son traitement par Tsunade et son rendu Vision. Il reste à démontrer qu'une expertise Katsuyu apporte une information réellement utile sur un incident ambigu effectivement observé dans Konoha.
 - [x] **Mode dégradé démontré** — Katsuyu a été rendu réellement indisponible sur Bubule. Pendant cette absence, les investigations déterministes locales de Tsunade sont restées opérationnelles, Shikamaru a poursuivi ses observations planifiées et le worker est resté `UNAVAILABLE` pendant toute la validation.
-- [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint 1559 tests PASS (1 skipped), les 9 scénarios Sandbox restent PASS et le full-stack avec inférence Ministral réelle et rendu Vision reste PASS.
-- [ ] **Valeur de Katsuyu démontrée** — le routage automatique vers Katsuyu est désormais démontré sur un incident ambigu reproductible. Le scénario `ambiguous-katsuyu-cycle` valide qu'Agent crée lui-même un unique `ai.inference`, conserve le résultat comme hypothèse `PROBABLE`, expose les éléments manquants et ne boucle pas sur les mêmes preuves. Le full-stack du 22 septembre reproduit ce cycle avec le vrai worker HTTPS, llama.cpp et Ministral : verdict `KO`, hypothèse structurée, contexte manquant, décision Tsunade `investigate` et proposition de vérification en lecture seule. Il reste uniquement à démontrer cette valeur sur un incident ambigu effectivement observé dans Konoha.
-- [ ] **Pannes représentatives exercées** — la panne contrôlée #1 `teleinfo2mqtt` est validée réellement sur Konoha avec Agent 1.29.18 : détection, incident unique, preuve Supervisor `state=error`, diagnostic `CONFIRMED`, aucune IA inutile et résolution automatique au retour des trames. La panne réseau #2 `SHE-04` a validé son cycle de vie mais révélé l'absence de déclenchement Tsunade pour les équipements sans source de journaux. Le correctif est qualifié localement par 1569 tests Agent, Ruff et le scénario `tsunade-observation-wiring`; un rejeu réel après déploiement de la prochaine release reste nécessaire. La panne #3 est préparée par `ambiguous-katsuyu-cycle` et le full-stack avec vrai LLM, mais doit encore être reproduite sur Konoha. Le critère sera acquis lorsque trois scénarios réels appartenant à au moins deux familles auront été validés avec retour à l'état initial.
+- [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint **1569 tests PASS, 1 skipped**, les **12/12 scénarios Sandbox sont PASS** et le full-stack avec inférence Ministral réelle et rendu Vision est PASS.
+- [x] **Valeur de Katsuyu démontrée** — au-delà des validations Sandbox et full-stack, un incident `logs.health` réel de HA-01 démontre l'apport de Katsuyu sur Konoha. Les preuves déterministes établissent les erreurs mais ne suffisent pas à en identifier la cause. Katsuyu produit des hypothèses explicites, associe preuves favorables et contradictoires, expose le contexte manquant et propose des investigations ciblées en lecture seule. Tsunade conserve ces contributions avec `diagnostic_level=PROBABLE`, `epistemic_status=hypothesis` et décision `investigate`, sans autoriser d'action sur la seule base de l'IA.
+- [ ] **Pannes représentatives exercées** — deux scénarios contrôlés réels sont désormais validés avec retour sain. #1 `teleinfo2mqtt`, famille Service, valide la détection, la confirmation Supervisor déterministe et la résolution automatique. #2 `SHE-04`, famille Réseau, valide sous Agent 1.29.19 le seuil de trois échecs, l'incident unique, le déclenchement automatique de Tsunade sans source de journaux, l'absence de boucle et la résolution automatique après remise sous tension. Il reste uniquement à exercer une troisième panne contrôlée réelle ; les deux familles minimales exigées sont déjà couvertes.
 
 La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.
 
@@ -1542,31 +1563,27 @@ Toutes les phases
 
 # Priorité immédiate
 
-La priorité actuelle reste :
+État de la Phase 1 au 22 septembre 2026 : **9 critères de sortie acquis sur 10**.
+
+Deux pannes contrôlées réelles sont validées :
 
 ```text
-1. Exercer suffisamment INFRA-01, HA-01 et LINKY-01
-             │
-             ▼
-2. Exercer trois pannes contrôlées dans plusieurs familles
-             │
-             ▼
-3. Vérifier en réel le mode dégradé sans Katsuyu
-             │
-             ▼
-4. Démontrer la valeur de l'IA sur un incident Konoha réellement ambigu
-             │
-             ▼
-5. Terminer l'audit de sûreté des preuves nécessaire à la sortie de phase
-             │
-             ▼
-6. Passer à la première réparation supervisée
-```
-La frontière Tsunade/Katsuyu et le rendu Vision sont désormais validés dans le
-laboratoire full-stack local. Ils restent à observer et à durcir dans l'usage
-réel, mais ne constituent plus à eux seuls les principaux inconnus techniques de
-la Phase 1.
-
-La prochaine étape d’Ohana n’est pas d’ajouter un nouveau composant ni d’atteindre une couverture parfaite.
-
-Elle consiste à rendre chaque capacité **suffisamment fiable pour être utilisée**, puis à la durcir progressivement à partir des problèmes réellement rencontrés dans Konoha.
+#1 Service — teleinfo2mqtt
+VALIDÉE
+        │
+        ▼
+#2 Réseau — SHE-04
+VALIDÉE sous Agent 1.29.19
+        │
+        ▼
+#3 Panne contrôlée
+À RÉALISER
+        │
+        ▼
+10/10
+        │
+        ▼
+Clôture Phase 1
+        │
+        ▼
+Phase 2 — première réparation supervisée
