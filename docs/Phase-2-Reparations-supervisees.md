@@ -11,20 +11,23 @@ sur une nouvelle preuve contradictoire.
 
 ## État des critères de sortie — 25 septembre 2026
 
-**3 critères sur 10 démontrés en réel.**
+**3 critères sur 10 démontrés en réel ; les 10 démontrés dans Sandbox.**
 
-| Critère | État | Preuve |
+| Critère | Réel (Konoha) | Sandbox (Agent 1.33.0, Vision 1.24.0) |
 | --- | --- | --- |
-| Première réparation de référence de bout en bout | ouvert | dnsmasq (`dnsmasq.restart`) couvert par les tests, pas encore exercé sur Konoha |
-| Deuxième réparation différente, même mécanisme | **acquis** | Mosquitto, 25 septembre (ci-dessous) |
-| Cycle sans état ambigu | partiel | chemin nominal réel ; `expired`, `refused` et `unverified` couverts par les tests seulement |
-| Action non autorisée non exécutable | partiel | tests (proposition expirée, incident résolu, refus) ; pas d'essai réel |
-| Refus ou report conservé | ouvert | à exercer depuis Vision ou Shizune |
-| Vérification réelle par Shikamaru | **acquis** | aller-retour MQTT observé après le redémarrage |
-| Échec explicite et exploitable | ouvert | refus Supervisor et `unverified` testés, pas d'échec réel |
-| Pas de répétition automatique après échec | partiel | tests ; à confirmer avec un échec réel |
-| Vision ou Shizune rendent l'action compréhensible | **acquis** | proposition, risque, conséquences et résultat lus et autorisés dans Vision |
-| Tsunade propriétaire de la décision finale | partiel | Tsunade propose et vérifie ; à confirmer sur refus et échec |
+| Première réparation de référence de bout en bout | ouvert | **démontré** : dnsmasq proposé, autorisé depuis Vision, exécuté, vérifié, appris |
+| Deuxième réparation différente, même mécanisme | **acquis** (Mosquitto, 25 septembre) | — |
+| Cycle sans état ambigu | partiel (chemin nominal) | **démontré** : `expired`, `refused`, `failed`, `unverified`, reprise SQLite |
+| Action non autorisée non exécutable | partiel | **démontré** : proposition inconnue, expirée ou refusée jamais exécutée |
+| Refus ou report conservé | ouvert | **démontré** : report Vision, refus Shizune et Vision |
+| Vérification réelle par Shikamaru | **acquis** | — |
+| Échec explicite et exploitable | ouvert | **démontré** : échec d'exécution et vérification non confirmée |
+| Pas de répétition automatique après échec | partiel | **démontré** : aucune nouvelle proposition après refus ou échec |
+| Vision ou Shizune rendent l'action compréhensible | **acquis** | **démontré** dans Chromium : report, autorisation, refus et états sur la carte |
+| Tsunade propriétaire de la décision finale | partiel | **démontré** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie |
+
+Sandbox ne remplace pas la validation réelle : les critères restent ouverts ou
+partiels tant qu'ils n'ont pas été exercés sur Konoha.
 
 ## Socle livré — Agent 1.31.0, Vision 1.23.0
 
@@ -107,12 +110,38 @@ Constats de durcissement, non bloquants :
   à jour, le champ « Dépend de » est resté vide jusqu'au vidage du cache du
   navigateur.
 
+## Qualification Sandbox — 25 septembre 2026
+
+Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
+Vision 1.24.0 ajoute « Refuser », « Plus tard » et l'état de la dernière
+réparation sur la carte d'incident.
+
+- `supervised-repair-cycle` (24 vérifications) : services Agent, bases SQLite
+  et exécuteur dnsmasq réels, demande de redémarrage écrite dans un fichier
+  temporaire. Parcours : proposition automatique après diagnostic confirmé,
+  report depuis Vision, reprise SQLite, autorisation Vision, vérification
+  Shikamaru, expérience apprise ; refus depuis Shizune sans nouvelle
+  proposition ; échec d'exécution explicite ; vérification non confirmée
+  (`unverified`, délai réduit à une seconde) jamais réécrite en succès ;
+  proposition expirée à la résolution.
+- `--full-stack` : après le cycle IA réel, le navigateur reporte, autorise
+  puis refuse des propositions dnsmasq dans Vision, jusqu'à l'API HTTP de
+  l'Agent, l'exécuteur dnsmasq et la vérification Shikamaru ; le refus passe
+  par la confirmation du navigateur.
+- Suite complète : 14 scénarios sur 14, exercice des journaux et
+  `--full-stack` PASS.
+
 ## Prochaines validations
 
+Après déploiement de Platform 1.0.122 (Agent 1.33.0, Vision 1.24.0) et
+`.\sandbox\run.ps1 post-deploy agent 1.33.0` :
+
 1. Réparation de référence dnsmasq en réel : arrêt contrôlé de dnsmasq sur
-   INFRA-01, en tenant compte de l'interruption du DHCP pendant l'essai.
-2. Refus, puis report, d'une réparation proposée, depuis Vision et depuis
-   Shizune : l'état reste `refused` ou en attente, et rien n'est exécuté.
-3. Échec réel : réparation refusée par le Supervisor, ou non confirmée par
-   Shikamaru, pour démontrer un état explicite (`failed` ou `unverified`) et
-   l'absence de nouvelle proposition automatique.
+   INFRA-01 (interruption du DHCP pendant l'essai), « Plus tard » puis
+   « Autoriser depuis Vision », vérification par Shikamaru.
+2. Refus depuis Vision : nouvel arrêt contrôlé (Mosquitto ou dnsmasq),
+   « Refuser » ; l'état reste `refused`, rien n'est exécuté, Tsunade ne
+   repropose pas ; remise en service manuelle.
+3. Échec réel : réparation autorisée dont le résultat n'est pas confirmé par
+   Shikamaru dans les 15 minutes (`unverified`) ou exécution refusée
+   (`failed`), sans nouvelle proposition automatique.
