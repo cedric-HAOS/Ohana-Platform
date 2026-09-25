@@ -237,7 +237,8 @@ def run() -> dict:
                 ),
                 any(
                     fact
-                    == "memory.status: TIMEOUT"
+                    # Agent 1.31: the summary states that no probe result exists.
+                    == "memory.status : délai dépassé, aucun résultat de sonde"
                     for fact in outcome.facts
                 ),
             ),

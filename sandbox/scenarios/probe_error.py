@@ -251,9 +251,10 @@ def run() -> dict:
                     "dans les faits"
                 ),
                 (
-                    "dns.query: KO"
+                    # Agent 1.31: the summary states that no probe result exists.
+                    "dns.query : exécution en échec, aucun résultat de sonde"
                     in outcome.facts
-                    and "network.ping: KO"
+                    and "network.ping : exécution en échec, aucun résultat de sonde"
                     in outcome.facts
                 ),
             ),

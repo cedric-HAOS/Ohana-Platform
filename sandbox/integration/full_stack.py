@@ -47,16 +47,13 @@ class ObservedServer(AdministrationHTTPServer):
         super().__init__(**kwargs)
         self.responses = Counter()
 
-    def _handler_class(self):
-        parent = super()._handler_class()
-        responses = self.responses
-
-        class Handler(parent):
-            def send_response(self, code, message=None):
-                responses[(self.command, self.path.split("?")[0], code)] += 1
-                super().send_response(code, message)
-
-        return Handler
+    async def _dispatch(self, request):
+        # Agent 1.30 serves its listeners with aiohttp: the former
+        # http.server handler class no longer exists.
+        response = await super()._dispatch(request)
+        path = request.raw_path.split("?", 1)[0]
+        self.responses[(request.method, path, response.status)] += 1
+        return response
 
 
 def _wait(label, predicate, *, timeout, worker=None, page=None):

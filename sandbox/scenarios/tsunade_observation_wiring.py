@@ -101,6 +101,9 @@ administration:
             severity="degraded",
             occurrence_count=2,
             node_id="she-04",
+            # A real incident always carries its latest decision (Agent 1.31
+            # reads it to resume an escalation after an upstream resolution).
+            latest_decision=None,
         )
 
         log_source_occurrence = SimpleNamespace(
