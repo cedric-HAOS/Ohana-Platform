@@ -557,12 +557,6 @@ Relèvent d’une phase ultérieure :
 
 Restent à suivre :
 
-- heure des journaux Home Assistant : Katsuyu lit les horodatages sans fuseau
-  (journal du cœur HA, add-ons) comme de l'UTC. Si Home Assistant les écrit en
-  heure de Paris, les fenêtres d'analyse sont décalées de deux heures ; indice :
-  la déconnexion MQTT de l'arrêt de Mosquitto n'apparaît dans aucun contrôle
-  des pannes #3 et du 25 septembre. À vérifier dans Home Assistant avant de
-  changer l'interprétation ;
 - transmission de `host.health` à Tsunade (prérequis d'un scénario
   « Ohana-Vision indisponible ») ;
 - fichiers statiques de Vision sans `Cache-Control` : après une mise à jour,
@@ -620,6 +614,10 @@ Traités depuis la clôture :
   incidents de journaux de LINKY-01 et ZWAVE-01 (Katsuyu, non publié) ;
 - catégories LINKY-01 : le nom de l'add-on ne force plus `serial` (Katsuyu,
   non publié) ;
+- heure des journaux Home Assistant : les horodatages sans fuseau de HA-01,
+  LINKY-01 et ZWAVE-01 sont lus en heure de Paris (confirmé le 25 septembre) ;
+  lus en UTC, ils décalaient les fenêtres de deux heures et la déconnexion MQTT
+  de l'arrêt de Mosquitto n'atteignait aucun contrôle (Katsuyu, non publié) ;
 - audit étendu des secrets : seules deux collectes du 27 août gardaient des
   sessions de caméra `/stok=` ; les résultats de jobs sont désormais masqués à
   la lecture (Agent, non publié).
