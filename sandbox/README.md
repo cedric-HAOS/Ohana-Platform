@@ -110,6 +110,18 @@ différents, sans référence comparable) ne relance pas d'expertise, et qu'une
 aggravation nette en relance une. La réponse IA est simulée. Rejoué contre
 Agent 1.31.0 et Katsuyu 0.8.15, il échoue sur les deux défauts corrigés.
 
+`supervised-repair-cycle` rejoue la réparation de référence dnsmasq avec le
+véritable exécuteur de l'Agent, dont la demande de redémarrage est écrite dans
+un fichier temporaire : proposition automatique après diagnostic confirmé,
+report depuis Vision, reprise SQLite, autorisation, vérification Shikamaru et
+expérience apprise ; refus depuis Shizune ; échec d'exécution ; vérification
+non confirmée dans le délai (réduit à une seconde) ; proposition expirée à la
+résolution de l'incident. Aucun service réel n'est redémarré.
+
+Le parcours `--full-stack` clique aussi « Plus tard », « Autoriser depuis
+Vision » et « Refuser » dans Vision (Chromium), jusqu'à l'exécuteur dnsmasq de
+l'Agent et à la vérification Shikamaru.
+
 `followup-restart` ferme et rouvre les deux bases SQLite puis reconstruit les
 services Agent. Il couvre l'expiration pendant l'arrêt et la reprise après un
 échec déjà traité : preuves conservées, aucune relance et lectures idempotentes.

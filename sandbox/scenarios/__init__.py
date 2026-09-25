@@ -66,6 +66,13 @@ SCENARIOS = {
             "source de logs collecte d'abord ses preuves."
         ),
     ),
+    "supervised-repair-cycle": (
+        "scenarios.supervised_repair_cycle",
+        (
+            "Réparation dnsmasq supervisée : proposition, report, refus, "
+            "autorisation, vérification, échec, expiration et reprise."
+        ),
+    ),
     "recurring-log-review": (
         "scenarios.recurring_log_review",
         (
