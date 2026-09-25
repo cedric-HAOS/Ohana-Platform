@@ -13,6 +13,7 @@ import ohana_agent
 
 from ohana_agent.api.service import AdministrationService
 from ohana_agent.core.events import EventBus
+from ohana_agent.runtime.administration_bootstrap import TsunadeObservationHandler
 from ohana_agent.runtime.bootstrap import build_production_agent
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
@@ -129,10 +130,7 @@ administration:
             event_type: type[Any],
             handler: Callable[[Any], None],
         ) -> None:
-            if (
-                getattr(handler, "__name__", "")
-                == "handle_tsunade_observation"
-            ):
+            if isinstance(handler, TsunadeObservationHandler):
                 captured_handlers["tsunade"] = handler
 
             original_subscribe(
