@@ -13,6 +13,34 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 - Workflow réutilisable `commit-messages.yml` qui vérifie le format
   Conventional Commits (avertissement sur push, échec sur pull request).
 
+## [1.0.118] - 2026-09-22
+
+### Composition
+
+- Ohana-Agent 1.29.18 → 1.29.19 : Déclenchement Tsunade pour les incidents sans source de journaux.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+- Sandbox : nouveaux scénarios `ambiguous_katsuyu_cycle`, `tsunade_observation_wiring`.
+
+## [1.0.117] - 2026-09-22
+
+### Composition
+
+- Ohana-Agent 1.29.17 → 1.29.18 : État Supervisor Téléinformation `error`.
+
+## [1.0.116] - 2026-09-22
+
+### Composition
+
+- Ohana-Agent 1.29.16 → 1.29.17 : Persistance des preuves Supervisor Téléinformation.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+- Sandbox : nouveau scénario `teleinformation_supervisor_cycle`.
+
 ## [1.0.115] - 2026-09-22
 
 ### Corrigé
@@ -30,6 +58,149 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 - Ohana Sandbox : 9 scénarios sur 9 PASS.
 - La requalification du scénario réel `teleinfo2mqtt` reste prévue après
   déploiement de cette composition.
+
+## [1.0.114] - 2026-09-21
+
+### Composition
+
+- Ohana-Agent 1.29.14 → 1.29.15 : Sûreté des preuves Tsunade.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+- Sandbox : nouveaux scénarios `exercise_logs`, `followup_evidence_cycle`, `followup_restart`, `local_diagnosis_worker_unavailable`.
+
+## [1.0.113] - 2026-09-21
+
+### Composition
+
+- Ohana-Agent 1.29.13 → 1.29.14 : Stabilisation des suivis et niveaux de diagnostic.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+- Création de la Sandbox Ohana (`sandbox/run.ps1`).
+- Sandbox : nouveaux scénarios `diagnostic_levels`, `katsuyu_unavailable`, `probe_confirmed_failure`, `probe_error`, `probe_timeout`, `terminal_jobs_over_16`.
+
+## [1.0.112] - 2026-09-21
+
+### Composition
+
+- Ohana-Agent 1.29.12 → 1.29.13.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+
+## [1.0.111] - 2026-09-20
+
+### Composition
+
+- Ohana-Agent 1.29.11 → 1.29.12.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+
+## [1.0.110] - 2026-09-20
+
+### Composition
+
+- Ohana-Agent 1.29.10 → 1.29.11.
+
+### Autres changements
+
+- Documentation mise à jour : suivi de phase.
+
+## [1.0.109] - 2026-09-20
+
+### Composition
+
+- Ohana-Agent 1.29.9 → 1.29.10.
+
+### Autres changements
+
+- Documentation mise à jour : suivi de phase.
+
+## [1.0.108] - 2026-09-19
+
+### Composition
+
+- Ohana-Agent 1.29.8 → 1.29.9.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+
+## [1.0.107] - 2026-09-19
+
+### Composition
+
+- Ohana-Agent 1.29.7 → 1.29.8.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+
+## [1.0.106] - 2026-09-19
+
+### Composition
+
+- Ohana-Agent 1.29.6 → 1.29.7.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
+
+## [1.0.105] - 2026-09-16
+
+### Composition
+
+- Ohana-Agent 1.29.5 → 1.29.6.
+
+### Autres changements
+
+- Documentation mise à jour : suivi de phase.
+
+## [1.0.104] - 2026-09-15
+
+### Composition
+
+- Ohana-Agent 1.29.4 → 1.29.5.
+
+### Autres changements
+
+- Documentation mise à jour : suivi de phase.
+
+## [1.0.103] - 2026-09-15
+
+### Composition
+
+- Ohana-Agent 1.29.3 → 1.29.4.
+
+### Autres changements
+
+- Documentation mise à jour : suivi de phase.
+
+## [1.0.102] - 2026-09-15
+
+### Composition
+
+- Ohana-Agent 1.29.2 → 1.29.3.
+
+### Autres changements
+
+- Documentation mise à jour : suivi de phase.
+
+## [1.0.101] - 2026-09-15
+
+### Composition
+
+- Ohana-Agent 1.29.0 → 1.29.2.
+
+### Autres changements
+
+- Documentation mise à jour : ROADMAP, suivi de phase.
 
 ## [1.0.100] - 2026-09-15
 
@@ -63,6 +234,30 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 - Shizune 0.2.3 présente l’essentiel, le détail et une demande de diagnostic réelle.
 - Installer 1.14.3 embarque cette composition. Katsuyu 0.8.6 est distribué
   séparément ; mettre Agent à jour avant le worker. Aucun changement YAML requis.
+
+## [1.0.96] - 2026-09-10
+
+### Composition
+
+- Ohana-Agent 1.26.14 → 1.26.15.
+
+## [1.0.95] - 2026-08-30
+
+### Composition
+
+- Ohana-Agent 1.26.13 → 1.26.14.
+
+## [1.0.94] - 2026-08-30
+
+### Composition
+
+- Ohana-Vision 1.22.11 → 1.22.12.
+
+## [1.0.93] - 2026-08-30
+
+### Composition
+
+- Ohana-Vision 1.22.10 → 1.22.11.
 
 ## [1.0.92] - 2026-08-30
 
@@ -167,6 +362,81 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 * Agent 1.26.5 reste le seul point de validation et d’exécution ; Vision ne
   conserve aucun jeton compagnon et exclut les réponses privées des caches.
 * Le mode HTTP de Shizune est réservé au Wi-Fi de confiance ou à WireGuard.
+
+## [1.0.83] - 2026-08-27
+
+### Composition
+
+- Ohana-Vision 1.22.3 → 1.22.4.
+
+## [1.0.82] - 2026-08-27
+
+### Composition
+
+- Ohana-Shizune 0.1.1 (ajouté).
+
+## [1.0.81] - 2026-08-27
+
+### Composition
+
+- Ohana-Agent 1.26.4 → 1.26.5.
+- Ohana-Vision 1.22.2 → 1.22.3.
+
+## [1.0.80] - 2026-08-27
+
+### Composition
+
+- Ohana-Agent 1.26.3 → 1.26.4.
+- Ohana-Vision 1.22.1 → 1.22.2.
+
+## [1.0.79] - 2026-08-25
+
+### Composition
+
+- Ohana-Agent 1.26.2 → 1.26.3.
+
+## [1.0.78] - 2026-08-25
+
+### Composition
+
+- Ohana-Agent 1.26.1 → 1.26.2.
+
+## [1.0.77] - 2026-08-25
+
+### Composition
+
+- Ohana-Agent 1.26.0 → 1.26.1.
+- Ohana-Vision 1.22.0 → 1.22.1.
+
+## [1.0.76] - 2026-08-25
+
+### Composition
+
+- Ohana-Agent 1.25.0 → 1.26.0 : Administration Wake-on-LAN.
+- Ohana-Vision 1.21.3 → 1.22.0 : Wake-on-LAN des workers.
+
+## [1.0.75] - 2026-08-25
+
+### Composition
+
+- Ohana-Agent 1.24.1 → 1.25.0 : Wake-on-LAN piloté par Katsuyu.
+
+## [1.0.74] - 2026-08-24
+
+### Composition
+
+- Ohana-Vision 1.21.1 → 1.21.3.
+
+## [1.0.73] - 2026-08-24
+
+- Republication sans changement de composition.
+
+## [1.0.72] - 2026-08-24
+
+### Composition
+
+- Ohana-Agent 1.24.0 → 1.24.1 : Accès aux journaux HAOS.
+- Ohana-Vision 1.21.0 → 1.21.1 : Suivi des contrôles de journaux.
 
 ## [1.0.71] - 2026-08-24
 
@@ -830,6 +1100,12 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 * Concordance du manifeste et du catalogue Platform 1.0.38.
 * Assets et sommes SHA-256 d'Agent 1.11.11 vérifiés après publication.
 
+## [1.0.37] - 2026-08-07
+
+### Composition
+
+- Ohana-Agent 1.11.9 → 1.11.10 : Synthèse Home Assistant stable.
+
 ## [1.0.36] - 2026-08-05
 
 ### Corrigé
@@ -1281,6 +1557,18 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 * Création de la structure documentaire.
 * Ajout du guide d’installation de la plateforme.
 * Référencement d’Ohana-Agent et d’Ohana-Vision comme composants indépendants.
+
+## [1.0.0] - 2026-07-23
+
+### Composition
+
+- Ohanna-Agent 1.1.0 et Ohanna-Vision 1.1.0 : première composition 1.0.
+
+### Autres changements
+
+- Documentation d'architecture (ADR 0000 à 0003), design system, catalogue
+  d'icônes, guides d'installation et de déploiement.
+- Diagrammes d'architecture, de déploiement et de flux sous `diagrams/`.
 
 ## [0.1.0] - 2026-07-15
 
