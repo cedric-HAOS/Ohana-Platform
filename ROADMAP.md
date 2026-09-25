@@ -557,16 +557,10 @@ Relèvent d’une phase ultérieure :
 
 Restent à suivre :
 
-- transmission de `host.health` à Tsunade (prérequis d'un scénario
-  « Ohana-Vision indisponible ») ;
-- fichiers statiques de Vision sans `Cache-Control` : après une mise à jour,
-  le navigateur peut garder d'anciens modules (constaté avec « Dépend de ») ;
 - réparation automatique NTP : la procédure est déterministe, mais redémarrer
   chrony demande un nouvel assistant privilégié installé par Installer ;
-- grosses fenêtres et comparaison de fenêtres : le contrôle quotidien de 24 h
-  d'INFRA-01 reste réellement tronqué (plafond de 10 000 lignes, environ
-  30 000 lignes de journal par jour) ; il faudrait des fenêtres plus courtes ou
-  un filtrage à la source ;
+- grosses fenêtres : vérifier après déploiement que le contrôle quotidien de
+  24 h d'INFRA-01 n'est plus tronqué (cause corrigée, voir ci-dessous) ;
 - raffinements de présentation Vision ;
 - scénarios de panne supplémentaires (à conduire sur Konoha) ;
 - fréquence des expertises Katsuyu : à remesurer après déploiement (objectif :
@@ -587,6 +581,15 @@ Vérifiés le 25 septembre sans défaut à corriger :
   validation `followup-restart` de la Phase 1.
 
 Traités depuis la clôture :
+
+- `host.health` transmis à Tsunade par un événement dédié : un
+  `ohana-vision.service` arrêté ouvre un incident confirmé par `service.status`
+  sans IA ; scénario Sandbox `vision-unavailable` (Agent, non publié) ;
+- fichiers de Vision servis avec `Cache-Control: no-cache` (Vision, non
+  publié) ;
+- journal d'INFRA-01 inondé depuis aiohttp (Agent 1.30.0) : chaque requête
+  HTTP réussie écrivait une ligne `INFO` (environ 3 800 par heure) ; l'Agent ne
+  journalise plus que les refus et les erreurs, Vision de même (non publié) ;
 
 - corrélation entre incidents : symptôme en aval rattaché à un incident amont
   actif déclaré par `depends_on`, sans escalade IA (Agent 1.31.0, validé en
@@ -762,12 +765,18 @@ Une réparation ayant échoué ne doit pas être répétée automatiquement sans
 ## Durcissement continu
 
 - enrichissement du catalogue de réparations ;
-- rollback lorsque nécessaire ;
-- meilleure présentation des risques ;
-- politiques spécifiques par type d’action ;
-- délais adaptatifs de vérification ;
+- rollback lorsque nécessaire (sans objet pour les redémarrages actuels) ;
 - réparations Home Assistant supplémentaires ;
 - gestion de réparations plus complexes.
+
+Traités (non publiés) :
+
+- présentation des risques : risque, conséquences et résultat attendu visibles
+  sur la carte d'incident avant toute décision ;
+- politique par type d'action : confirmation explicite pour une réparation à
+  risque moyen ou élevé, un clic pour un risque faible ;
+- délais adaptatifs de vérification : trois intervalles d'observation de
+  l'incident, entre 5 et 30 minutes, échéance enregistrée et affichée.
 
 ---
 
