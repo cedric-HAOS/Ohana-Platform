@@ -21,17 +21,21 @@ from zoneinfo import ZoneInfo
 import uvicorn
 from ohana_agent.api.http import AdministrationHTTPServer
 from ohana_agent.api.service import AdministrationService
+from ohana_agent.host.dhcp import DnsmasqDHCPRepository
 from ohana_agent.infrastructure.repository import InfrastructureConfigurationRepository
 from ohana_agent.jobs.log_sources import LogSourceBroker
 from ohana_agent.jobs.repository import DistributedJobRepository
+from ohana_agent.observation import Observation, ObservationStatus
 from ohana_agent.plugins.backup.config import BackupConfig
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
+from ohana_agent.tsunade.local_time import paris_now
 from ohana_vision.configuration import ApplicationConfiguration
 from ohana_vision.web.bootstrap import build_application
 from playwright.sync_api import expect, sync_playwright
 from starlette.staticfiles import StaticFiles
 from scenarios._support import NoProbes
+from scenarios.supervised_repair_cycle import DnsmasqStopped
 from ohana_agent.tsunade.incident_summary import incident_assessment
 
 from integration.lifecycle import certificate, stop_worker
@@ -171,7 +175,8 @@ def run(*, args):
                 "  environment: development\n"
                 "nodes:\n  - id: infra-01\n    name: INFRA-01 Sandbox\n"
                 "    endpoint:\n      type: ip\n      address: 127.0.0.1\n"
-                "services: []\n",
+                "services:\n  - id: dhcp\n    name: DHCP\n    type: dhcp\n"
+                "    node: infra-01\n    implementation: dnsmasq\n",
                 encoding="utf-8",
             )
             # Only the physical journal source is supplied by the lab. Job-bound
@@ -198,6 +203,13 @@ def run(*, args):
                 ),
                 job_repository=jobs,
                 incident_repository=incidents,
+                # Real dnsmasq executor; its restart request stays in the lab.
+                dhcp_repository=DnsmasqDHCPRepository(
+                    main_config_path=root / "dnsmasq.conf",
+                    reservation_paths={},
+                    leases_path=root / "dnsmasq.leases",
+                    reload_request_path=root / "run" / "dhcp-reload.request",
+                ),
                 log_sources=("infra-01",),
                 log_timeout_seconds=args.stack_timeout,
                 wake_enabled=False,
@@ -509,6 +521,106 @@ def run(*, args):
                 True,
             )
             check("Résumé IA effectivement rendu dans le dossier Vision", True)
+
+            # Phase 2: supervised repair decisions clicked in the real Vision.
+            reload_request = root / "run" / "dhcp-reload.request"
+            repairs = TsunadeExpertiseService(
+                incidents=incidents, investigations=DnsmasqStopped()
+            )
+            repairs.set_repair_proposer(
+                lambda repair_incident_id: service.propose_incident_repair(
+                    str(repair_incident_id), {}, automatic=True
+                )
+            )
+
+            def dnsmasq(status):
+                return incidents.process(
+                    Observation(
+                        node="infra-01",
+                        service="dhcp",
+                        capability="dhcp.status",
+                        status=status,
+                        success=status is ObservationStatus.HEALTHY,
+                        message=f"dnsmasq is {status.value}",
+                        source="dhcp.status",
+                        id=uuid4(),
+                        timestamp=paris_now(),
+                        metadata={"device_id": "infra-01"},
+                    )
+                )
+
+            def proposal():
+                repair_incident = dnsmasq(ObservationStatus.UNHEALTHY)
+                repairs.diagnose(repair_incident.incident_id)
+                proposed = incidents.get(repair_incident.incident_id).repairs[0]
+                page.reload(wait_until="networkidle")
+                page.locator('[data-navigation-target="incidents"]').click()
+                return repair_incident.incident_id, str(proposed.repair_id)
+
+            def post(fragment, locator):
+                with page.expect_response(
+                    lambda response: response.url.endswith(fragment)
+                    and response.request.method == "POST"
+                ) as response_info:
+                    locator.click()
+                return response_info.value.ok
+
+            repair_incident_id, repair_id = proposal()
+            defer = page.locator(
+                f'[data-tsunade-repair-decision="defer"][data-repair-id="{repair_id}"]'
+            )
+            expect(defer).to_be_visible(timeout=15000)
+            deferred_ok = post("/repairs/defer", defer)
+            expect(page.locator("#incidents-list")).to_contain_text(
+                "reportée jusqu’à", timeout=15000
+            )
+            check(
+                "Réparation reportée depuis Vision, sans exécution",
+                deferred_ok
+                and incidents.get(repair_incident_id).repairs[0].deferred_until
+                is not None
+                and not reload_request.exists(),
+            )
+            authorized_ok = post(
+                "/repairs/authorize",
+                page.locator(f'[data-tsunade-repair-authorize="{repair_id}"]'),
+            )
+            expect(page.locator("#incidents-list")).to_contain_text(
+                "Exécutée, vérification Shikamaru en attente", timeout=15000
+            )
+            check(
+                "Réparation autorisée depuis Vision : dnsmasq demandé une fois",
+                authorized_ok
+                and reload_request.exists()
+                and incidents.get(repair_incident_id).repairs[0].status
+                == "verifying",
+            )
+            dnsmasq(ObservationStatus.HEALTHY)
+            check(
+                "Shikamaru vérifie la réparation autorisée depuis Vision",
+                incidents.get(repair_incident_id).repairs[0].status == "succeeded",
+            )
+            reload_request.unlink()  # The helper consumes each request.
+            refused_incident_id, refused_id = proposal()
+            page.once("dialog", lambda dialog: dialog.accept())
+            refused_ok = post(
+                "/repairs/refuse",
+                page.locator(
+                    f'[data-tsunade-repair-decision="refuse"]'
+                    f'[data-repair-id="{refused_id}"]'
+                ),
+            )
+            expect(page.locator("#incidents-list")).to_contain_text(
+                "Refusée, aucune action exécutée", timeout=15000
+            )
+            check(
+                "Réparation refusée depuis Vision après confirmation, sans exécution",
+                refused_ok
+                and incidents.get(refused_incident_id).repairs[0].status == "refused"
+                and not reload_request.exists(),
+            )
+            page.screenshot(path=str(output / "vision-repairs.png"), full_page=True)
+            report["screenshots"].append("vision-repairs.png")
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page.set_viewport_size({"width": width, "height": height})
                 expect(page.locator("#incidents-heading")).to_be_visible()
