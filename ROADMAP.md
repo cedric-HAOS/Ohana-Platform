@@ -89,6 +89,8 @@ Suivi : [campagne de validation et premiers constats](docs/Phase-1-Stabilisation
 
 Phase démarrée le 15 septembre 2026.
 
+**Phase clôturée le 25 septembre 2026 : 10 critères de sortie sur 10.**
+
 Le périmètre de cette phase a été recentré le 20 septembre 2026.
 
 L’objectif n’est plus de valider exhaustivement toutes les investigations, tous les protocoles, tous les faux positifs et tous les scénarios de panne possibles avant de poursuivre la roadmap.
@@ -446,7 +448,7 @@ Famille système / Ohana :
 
 Critère :
 
-- [ ] Trois scénarios représentatifs appartenant à plusieurs familles ont été exercés avec retour à l’état initial vérifié.
+- [x] Trois scénarios représentatifs appartenant à plusieurs familles ont été exercés avec retour à l’état initial vérifié (`teleinfo2mqtt`, `SHE-04`, Mosquitto).
 
 État au 22 septembre 2026 :
 
@@ -567,6 +569,16 @@ Restent notamment à suivre :
 - reprises rares après interruption ;
 - raffinements de présentation Vision ;
 - nombre de jobs et réveils Katsuyu ;
+- corrélation entre incidents : un symptôme en aval (télémétrie `sun-01`) doit
+  pouvoir être rattaché à un incident amont actif (broker MQTT) avant toute
+  escalade IA (constaté pendant la panne #3) ;
+- libellé des investigations : distinguer l'exécution d'une opération
+  (`mqtt.status: OK`) du résultat de la sonde (aller-retour en échec) ;
+- faits de journaux sans rapport inclus dans un diagnostic d'un autre service ;
+- fuseaux horaires mélangés (UTC et Europe/Paris) dans les événements d'incident ;
+- procédure déterministe pour NTP ;
+- transmission de `host.health` à Tsunade (prérequis d'un scénario
+  « Ohana-Vision indisponible ») ;
 - fréquence des expertises Katsuyu sur les incidents `logs.health` très longs :
   l'incident HA-01 ouvert depuis août totalise de nombreux cycles IA ; optimiser
   ce coût sans réintroduire de boucle ni masquer les nouvelles preuves ;
@@ -589,7 +601,7 @@ Restent notamment à suivre :
 - [x] **Mode dégradé démontré** — Katsuyu a été rendu réellement indisponible sur Bubule. Pendant cette absence, les investigations déterministes locales de Tsunade sont restées opérationnelles, Shikamaru a poursuivi ses observations planifiées et le worker est resté `UNAVAILABLE` pendant toute la validation.
 - [x] **Preuves suffisamment sûres** — sanitation centralisée validée sur les observations, résultats d'investigation, erreurs distribuées utilisées comme preuves, dossiers envoyés à Katsuyu, résultats IA, follow-up, expériences mémorisées et projections relues depuis SQLite. Les données historiques sont également nettoyées à la lecture sans migration destructive. La campagne Agent atteint **1569 tests PASS, 1 skipped**, les **12/12 scénarios Sandbox sont PASS** et le full-stack avec inférence Ministral réelle et rendu Vision est PASS.
 - [x] **Valeur de Katsuyu démontrée** — au-delà des validations Sandbox et full-stack, un incident `logs.health` réel de HA-01 démontre l'apport de Katsuyu sur Konoha. Les preuves déterministes établissent les erreurs mais ne suffisent pas à en identifier la cause. Katsuyu produit des hypothèses explicites, associe preuves favorables et contradictoires, expose le contexte manquant et propose des investigations ciblées en lecture seule. Tsunade conserve ces contributions avec `diagnostic_level=PROBABLE`, `epistemic_status=hypothesis` et décision `investigate`, sans autoriser d'action sur la seule base de l'IA.
-- [ ] **Pannes représentatives exercées** — deux scénarios contrôlés réels sont désormais validés avec retour sain. #1 `teleinfo2mqtt`, famille Service, valide la détection, la confirmation Supervisor déterministe et la résolution automatique. #2 `SHE-04`, famille Réseau, valide sous Agent 1.29.19 le seuil de trois échecs, l'incident unique, le déclenchement automatique de Tsunade sans source de journaux, l'absence de boucle et la résolution automatique après remise sous tension. Il reste uniquement à exercer une troisième panne contrôlée réelle ; les deux familles minimales exigées sont déjà couvertes.
+- [x] **Pannes représentatives exercées** — trois scénarios contrôlés réels sont validés avec retour sain. #1 `teleinfo2mqtt`, famille Service, valide la détection, la confirmation Supervisor déterministe et la résolution automatique. #2 `SHE-04`, famille Réseau, valide sous Agent 1.29.19 le seuil de trois échecs, l'incident unique, le déclenchement automatique de Tsunade sans source de journaux, l'absence de boucle et la résolution automatique après remise sous tension. #3 Mosquitto indisponible, famille Service, valide le 25 septembre sous Agent 1.29.19 l'incident unique `mqtt.roundtrip`, un seul `logs.health_check` pour la source HA-01, un diagnostic `CONFIRMED` par sonde sans IA, trois observations dans le même incident sans nouveau job et la résolution automatique du même incident après redémarrage.
 
 La Phase 1 n’exige pas l’absence totale de bugs ou de faux positifs.
 

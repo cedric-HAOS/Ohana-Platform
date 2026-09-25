@@ -12,6 +12,74 @@ service redémarré ou changement déployé pendant cette campagne.
 
 ## Conclusion et priorités
 
+### Clôture — 25 septembre 2026
+
+**Phase 1 : 10 critères de sortie acquis sur 10. La phase est clôturée.**
+
+Le dernier critère, « Pannes représentatives exercées », est acquis par la
+panne contrôlée #3 ci-dessous. Les validations précédentes ne sont pas
+rejouées. Le développement passe à la Phase 2 ; elles ne se rouvrent que sur
+une nouvelle preuve contradictoire.
+
+#### #3 — Service — Mosquitto indisponible — VALIDÉE
+
+- famille : Service (scénario « Mosquitto indisponible » du ROADMAP) ;
+- Agent : 1.29.19, sans modification pour la recette ;
+- suivi en lecture seule : bases SQLite ouvertes avec `mode=ro` et
+  `PRAGMA query_only=ON`, sous le compte `ohana-agent`.
+
+Choix du scénario : **Ohana-Vision indisponible** a été écarté. La santé d'hôte
+d'INFRA-01 détecte bien `ohana-vision.service` inactif, mais l'observation
+`host.health` n'est exportée que vers Vision et ne passe pas par le bus
+d'événements consommé par Tsunade : aucun incident ne serait ouvert sans
+nouveau développement. NTP (chrony) a aussi été écarté : aucune procédure
+connue, donc escalade IA pour un simple arrêt de service. DNS (dnsmasq) aurait
+coupé la résolution de toute la maison.
+
+État initial, 11:08 : Agent 1.29.19 actif depuis le 22 septembre,
+`NRestarts=0`, aucun job non terminé, aucun incident MQTT ; service `mqtt`
+déclaré sur `ha-01` (Mosquitto, port 1883, critique) ; plugin MQTT toutes les
+120 s ; Téléinformation en `direct_http` ; `ha-01` source de journaux Katsuyu.
+
+Déroulé, heure Europe/Paris :
+
+| Heure | Événement |
+| --- | --- |
+| 11:10:32 | arrêt volontaire du module Mosquitto broker dans Home Assistant |
+| 11:11:09 | observation `mqtt.roundtrip` : `[Errno 111] Connection refused` ; ouverture de l'incident unique `82362354-d5df-4f0c-80cc-62cdc1dcf0a3`, sévérité `critical` |
+| 11:11:09 | un seul `logs.health_check` pour `ha-01` (première occurrence, source de journaux configurée) ; `SUCCEEDED` à 11:11:20 sur `katsuyu-bubule` |
+| 11:11:21 | investigations `mqtt.status` (sonde exécutée, aller-retour en échec) et `network.ping` ; diagnostic `CONFIRMED` / `confirmed_by_probe`, décision `action_required`, source `deterministic` ; proposition non autorisée ; **aucun `ai.inference`** pour cet incident |
+| 11:13:09 | deuxième observation en échec, même incident (occurrences : 2), aucun nouveau job |
+| 11:15:10 | troisième observation en échec, même incident (occurrences : 3), aucun nouveau job |
+| 11:16:03 | redémarrage volontaire de Mosquitto |
+| 11:17:11 | `MQTT round trip succeeded for ha-01.ohana.lan in 3.829 ms.` ; résolution automatique du même incident : `La capacité est revenue à un état sain.` |
+
+Incident secondaire réel : l'entité `sensor.micro_inverter_roof_power` de
+`sun-01`, alimentée par MQTT, est devenue indisponible. Tsunade a ouvert à
+11:11:33 un incident `home_assistant.telemetry.freshness`
+(`040204b9-6ac4-4afa-bc4f-74c983bd4839`) et demandé un unique `ai.inference`
+(`SUCCEEDED` à 11:12:03). Le résultat est resté `PROBABLE` / `hypothesis`,
+décision `investigate`, sans action autorisée. L'incident a été résolu
+automatiquement à 11:16:34 lorsque la télémétrie est redevenue fraîche.
+
+Recette finale : `.\sandbox\run.ps1 post-deploy agent 1.29.19` →
+**PASS** (service actif, `NRestarts=0`, aucun job actif, aucun résultat
+terminal en attente, aucune erreur Agent récente). L'export MQTT de l'Agent vers
+Home Assistant, en erreur pendant la panne, n'a provoqué aucun redémarrage.
+
+Constats de durcissement, non bloquants :
+
+- aucune corrélation entre incidents : la perte de télémétrie de `sun-01`
+  n'est pas rattachée à l'incident du broker MQTT déjà actif, d'où une
+  expertise IA évitable ;
+- les faits affichent `mqtt.status: OK` alors que l'aller-retour a échoué :
+  `OK` décrit l'exécution de l'opération, pas le résultat de la sonde ;
+- le diagnostic MQTT reprend des anomalies de journaux HA-01 sans rapport
+  (kasa, template `sensor.micro_inverter_roof_grid_current`) ;
+- les dates des événements d'incident mélangent UTC et Europe/Paris ;
+- NTP n'a pas de procédure déterministe connue ;
+- `host.health` n'est pas transmis à Tsunade.
+
 ### État de reprise — 22 septembre 2026, après validation Agent 1.29.19
 
 **Phase 1 : 9 critères de sortie acquis sur 10.**
@@ -168,7 +236,7 @@ Contrôles :
 - aucun résultat terminal non traité ;
 - aucune erreur Agent récente.
 
-#### Prochaine reprise — panne contrôlée #3
+#### Prochaine reprise — panne contrôlée #3 (réalisée le 25 septembre, voir Clôture)
 
 **Ne pas reprendre les validations précédentes.**
 
