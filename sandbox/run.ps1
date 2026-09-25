@@ -79,6 +79,10 @@ if (($SandboxArgs -contains "run") -and $NeedsKatsuyu) {
     }
 }
 
+# The runner's exit code carries the verdict. Windows asyncio may print a
+# harmless connection reset on stderr when the browser reloads; with Stop it
+# aborted a passing run when the output was redirected.
+$ErrorActionPreference = "Continue"
 & $Python -X utf8 $Runner @SandboxArgs
 
 exit $LASTEXITCODE
