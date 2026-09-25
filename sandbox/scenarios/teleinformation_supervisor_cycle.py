@@ -128,9 +128,11 @@ def run() -> dict:
                     and "teleinfo2mqtt" in decision.get("conclusion", "").lower(),
                 ),
                 (
-                    "décision investigate déterministe, sans réparation automatique",
-                    outcome.decision == "investigate"
-                    and outcome.decision_source == "deterministic",
+                    "décision action_required déterministe, aucune réparation "
+                    "exécutée sans autorisation",
+                    outcome.decision == "action_required"
+                    and outcome.decision_source == "deterministic"
+                    and not diagnosed.repairs,
                 ),
                 (
                     "projection CONFIRMED courante avec empreinte diagnostique",
@@ -163,7 +165,7 @@ def run() -> dict:
                         f"observation {occurrence} : diagnostic confirmé toujours courant",
                         projection["decision_current"] is True
                         and projection["diagnostic_level"] == "CONFIRMED"
-                        and projection["state"] == "investigate"
+                        and projection["state"] == "action_required"
                         and current.latest_decision == decision,
                     ),
                     (

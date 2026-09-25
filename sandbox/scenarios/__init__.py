@@ -80,6 +80,13 @@ SCENARIOS = {
             "autorisation, vérification, échec, expiration et reprise."
         ),
     ),
+    "catalogue-repair-cycle": (
+        "scenarios.catalogue_repair_cycle",
+        (
+            "Réparations teleinfo2mqtt, Z-Wave JS et chrony : cible observée, "
+            "autorisation, exécution, vérification, refus et garde-fous."
+        ),
+    ),
     "recurring-log-review": (
         "scenarios.recurring_log_review",
         (
