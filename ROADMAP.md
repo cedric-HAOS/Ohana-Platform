@@ -611,9 +611,11 @@ Elle exige qu’aucun défaut bloquant connu ne remette en cause les invariants 
 
 # Phase 2 — Cycle complet incident → réparation supervisée
 
+Suivi : [validations réelles et état des critères](docs/Phase-2-Reparations-supervisees.md).
+
 Phase démarrée le 25 septembre 2026.
 
-État au 25 septembre (travail local, non déployé) :
+État au 25 septembre (Platform 1.0.120 : Agent 1.31.0, Vision 1.23.0, déployés) :
 
 - réparations déclarées dans un catalogue (Agent `tsunade/repair_catalog.py`),
   proposées par Tsunade seulement après un diagnostic confirmé par la sonde
@@ -624,7 +626,8 @@ Phase démarrée le 25 septembre 2026.
   le Supervisor (sonde `mqtt.status`, aller-retour en échec) ;
 - aucune autorisation tardive (proposition `expired`), aucune vérification sans
   fin (`unverified` après 15 minutes), aucune répétition automatique ;
-- critères de sortie à démontrer par des réparations réelles sur Konoha.
+- réparation Mosquitto validée en réel le 25 septembre (Agent 1.31.0) : 3 critères
+  de sortie sur 10 acquis.
 
 ## Objectif
 
@@ -705,14 +708,14 @@ Une réparation ayant échoué ne doit pas être répétée automatiquement sans
 ## Critères de sortie de la Phase 2
 
 - [ ] Une première réparation supervisée de référence fonctionne de bout en bout.
-- [ ] Une deuxième réparation suffisamment différente utilise le même mécanisme.
+- [x] Une deuxième réparation suffisamment différente utilise le même mécanisme.
 - [ ] Le cycle `diagnostic → proposition → autorisation → exécution → vérification` ne contient aucun état ambigu.
 - [ ] Une action non autorisée ne peut pas être exécutée.
 - [ ] Une action refusée ou différée reste explicitement dans cet état.
-- [ ] Shikamaru vérifie le résultat réel de la réparation.
+- [x] Shikamaru vérifie le résultat réel de la réparation.
 - [ ] Un échec laisse l’incident dans un état explicite et exploitable.
 - [ ] Une réparation échouée n’est pas répétée automatiquement sans nouvelle décision.
-- [ ] Vision et/ou Shizune permettent de comprendre l’action proposée et son résultat.
+- [x] Vision et/ou Shizune permettent de comprendre l’action proposée et son résultat.
 - [ ] Tsunade reste propriétaire de la décision finale.
 
 ---
