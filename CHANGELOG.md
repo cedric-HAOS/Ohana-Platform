@@ -6,6 +6,14 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.119] - 2026-09-25
+
+### Composition
+
+- Ohana-Agent 1.29.19 → 1.30.0 : registre de plugins, serveur HTTP aiohttp
+  (API d'administration, écouteurs Katsuyu et compagnon, réception
+  Téléinformation) et découpage des gros modules.
+
 ### Ajouté
 
 - Convention commune de commits, CHANGELOG et releases :
