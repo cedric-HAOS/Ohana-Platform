@@ -569,19 +569,31 @@ Restent notamment à suivre :
 - reprises rares après interruption ;
 - raffinements de présentation Vision ;
 - nombre de jobs et réveils Katsuyu ;
-- corrélation entre incidents : un symptôme en aval (télémétrie `sun-01`) doit
-  pouvoir être rattaché à un incident amont actif (broker MQTT) avant toute
-  escalade IA (constaté pendant la panne #3) ;
-- libellé des investigations : distinguer l'exécution d'une opération
-  (`mqtt.status: OK`) du résultat de la sonde (aller-retour en échec) ;
-- faits de journaux sans rapport inclus dans un diagnostic d'un autre service ;
-- fuseaux horaires mélangés (UTC et Europe/Paris) dans les événements d'incident ;
+- faits de journaux sans rapport inclus dans un diagnostic d'un autre service
+  (anomalies kasa et template reprises dans le diagnostic MQTT de la panne #3) ;
 - procédure déterministe pour NTP ;
 - transmission de `host.health` à Tsunade (prérequis d'un scénario
   « Ohana-Vision indisponible ») ;
 - fréquence des expertises Katsuyu sur les incidents `logs.health` très longs :
-  l'incident HA-01 ouvert depuis août totalise de nombreux cycles IA ; optimiser
+  mesuré le 25 septembre, 62 `ai.inference` en 7 jours, dont 2 par jour pour
+  chacun des incidents HA-01 et LINKY-01 ouverts depuis le 24 août ; optimiser
   ce coût sans réintroduire de boucle ni masquer les nouvelles preuves ;
+- fichiers statiques de Vision sans `Cache-Control` : après une mise à jour,
+  le navigateur peut garder d'anciens modules (constaté avec « Dépend de »).
+
+Traités depuis la clôture :
+
+- corrélation entre incidents : symptôme en aval rattaché à un incident amont
+  actif déclaré par `depends_on`, sans escalade IA (Agent 1.31.0, validé en
+  réel le 25 septembre) ;
+- libellé des investigations : `mqtt.status : exécutée, résultat en échec`
+  au lieu de `mqtt.status: OK` (Agent 1.31.0) ;
+- fuseaux horaires : incidents, événements, réparations et demandes en heure
+  de Paris uniquement (Agent, non publié) ;
+- « Contrôle des journaux par Katsuyu : KO » remplacé par le résultat réel
+  (Agent, non publié) ;
+- `logs.health_check` relancé à la résolution d'un incident à une seule
+  observation (Agent, non publié).
 
 ---
 
