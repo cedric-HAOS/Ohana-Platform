@@ -611,6 +611,21 @@ Elle exige qu’aucun défaut bloquant connu ne remette en cause les invariants 
 
 # Phase 2 — Cycle complet incident → réparation supervisée
 
+Phase démarrée le 25 septembre 2026.
+
+État au 25 septembre (travail local, non déployé) :
+
+- réparations déclarées dans un catalogue (Agent `tsunade/repair_catalog.py`),
+  proposées par Tsunade seulement après un diagnostic confirmé par la sonde
+  qui établit le symptôme corrigé ;
+- réparation de référence : redémarrage de dnsmasq pour le service `dhcp`
+  d'INFRA-01 (sonde `dhcp.status`, dnsmasq inactif) ;
+- deuxième réparation retenue : redémarrage de l'add-on Mosquitto de HA-01 par
+  le Supervisor (sonde `mqtt.status`, aller-retour en échec) ;
+- aucune autorisation tardive (proposition `expired`), aucune vérification sans
+  fin (`unverified` après 15 minutes), aucune répétition automatique ;
+- critères de sortie à démontrer par des réparations réelles sur Konoha.
+
 ## Objectif
 
 Faire évoluer Tsunade d’un moteur de diagnostic fiable vers un coordinateur capable de **proposer une réparation déterministe, demander l’autorisation appropriée, exécuter l’action et vérifier son résultat**.
