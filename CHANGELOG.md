@@ -6,6 +6,22 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.123] - 2026-09-25
+
+### Composition
+
+- Ohana-Agent 1.33.0 → 1.34.0 : catalogue de réparations enrichi
+  (add-ons teleinfo2mqtt et Z-Wave JS par le Supervisor, chrony par un
+  assistant privilégié), `host.health` transmis à Tsunade, délai de
+  vérification adaptatif, journal d'accès HTTP réduit aux refus et erreurs.
+- Ohana-Vision 1.24.0 → 1.25.0 : risque, conséquences et échéance de
+  vérification sur la carte d'incident, confirmation pour un risque moyen ou
+  élevé, `Cache-Control: no-cache` sur `/ui`, journal d'accès réduit.
+- Ohana-Installer 1.15.0 (publié à part) : assistant
+  `ohana-chrony-restart.path`, requis par la réparation chrony.
+- Sandbox : scénarios `catalogue-repair-cycle` et `vision-unavailable`,
+  échéance de vérification suivie.
+
 ## [1.0.122] - 2026-09-25
 
 ### Composition
