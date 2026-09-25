@@ -66,6 +66,13 @@ SCENARIOS = {
             "source de logs collecte d'abord ses preuves."
         ),
     ),
+    "vision-unavailable": (
+        "scenarios.vision_unavailable",
+        (
+            "Ohana-Vision arrêté : host.health ouvre un incident Tsunade, "
+            "confirmé par sonde sans IA, résolu au retour du service."
+        ),
+    ),
     "supervised-repair-cycle": (
         "scenarios.supervised_repair_cycle",
         (

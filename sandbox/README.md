@@ -110,6 +110,13 @@ différents, sans référence comparable) ne relance pas d'expertise, et qu'une
 aggravation nette en relance une. La réponse IA est simulée. Rejoué contre
 Agent 1.31.0 et Katsuyu 0.8.15, il échoue sur les deux défauts corrigés.
 
+`vision-unavailable` rejoue « Ohana-Vision indisponible » par la santé d'hôte :
+le vrai moniteur, le rapporteur, le bus d'événements, le gestionnaire Tsunade,
+le magasin d'incidents et l'exécuteur d'investigations traitent un
+`ohana-vision.service` inactif (seules les réponses `systemctl` sont simulées).
+L'incident est confirmé par la sonde `service.status` sans IA, la répétition ne
+relance rien et le retour du service le résout.
+
 `supervised-repair-cycle` rejoue la réparation de référence dnsmasq avec le
 véritable exécuteur de l'Agent, dont la demande de redémarrage est écrite dans
 un fichier temporaire : proposition automatique après diagnostic confirmé,
