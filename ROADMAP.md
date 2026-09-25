@@ -555,31 +555,42 @@ Relèvent d’une phase ultérieure :
 
 ## Durcissement continu
 
-Restent notamment à suivre :
+Restent à suivre :
 
-- messages `s6-rc` sans date exploitable ;
-- faux positifs de journaux ;
-- codes HTTP supplémentaires ;
-- limites lignes/octets/groupes ;
-- grosses fenêtres de journaux ;
-- comparaison de fenêtres ;
-- audit étendu des secrets ;
-- sondes MQTT, Supervisor et `teleinfo2mqtt` ;
-- scénarios de panne supplémentaires ;
-- reprises rares après interruption ;
-- raffinements de présentation Vision ;
-- nombre de jobs et réveils Katsuyu ;
-- faits de journaux sans rapport inclus dans un diagnostic d'un autre service
-  (anomalies kasa et template reprises dans le diagnostic MQTT de la panne #3) ;
-- procédure déterministe pour NTP ;
+- heure des journaux Home Assistant : Katsuyu lit les horodatages sans fuseau
+  (journal du cœur HA, add-ons) comme de l'UTC. Si Home Assistant les écrit en
+  heure de Paris, les fenêtres d'analyse sont décalées de deux heures ; indice :
+  la déconnexion MQTT de l'arrêt de Mosquitto n'apparaît dans aucun contrôle
+  des pannes #3 et du 25 septembre. À vérifier dans Home Assistant avant de
+  changer l'interprétation ;
 - transmission de `host.health` à Tsunade (prérequis d'un scénario
   « Ohana-Vision indisponible ») ;
-- fréquence des expertises Katsuyu sur les incidents `logs.health` très longs :
-  mesuré le 25 septembre, 62 `ai.inference` en 7 jours, dont 2 par jour pour
-  chacun des incidents HA-01 et LINKY-01 ouverts depuis le 24 août ; optimiser
-  ce coût sans réintroduire de boucle ni masquer les nouvelles preuves ;
 - fichiers statiques de Vision sans `Cache-Control` : après une mise à jour,
-  le navigateur peut garder d'anciens modules (constaté avec « Dépend de »).
+  le navigateur peut garder d'anciens modules (constaté avec « Dépend de ») ;
+- réparation automatique NTP : la procédure est déterministe, mais redémarrer
+  chrony demande un nouvel assistant privilégié installé par Installer ;
+- grosses fenêtres et comparaison de fenêtres : le contrôle quotidien de 24 h
+  d'INFRA-01 reste réellement tronqué (plafond de 10 000 lignes, environ
+  30 000 lignes de journal par jour) ; il faudrait des fenêtres plus courtes ou
+  un filtrage à la source ;
+- raffinements de présentation Vision ;
+- scénarios de panne supplémentaires (à conduire sur Konoha) ;
+- fréquence des expertises Katsuyu : à remesurer après déploiement (objectif :
+  plus d'expertise quotidienne pour des anomalies inchangées).
+
+Vérifiés le 25 septembre sans défaut à corriger :
+
+- codes HTTP : les 5xx sont des anomalies, les 4xx d'accès ne le sont pas ;
+- messages `INFO` de démarrage ou de reconnexion : ils restent des preuves,
+  y compris isolés (79 reconnexions au broker et 21 démarrages de
+  teleinfo2mqtt sur LINKY-01 sont de vrais signaux) ;
+- sondes MQTT, Supervisor et `teleinfo2mqtt` : exercées en réel pendant les
+  pannes #1, #3 et la réparation Mosquitto ;
+- nombre de jobs Katsuyu sur 7 jours : 62 `ai.inference`, 37
+  `logs.health_check`, 27 `logs.investigate`, 10 `backup.infra` ; le surcoût
+  venait des expertises quotidiennes, traitées ci-dessous ;
+- reprises rares après interruption : aucun défaut constaté depuis la
+  validation `followup-restart` de la Phase 1.
 
 Traités depuis la clôture :
 
@@ -593,7 +604,25 @@ Traités depuis la clôture :
 - « Contrôle des journaux par Katsuyu : KO » remplacé par le résultat réel
   (Agent, non publié) ;
 - `logs.health_check` relancé à la résolution d'un incident à une seule
-  observation (Agent, non publié).
+  observation (Agent, non publié) ;
+- expertises Katsuyu quotidiennes sur les incidents `logs.health` longs : une
+  anomalie déjà examinée est reconnue par sa signature et ne relance l'IA que
+  si sa fréquence double ou si sa gravité change (Agent, non publié) ;
+- faits de journaux sans rapport : le diagnostic d'un service ne garde que les
+  anomalies qui le citent (Agent, non publié) ;
+- procédure déterministe NTP : sonde `ntp.status` et procédure connue, sans
+  expertise Katsuyu (Agent, non publié) ;
+- messages sans date exploitable : lignes à heure seule (teleinfo2mqtt) datées
+  et fenêtrées, lignes de suite de traceback rattachées à leur enregistrement
+  (Katsuyu, non publié) ;
+- limites de lignes : le plafond de `/core/logs/latest` n'est plus une
+  troncature quand la fenêtre est couverte, ce qui bloquait la résolution des
+  incidents de journaux de LINKY-01 et ZWAVE-01 (Katsuyu, non publié) ;
+- catégories LINKY-01 : le nom de l'add-on ne force plus `serial` (Katsuyu,
+  non publié) ;
+- audit étendu des secrets : seules deux collectes du 27 août gardaient des
+  sessions de caméra `/stok=` ; les résultats de jobs sont désormais masqués à
+  la lecture (Agent, non publié).
 
 ---
 
