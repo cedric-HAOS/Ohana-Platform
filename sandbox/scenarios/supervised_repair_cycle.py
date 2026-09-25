@@ -204,6 +204,11 @@ def _reference(checks, details):
                 "référence : la vérification en attente survit à la reprise",
                 lab.incident(incident.incident_id).repairs[0].status == "verifying",
             ),
+            (
+                "référence : l'échéance de vérification est enregistrée",
+                verifying.verification_deadline is not None
+                and verifying.verification_deadline > verifying.executed_at,
+            ),
         ]
         lab.observe(ObservationStatus.HEALTHY)
         verified = lab.incident(incident.incident_id)
@@ -294,17 +299,25 @@ def _unverified(checks, details):
         incident = lab.observe(ObservationStatus.UNHEALTHY)
         lab.expertise.diagnose(incident.incident_id)
         repair = lab.incident(incident.incident_id).repairs[0]
-        lab.service.authorize_incident_repair(
-            str(incident.incident_id), _decision(repair.repair_id)
+        # Production waits at least 5 minutes; the lab shortens only this delay,
+        # which is fixed when the repair runs.
+        original = (
+            incident_repairs.REPAIR_VERIFICATION_SECONDS,
+            incident_repairs.REPAIR_VERIFICATION_MIN_SECONDS,
         )
-        # Production waits 15 minutes; the lab shortens only this delay.
-        original = incident_repairs.REPAIR_VERIFICATION_SECONDS
         incident_repairs.REPAIR_VERIFICATION_SECONDS = 1
+        incident_repairs.REPAIR_VERIFICATION_MIN_SECONDS = 1
         try:
-            time.sleep(1.2)
-            unverified = lab.incident(incident.incident_id).repairs[0]
+            lab.service.authorize_incident_repair(
+                str(incident.incident_id), _decision(repair.repair_id)
+            )
         finally:
-            incident_repairs.REPAIR_VERIFICATION_SECONDS = original
+            (
+                incident_repairs.REPAIR_VERIFICATION_SECONDS,
+                incident_repairs.REPAIR_VERIFICATION_MIN_SECONDS,
+            ) = original
+        time.sleep(1.2)
+        unverified = lab.incident(incident.incident_id).repairs[0]
         lab.observe(ObservationStatus.HEALTHY)
         late = lab.incident(incident.incident_id)
         checks += [
