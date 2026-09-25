@@ -6,6 +6,17 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.122] - 2026-09-25
+
+### Composition
+
+- Ohana-Agent 1.32.0 → 1.33.0 : refus et report d'une réparation supervisée
+  depuis l'API d'administration, `deferred_until` sur chaque réparation.
+- Ohana-Vision 1.23.0 → 1.24.0 : boutons « Refuser » et « Plus tard », état de
+  la dernière réparation visible sur la carte d'incident.
+- Sandbox : scénario `supervised-repair-cycle` et décisions de réparation
+  cliquées dans Vision par le parcours `--full-stack`.
+
 ## [1.0.121] - 2026-09-25
 
 ### Composition
