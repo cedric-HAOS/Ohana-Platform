@@ -557,8 +557,6 @@ Relèvent d’une phase ultérieure :
 
 Restent à suivre :
 
-- réparation automatique NTP : la procédure est déterministe, mais redémarrer
-  chrony demande un nouvel assistant privilégié installé par Installer ;
 - grosses fenêtres : vérifier après déploiement que le contrôle quotidien de
   24 h d'INFRA-01 n'est plus tronqué (cause corrigée, voir ci-dessous) ;
 - raffinements de présentation Vision ;
@@ -582,6 +580,9 @@ Vérifiés le 25 septembre sans défaut à corriger :
 
 Traités depuis la clôture :
 
+- réparation automatique NTP : sonde locale `chrony.status` et redémarrage
+  supervisé de chrony par l'assistant `ohana-chrony-restart.path` qu'installe
+  Installer (Agent 1.34.0, Installer 1.15.0) ;
 - `host.health` transmis à Tsunade par un événement dédié : un
   `ohana-vision.service` arrêté ouvre un incident confirmé par `service.status`
   sans IA ; scénario Sandbox `vision-unavailable` (Agent, non publié) ;
@@ -764,13 +765,17 @@ Une réparation ayant échoué ne doit pas être répétée automatiquement sans
 
 ## Durcissement continu
 
-- enrichissement du catalogue de réparations ;
 - rollback lorsque nécessaire (sans objet pour les redémarrages actuels) ;
 - réparations Home Assistant supplémentaires ;
 - gestion de réparations plus complexes.
 
-Traités (non publiés) :
+Traités (Platform 1.0.123) :
 
+- enrichissement du catalogue : redémarrage supervisé des add-ons
+  teleinfo2mqtt (arrêté ou en erreur selon le Supervisor) et Z-Wave JS (sonde
+  `zwave.status` en échec, risque moyen), cible prise dans la liste des
+  add-ons du Supervisor du nœud ; redémarrage de chrony inactif sur INFRA-01
+  par un assistant privilégié à commande fixe, installé par Installer ;
 - présentation des risques : risque, conséquences et résultat attendu visibles
   sur la carte d'incident avant toute décision ;
 - politique par type d'action : confirmation explicite pour une réparation à

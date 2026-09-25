@@ -131,6 +131,31 @@ réparation sur la carte d'incident.
 - Suite complète : 14 scénarios sur 14, exercice des journaux et
   `--full-stack` PASS.
 
+## Catalogue enrichi — Agent 1.34.0, Installer 1.15.0
+
+Même mécanisme que Mosquitto : proposition par Tsunade après un diagnostic
+confirmé, autorisation humaine, vérification par Shikamaru, aucune nouvelle
+proposition automatique après un refus ou un échec.
+
+| Réparation | Service | Preuve exigée | Action | Risque |
+| --- | --- | --- | --- | --- |
+| `teleinfo2mqtt.restart` | `tic-linky` (LINKY-01) | Supervisor : add-on `stopped` ou `error` (`confirmed_by_supervisor`) | redémarrage de l'add-on par le Supervisor | faible |
+| `zwave_js.restart` | `zwave` (ZWAVE-01) | sonde `zwave.status` en échec, add-on listé par le Supervisor | redémarrage de l'add-on par le Supervisor | moyen |
+| `chrony.restart` | `chrony` (INFRA-01) | sonde `ntp.status` et sonde locale `chrony.status` : chrony inactif | demande écrite à `ohana-chrony-restart.path` | faible |
+
+- La cible d'un add-on est le slug listé par la dernière inspection du
+  Supervisor du nœud (`6fc079ce_teleinfo2mqtt_ohana`, `a0d7b954_zwavejs2mqtt`
+  sur Konoha) ; sans inspection disponible, rien n'est proposé.
+- Un add-on teleinfo2mqtt démarré alors que les trames manquent, ou un chrony
+  actif dont les sources amont échouent, ne déclenche aucune réparation.
+- L'assistant chrony est une unité de chemin et un service `oneshot` dont la
+  seule commande est `systemctl restart chrony.service` ; le contenu de la
+  demande n'est pas lu. Sans assistant installé, l'exécution échoue
+  explicitement.
+- Sandbox : scénario `catalogue-repair-cycle` (15 vérifications, exécuteurs
+  Agent réels, Supervisor simulé) ; échoue sur Agent 1.33.0. Suite complète
+  16/16, exercice des journaux et `--full-stack` PASS.
+
 ## Prochaines validations
 
 Après déploiement de Platform 1.0.122 (Agent 1.33.0, Vision 1.24.0) et
