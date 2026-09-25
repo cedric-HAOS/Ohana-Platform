@@ -4,6 +4,15 @@ Toutes les modifications notables apportées à Ohana Platform sont documentées
 
 Le format s’inspire de Keep a Changelog et le projet suit une stratégie de versionnement sémantique.
 
+## Non publié
+
+### Ajouté
+
+- Convention commune de commits, CHANGELOG et releases :
+  `docs/Guides/Versions-et-releases.md`.
+- Workflow réutilisable `commit-messages.yml` qui vérifie le format
+  Conventional Commits (avertissement sur push, échec sur pull request).
+
 ## [1.0.115] - 2026-09-22
 
 ### Corrigé

@@ -1,0 +1,95 @@
+name: Commit messages
+
+# Vérifie le format Conventional Commits des titres de commit.
+# Convention : docs/Guides/Versions-et-releases.md
+#
+# Réutilisable depuis les autres dépôts Ohana :
+#   commits:
+#     uses: cedric-HAOS/Ohana-Platform/.github/workflows/commit-messages.yml@main
+
+on:
+  workflow_call:
+    inputs:
+      strict:
+        description: "Échouer aussi sur push (sinon avertissement seulement)."
+        type: boolean
+        default: false
+  push:
+    branches: ["**"]
+    tags-ignore: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Vérifier les titres de commit
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          STRICT: ${{ inputs.strict && 'true' || 'false' }}
+        shell: python
+        run: |
+          import os
+          import re
+          import subprocess
+          import sys
+
+          PATTERN = re.compile(
+              r"^(feat|fix|refactor|perf|test|docs|ci|build|chore|release|revert)"
+              r"(\([a-z0-9._/-]+\))?!?: \S.{0,99}$"
+          )
+          GIT_GENERATED = re.compile(r'^Revert ".+"$')
+          GUIDE = (
+              "https://github.com/cedric-HAOS/Ohana-Platform/blob/main/"
+              "docs/Guides/Versions-et-releases.md"
+          )
+
+          event = os.environ["EVENT_NAME"]
+          if event == "pull_request":
+              revisions = f"{os.environ['PR_BASE']}..{os.environ['PR_HEAD']}"
+              blocking = True
+          else:
+              before = os.environ.get("PUSH_BEFORE", "")
+              after = os.environ.get("PUSH_AFTER") or "HEAD"
+              if not before or set(before) == {"0"}:
+                  # Nouvelle branche : seul le commit poussé est connu.
+                  revisions = f"-1 {after}"
+              else:
+                  revisions = f"{before}..{after}"
+              blocking = os.environ["STRICT"] == "true"
+
+          log = subprocess.run(
+              ["git", "log", "--no-merges", "--format=%h%x09%s", *revisions.split()],
+              capture_output=True,
+              text=True,
+              check=True,
+          ).stdout.splitlines()
+
+          invalid = []
+          for line in log:
+              sha, subject = line.split("\t", 1)
+              if not (PATTERN.match(subject) or GIT_GENERATED.match(subject)):
+                  invalid.append((sha, subject))
+
+          print(f"{len(log)} commit(s) vérifié(s), {len(invalid)} non conforme(s).")
+          level = "error" if blocking else "warning"
+          for sha, subject in invalid:
+              print(
+                  f"::{level} title=Message de commit non conforme ({sha})::"
+                  f"{subject!r} — attendu « type(portée): résumé ». Voir {GUIDE}"
+              )
+          if invalid and blocking:
+              sys.exit(1)

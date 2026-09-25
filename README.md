@@ -54,6 +54,7 @@ is maintained in
 | [Operations](docs/Architecture/Déploiement.md) | Deployment architecture |
 | [Sauvegardes vers iCloud](docs/Guides/Sauvegarder-HAOS-vers-iCloud.md) | Configuration, sécurité et validation des sauvegardes |
 | [Design system](docs/Design/Brand.md) | Shared visual identity |
+| [Versions et releases](docs/Guides/Versions-et-releases.md) | Commits, CHANGELOG, fréquence des releases et SemVer |
 
 ## Getting started
 
