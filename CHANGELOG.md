@@ -6,6 +6,20 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.121] - 2026-09-25
+
+### Composition
+
+- Ohana-Agent 1.31.0 → 1.32.0 : heures de Paris uniquement, fin des expertises
+  quotidiennes sur des anomalies de journaux inchangées, faits de journaux
+  limités au service, procédure déterministe NTP, masquage des sessions de
+  caméra dans les résultats de jobs.
+- Ohana-Katsuyu 0.8.16, installé séparément sur Bubule : journaux Home
+  Assistant lus en heure de Paris, lignes à heure seule datées, traceback
+  rattachés à leur ligne, plafond de lignes sans fausse troncature.
+- Sandbox : scénario `recurring-log-review` et scénarios alignés sur Agent 1.30
+  et 1.31.
+
 ## [1.0.120] - 2026-09-25
 
 ### Composition
