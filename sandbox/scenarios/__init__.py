@@ -66,6 +66,13 @@ SCENARIOS = {
             "source de logs collecte d'abord ses preuves."
         ),
     ),
+    "recurring-log-review": (
+        "scenarios.recurring_log_review",
+        (
+            "Revoir chaque jour les mêmes anomalies HA-01 sans nouvelle "
+            "expertise, en heure de Paris, et relancer sur aggravation."
+        ),
+    ),
     "ambiguous-katsuyu-cycle": (
         "scenarios.ambiguous_katsuyu_cycle",
         (

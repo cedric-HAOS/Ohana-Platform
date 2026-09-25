@@ -295,7 +295,12 @@ def main() -> int:
     )
 
     exercise_passed = True
-    if args.exercise_logs or args.full_stack:
+    # Scenarios that run the real Katsuyu log analyser need its checkout too.
+    if (
+        args.exercise_logs
+        or args.full_stack
+        or args.scenario in {"all", "recurring-log-review"}
+    ):
         katsuyu_root = args.katsuyu.resolve()
         if not (katsuyu_root / "ohana_katsuyu").is_dir():
             raise SystemExit(f"Checkout Katsuyu invalide : {katsuyu_root}")

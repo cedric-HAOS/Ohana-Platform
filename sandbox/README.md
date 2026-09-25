@@ -102,6 +102,14 @@ reprise, sans job IA ni collecte complémentaire. Aucune sonde réelle ni aucun
 arrêt/redémarrage d'add-on n'est effectué. Ce scénario ne remplace pas la
 requalification de la panne contrôlée sur Konoha après déploiement.
 
+`recurring-log-review` passe trois contrôles quotidiens de HA-01 par le véritable
+`LogsHealthCheckHandler` de Katsuyu, avec des horodatages sans fuseau en heure de
+Paris comme dans Home Assistant. Il vérifie que ces lignes tombent dans la
+fenêtre, qu'un contrôle retrouvant les mêmes anomalies (compteur et date
+différents, sans référence comparable) ne relance pas d'expertise, et qu'une
+aggravation nette en relance une. La réponse IA est simulée. Rejoué contre
+Agent 1.31.0 et Katsuyu 0.8.15, il échoue sur les deux défauts corrigés.
+
 `followup-restart` ferme et rouvre les deux bases SQLite puis reconstruit les
 services Agent. Il couvre l'expiration pendant l'arrêt et la reprise après un
 échec déjà traité : preuves conservées, aucune relance et lectures idempotentes.

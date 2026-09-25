@@ -64,8 +64,10 @@ if (-not (Test-Path $Marker)) {
 
 $Runner = Join-Path $SandboxDir "runner.py"
 
-# Le parcours de développement utilise aussi le code et les dépendances Katsuyu.
-if (($SandboxArgs -contains "run") -and ($SandboxArgs -contains "--exercise-logs")) {
+# Le parcours de développement et les scénarios de journaux utilisent aussi le
+# code et les dépendances Katsuyu.
+$NeedsKatsuyu = ($SandboxArgs -contains "--exercise-logs") -or ($SandboxArgs -contains "all") -or ($SandboxArgs -contains "recurring-log-review")
+if (($SandboxArgs -contains "run") -and $NeedsKatsuyu) {
     $KatsuyuDir = Join-Path $WorkspaceDir "Ohana-Katsuyu"
     $KatsuyuIndex = [Array]::IndexOf($SandboxArgs, "--katsuyu")
     if ($KatsuyuIndex -ge 0 -and $KatsuyuIndex + 1 -lt $SandboxArgs.Count) {
