@@ -6,6 +6,16 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.120] - 2026-09-25
+
+### Composition
+
+- Ohana-Agent 1.30.0 → 1.31.0 : libellé des investigations, corrélation entre
+  incidents (`depends_on`), expiration des réparations et vérification bornée,
+  catalogue de réparations supervisées avec redémarrage de l'add-on Mosquitto.
+- Ohana-Vision 1.22.14 → 1.23.0 : champ « Dépend de », demande de la réparation
+  connue et états `expired` / `unverified`.
+
 ## [1.0.119] - 2026-09-25
 
 ### Composition
