@@ -11,7 +11,7 @@ sur une nouvelle preuve contradictoire.
 
 ## État des critères de sortie — 26 septembre 2026
 
-**9 critères sur 10 démontrés en réel ; les 10 démontrés dans Sandbox.**
+**Les 10 critères démontrés en réel et dans Sandbox.**
 
 | Critère | Réel (Konoha) | Sandbox (Agent 1.33.0, Vision 1.24.0) |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ sur une nouvelle preuve contradictoire.
 | Action non autorisée non exécutable | **acquis** : proposition reportée puis refusée jamais exécutée | **démontré** : proposition inconnue, expirée ou refusée jamais exécutée |
 | Refus ou report conservé | **acquis** (refus Mosquitto, report dnsmasq) | **démontré** : report Vision, refus Shizune et Vision |
 | Vérification réelle par Shikamaru | **acquis** | — |
-| Échec explicite et exploitable | partiel : `unverified` explicite ; le faux `unverified` de chrony est corrigé (1.35.0), un vrai échec reste à exercer | **démontré** : échec d'exécution et vérification non confirmée |
+| Échec explicite et exploitable | **acquis** : chrony masqué, réparation « Échec confirmé » par Shikamaru, jamais reproposée ; la cause côté assistant n'est pas remontée | **démontré** : échec d'exécution et vérification non confirmée |
 | Pas de répétition automatique après échec | **acquis** : rien de reproposé après `unverified` ni après refus | **démontré** : aucune nouvelle proposition après refus ou échec |
 | Vision ou Shizune rendent l'action compréhensible | **acquis** | **démontré** dans Chromium : report, autorisation, refus et états sur la carte |
 | Tsunade propriétaire de la décision finale | **acquis** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie | **démontré** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie |
@@ -198,6 +198,24 @@ observations du service réparé, à +20 s et +75 s.
 Le défaut de vérification liée à la cadence est corrigé en réel : la
 confirmation arrive 20 secondes après l'exécution au lieu du cycle horaire.
 
+### Échec réel — chrony masqué — 26 septembre 2026, soir
+
+chrony arrêté puis masqué par l'utilisateur ; intervalle NTP réduit dans
+Vision pour la durée de l'essai.
+
+| Heure | Événement |
+| --- | --- |
+| 19:31:29 | incident NTP ouvert |
+| 19:31:41 | `ntp.status` et `chrony.status` en échec ; diagnostic déterministe |
+| 19:31:42 | Tsunade propose le redémarrage supervisé de chrony |
+| 19:34:01 | autorisation depuis Vision, exécution ; l'assistant échoue : « Unit chrony.service is masked » |
+| 19:34:26 | observation demandée : dégradée, ignorée pendant le délai de stabilisation |
+| 19:35:21 | observation demandée : « Shikamaru observe encore une capacité dégradée après la réparation » ; réparation « Échec confirmé » |
+| 19:37:21 | nouvelles observations dégradées : rien n'est reproposé ; seuls « Actualiser l'analyse » et « Demander la réparation connue » restent offerts |
+
+Limite : l'Agent dépose la demande et ne lit pas le résultat de l'assistant
+systemd ; l'échec est établi par l'observation, sans sa cause (unité masquée).
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
@@ -248,7 +266,7 @@ proposition automatique après un refus ou un échec.
 
 1. ~~Corriger la vérification~~ : fait (Agent 1.35.0), chrony `succeeded` en
    réel 20 secondes après l'exécution.
-2. Échec réel exploitable : `unverified` sur une réparation réellement
-   inefficace, ou `failed` sur une exécution refusée.
+2. ~~Échec réel exploitable~~ : fait, chrony masqué, « Échec confirmé »
+   sans nouvelle proposition. Reste à remonter la cause côté assistant.
 3. Réparations `teleinfo2mqtt.restart` et `zwave_js.restart` : arrêt de
    l'add-on dans Home Assistant par l'utilisateur, autorisation depuis Vision.
