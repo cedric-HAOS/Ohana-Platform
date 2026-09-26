@@ -6,6 +6,25 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.128] - 2026-09-26
+
+### Composition
+
+- Ohana-Agent 1.36.0 → 1.36.1 :
+  - jobs jamais démarrés déclarés `TIMEOUT` à l'heure, même worker endormi
+    et Vision fermé (255 minutes de retard le 26 septembre) ;
+  - les assistants de réparation en échec n'ouvrent plus d'incident
+    `systemd_units_failed` durable sur INFRA-01 ;
+  - complexité réduite de l'aller-retour MQTT et de l'instantané de
+    diagnostic, sans changement de comportement.
+- Ohana-Vision 1.27.0 → 1.27.1 : `vision.db` rend l'espace libéré par la
+  purge (reconstruction unique au premier démarrage) ; cause d'une réparation
+  en échec visible sur la carte ; libellé d'évaluation non répété.
+- Shizune 0.3.0 inchangé. Hors composition : Katsuyu 0.8.17 (LINKY-01 n'est
+  plus déclaré tronqué à tort) et Installer 1.15.1.
+- Sandbox : `run.ps1 live jobs-report` affiche la fenêtre et les anomalies
+  datées de la dernière collecte de chaque source.
+
 ## [1.0.127] - 2026-09-26
 
 ### Composition
