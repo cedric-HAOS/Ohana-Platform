@@ -6,6 +6,26 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.126] - 2026-09-26
+
+### Composition
+
+- Ohana-Agent 1.35.1 → 1.36.0 :
+  - cause d'un échec d'assistant (chrony, dnsmasq) remontée dans la
+    réparation, par exemple « chrony.service est masqué » ;
+  - cascade d'une panne DNS : un échec de résolution de nom est rattaché à
+    l'incident DNS ou dnsmasq, sans réparation du service touché, et une
+    observation DNS et DHCP immédiate est demandée ;
+  - redémarrage d'un add-on lent (Z-Wave JS UI) : Home Assistant attend le
+    Supervisor au lieu de ses 10 secondes par défaut.
+- Ohana-Vision 1.25.0 → 1.26.0 : carte d'incident à jour après une décision,
+  bandeau fidèle au résultat, titre par service et équipement, procédure
+  déterministe distinguée de l'analyse Katsuyu.
+- Shizune 0.3.0 inchangé.
+- Sandbox : scénario `dns-cascade`, cas chrony masqué et Supervisor lent
+  (délai de 10 secondes de Home Assistant simulé) dans
+  `catalogue-repair-cycle`, rapport `run.ps1 live jobs-report`.
+
 ## [1.0.125] - 2026-09-26
 
 ### Composition
