@@ -570,10 +570,14 @@ Restent à suivre :
 - jobs jamais démarrés (worker endormi) déclarés `TIMEOUT` des heures après
   leur délai : 255 minutes pour un délai de 15 minutes le 26 septembre, 8 cas
   depuis le 20 ;
-- Vision saturé sur INFRA-01 : processus à 90–110 % de CPU, 353 Mo de
-  mémoire sur 905 Mo, `vision.db` de 267 Mo ; 432 livraisons d'observations
-  expirées entre 12 h et 21 h le 26 septembre, d'où des états affichés en
-  retard et des 502 de l'administration.
+- Vision saturé sur INFRA-01 : processus à 90–110 % de CPU, 432 livraisons
+  d'observations expirées le 26 septembre. Cause : chaque page rechargeait à
+  chaque observation une chronologie de 24 h qui coûtait environ 18 s sur
+  INFRA-01. Corrigé dans Vision (non publié) : chronologie lue par changements
+  de statut (1 211 ms → 49 ms), rechargement sur changement de statut
+  seulement ; scénario `vision-ingestion-load` (ingestion p95 2 347 ms en
+  1.26.0, 36 ms corrigé). Reste : `vision.db` de 267 Mo pour environ 45 Mo de
+  données (pages libérées par la purge, jamais récupérées).
 
 Vérifiés le 25 septembre sans défaut à corriger :
 

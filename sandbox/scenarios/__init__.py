@@ -101,6 +101,13 @@ SCENARIOS = {
             "observation DHCP immédiate, rattachement, aucune réparation aval."
         ),
     ),
+    "vision-ingestion-load": (
+        "scenarios.vision_ingestion_load",
+        (
+            "Vision sous la charge de Konoha : 1 observation/s, 2 pages qui "
+            "rechargent la chronologie 24 h, latences d'ingestion mesurées."
+        ),
+    ),
     "recurring-log-review": (
         "scenarios.recurring_log_review",
         (
