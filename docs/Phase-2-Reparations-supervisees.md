@@ -262,10 +262,18 @@ Constats :
 Second essai, watchdog de l'add-on désactivé : arrêt à 20:11:28, incident à
 20:12:35, proposition à 20:13:04, autorisation à 20:13:25, puis de nouveau
 `failed` à 20:13:35 (« Le Supervisor a refusé le redémarrage »), sans nouvelle
-proposition. L'utilisateur a relancé l'add-on ; incident résolu à 20:14:36. Le
-refus est reproductible et ne vient pas du watchdog. Hypothèse à vérifier dans
-le journal du Supervisor de ZWAVE-01 : `restart` refusé sur un add-on arrêté,
-qui demanderait `start`. La réparation `zwave_js.restart` n'est pas validée.
+proposition. Personne n'a relancé l'add-on : il répond de nouveau à 20:14:36
+et l'incident est résolu.
+
+Analyse : aux deux essais, l'add-on revient environ une minute après le
+« refus », et ce refus arrive exactement 10 secondes après l'autorisation.
+Le Supervisor a donc bien redémarré l'add-on. Cause probable : l'appel
+WebSocket `supervisor/api` de Home Assistant abandonne l'attente au bout de
+10 secondes par défaut, alors que Z-Wave JS UI met environ une minute à
+redémarrer (Mosquitto et teleinfo2mqtt, plus rapides, répondent à temps).
+L'Agent prend cette expiration pour un refus. La réparation
+`zwave_js.restart` n'est pas validée : l'exécution est déclarée en échec alors
+qu'elle réussit.
 
 ## Qualification Sandbox — 25 septembre 2026
 
