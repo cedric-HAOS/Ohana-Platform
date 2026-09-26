@@ -1,74 +1,82 @@
 # Ohana Platform
 
-> A modular infrastructure supervision platform built around observation,
-> health monitoring and real-time visualization.
+> Plateforme modulaire de supervision d’infrastructure, construite autour de
+> l’observation, du suivi de santé et de la visualisation en temps réel.
 
-Ohana separates collection, visualization and deployment into independent
-components connected by explicit contracts.
+Ohana sépare la collecte, la visualisation et le déploiement en composants
+indépendants, reliés par des contrats explicites.
 
-## Ecosystem
+## Écosystème
 
-| Repository | Responsibility |
+| Dépôt | Responsabilité |
 | --- | --- |
-| [Ohana-Agent](https://github.com/cedric-HAOS/Ohana-Agent) | Technical runtime hosting Shikamaru observation and Tsunade coordination. |
-| [Ohana-Vision](https://github.com/cedric-HAOS/Ohana-Vision) | Technical cockpit for Konoha health, history and topology. |
-| [Ohana-Installer](https://github.com/cedric-HAOS/Ohana-Installer) | Installs, updates and removes the released platform on Linux/systemd. |
-| [Ohana-Katsuyu](https://github.com/cedric-HAOS/Ohana-Katsuyu) | Executes allowlisted jobs and optional local AI inference on Bubule. |
-| [Ohana-House](https://github.com/cedric-HAOS/Ohana-House) | Documents the reference Konoha home deployment. |
-| **Ohana-Platform** | Defines the shared architecture, documentation, design system and release manifest. |
+| [Ohana-Agent](https://github.com/cedric-HAOS/Ohana-Agent) | Runtime technique qui héberge l’observation Shikamaru et la coordination Tsunade. |
+| [Ohana-Vision](https://github.com/cedric-HAOS/Ohana-Vision) | Cockpit technique : santé, historique et topologie de Konoha. |
+| [Ohana-Installer](https://github.com/cedric-HAOS/Ohana-Installer) | Installe, met à jour et désinstalle la plateforme publiée sous Linux/systemd. |
+| [Ohana-Katsuyu](https://github.com/cedric-HAOS/Ohana-Katsuyu) | Exécute sur Bubule les jobs autorisés et l’inférence IA locale facultative. |
+| [Ohana-Shizune](https://github.com/cedric-HAOS/Ohana-Shizune) | PWA compagnon personnelle pour suivre Konoha et prendre les décisions. |
+| [Ohana-House](https://github.com/cedric-HAOS/Ohana-House) | Documente le déploiement de référence de Konoha à la maison. |
+| **Ohana-Platform** | Définit l’architecture commune, la documentation, le design system et le manifeste de release. |
 
 ```text
 Infrastructure
       |
       v
-Ohana-Agent -- REST --> Ohana-Vision --> Web dashboard
+Ohana-Agent -- REST --> Ohana-Vision --> Tableau de bord web
       ^
       |
-Ohana-Installer reads the Ohana-Platform release catalog
+Ohana-Installer lit le catalogue de releases d’Ohana-Platform
 ```
 
-The repository and package names are stable technical identifiers. Konoha,
-Shikamaru, Tsunade and Shizune describe functional domains and roles; they do
-not replace Agent, Vision, Installer, Platform or House. The normative mapping
-is maintained in
-[the architecture reference](docs/Architecture/Architecture.md#21-vocabulaire-technique-et-fonctionnel).
+Les noms de dépôts et de paquets sont des identifiants techniques stables.
+Konoha, Shikamaru, Tsunade et Shizune décrivent des domaines et des rôles
+fonctionnels ; ils ne remplacent pas Agent, Vision, Installer, Platform ou
+House. La correspondance de référence est tenue dans
+[l’architecture](docs/Architecture/Architecture.md#21-vocabulaire-technique-et-fonctionnel).
 
-## Shared contracts
+## Contrats communs
 
-- Agent publishes observations to `POST /api/observations`.
-- Agent synchronizes topology through `PUT /api/infrastructure`.
-- Vision listens on `127.0.0.1:8000` by default.
-- `release-catalog.yaml` lists every officially installable Agent/Vision couple.
-- `release-manifest.yaml` is the immutable contract of one Platform release.
-- Each Platform release publishes both files as GitHub release assets.
-- Component releases publish every wheel and configuration file declared by the manifest.
-- `Ohana-Installer/config/release-catalog.yaml` and
-  `Ohana-Installer/config/release-manifest.yaml` are synchronized validation copies.
+- Agent publie les observations sur `POST /api/observations`.
+- Agent synchronise la topologie par `PUT /api/infrastructure`.
+- Vision écoute par défaut sur `127.0.0.1:8000`.
+- `release-catalog.yaml` liste chaque couple Agent/Vision installable
+  officiellement.
+- `release-manifest.yaml` est le contrat immuable d’une release Platform.
+- Chaque release Platform publie ces deux fichiers comme assets de sa release
+  GitHub.
+- Les releases de composants publient chaque wheel et chaque fichier de
+  configuration déclarés par le manifeste.
+- `Ohana-Installer/config/release-catalog.yaml` et
+  `Ohana-Installer/config/release-manifest.yaml` en sont des copies de
+  validation synchronisées.
 
 ## Documentation
 
 | Document | Description |
 | --- | --- |
-| [Architecture](docs/Architecture/Architecture.md) | Global platform architecture |
-| [Development installation](docs/getting-started/Installer-Ohana-Platform.md) | Local Agent + Vision setup |
-| [Operations](docs/Architecture/Déploiement.md) | Deployment architecture |
+| [Architecture](docs/Architecture/Architecture.md) | Architecture globale de la plateforme |
+| [Installation de développement](docs/getting-started/Installer-Ohana-Platform.md) | Agent et Vision en local |
+| [Déploiement](docs/Architecture/Déploiement.md) | Architecture de déploiement |
+| [Roadmap](ROADMAP.md) | Phases, critères de sortie et durcissement continu |
 | [Sauvegardes vers iCloud](docs/Guides/Sauvegarder-HAOS-vers-iCloud.md) | Configuration, sécurité et validation des sauvegardes |
-| [Design system](docs/Design/Brand.md) | Shared visual identity |
+| [Design system](docs/Design/Brand.md) | Identité visuelle commune |
 | [Versions et releases](docs/Guides/Versions-et-releases.md) | Commits, CHANGELOG, fréquence des releases et SemVer |
+| [Ohana Sandbox](sandbox/README.md) | Scénarios locaux, full-stack et recettes en lecture seule sur Konoha |
 
-## Getting started
+## Démarrage
 
-For a development environment, follow
-[the complete installation guide](docs/getting-started/Installer-Ohana-Platform.md).
-Production installation is handled by Ohana-Installer from official GitHub
-releases.
+Pour un environnement de développement, suivre
+[le guide d’installation complet](docs/getting-started/Installer-Ohana-Platform.md).
+L’installation de production passe par Ohana-Installer, à partir des releases
+GitHub officielles.
 
-## Repository structure
+## Structure du dépôt
 
 ```text
 Ohana-Platform/
 ├── diagrams/
 ├── docs/
+├── sandbox/
 ├── CHANGELOG.md
 ├── LICENSE
 ├── README.md
@@ -77,9 +85,9 @@ Ohana-Platform/
 └── release-manifest.yaml
 ```
 
-## Version compatibility
+## Compatibilité des versions
 
-| Platform | Agent | Vision | Python | Target |
+| Platform | Agent | Vision | Python | Cible |
 | --- | --- | --- | --- | --- |
 | 1.0.128 | 1.36.1 | 1.27.1 | 3.13+ | Linux/systemd |
 | 1.0.127 | 1.36.0 | 1.27.0 | 3.13+ | Linux/systemd |
@@ -192,20 +200,20 @@ Ohana-Platform/
 | 1.0.2 | 1.1.1 | 1.1.2 | 3.13+ | Linux/systemd |
 | 1.0.1 | 1.1.1 | 1.1.1 | 3.13+ | Linux/systemd |
 
-The complete list of selectable compositions is defined in
-`release-catalog.yaml`. The exact artifact names and service contracts of each
-composition remain defined by the `release-manifest.yaml` published in its Platform
-release.
+La liste complète des compositions sélectionnables est définie dans
+`release-catalog.yaml`. Les noms exacts des artefacts et les contrats de
+service de chaque composition restent définis par le `release-manifest.yaml`
+publié avec sa release Platform.
 
-## Contributing
+## Contribuer
 
-The platform is currently maintained as the reference implementation of the
-Ohana ecosystem. Component-specific changes belong in the corresponding
-repository; shared contracts and release coordination belong here.
+La plateforme est maintenue comme implémentation de référence de l’écosystème
+Ohana. Les changements propres à un composant vont dans son dépôt ; les
+contrats communs et la coordination des releases vont ici.
 
-## License
+## Licence
 
-Distributed under the MIT license. See `LICENSE`.
+Distribué sous licence MIT. Voir `LICENSE`.
 
 ## Composition 1.0.70
 
