@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.125] - 2026-09-26
+
+### Composition
+
+- Ohana-Agent 1.35.0 → 1.35.1 : fin des erreurs « Tsunade est indisponible :
+  Unexpected administration failure » dans Vision ; la liste et le détail des
+  incidents sont construits sous le verrou de la base Tsunade.
+- Ohana-Vision 1.25.0 et Shizune 0.3.0 inchangés.
+- Phase 2 clôturée : les 10 critères de sortie sont démontrés en réel.
+- Sandbox : Vision du full-stack servi sur une boucle sélecteur, comme sous
+  Linux en production, ce qui supprime l'arrêt bloqué après une connexion
+  Chromium réinitialisée sous Windows.
+
 ## [1.0.124] - 2026-09-26
 
 ### Composition
