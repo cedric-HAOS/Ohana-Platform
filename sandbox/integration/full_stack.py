@@ -581,6 +581,24 @@ def run(*, args):
                 "Shikamaru vérifie la réparation autorisée depuis Vision",
                 incidents.get(repair_incident_id).repairs[0].status == "succeeded",
             )
+            # The resolved incident left "Tous les actifs": its save button
+            # must still be found without opening the "Résolus" dossiers.
+            page.reload(wait_until="networkidle")
+            page.locator('[data-navigation-target="incidents"]').click()
+            save = page.locator(
+                "#incidents-experience-pending "
+                f'[data-tsunade-experience="{repair_incident_id}"]'
+            )
+            expect(save).to_be_visible(timeout=20000)
+            saved_ok = post("/experience", save)
+            expect(page.locator("#incidents-experience-pending")).to_be_hidden(
+                timeout=15000
+            )
+            check(
+                "Réparation vérifiée enregistrée depuis « Réparations à confirmer »",
+                saved_ok
+                and incidents.get(repair_incident_id).experience_candidate is None,
+            )
             reload_request.unlink()  # The helper consumes each request.
             refused_incident_id, refused_id = proposal()
             page.once("dialog", lambda dialog: dialog.accept())
