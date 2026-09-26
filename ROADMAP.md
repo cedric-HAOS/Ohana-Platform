@@ -557,12 +557,19 @@ Relèvent d’une phase ultérieure :
 
 Restent à suivre :
 
-- grosses fenêtres : vérifier après déploiement que le contrôle quotidien de
-  24 h d'INFRA-01 n'est plus tronqué (cause corrigée, voir ci-dessous) ;
+- grosses fenêtres : mesuré le 26 septembre (`run.ps1 live jobs-report`),
+  HA-01 n'est plus tronqué (0/4) mais LINKY-01 et ZWAVE-01 le restent (3/3) :
+  le Supervisor renvoie au plus 10 000 lignes et 24 h de journaux de
+  teleinfo2mqtt et Z-Wave JS UI les dépassent ; INFRA-01 partiellement (3/8) ;
 - raffinements de présentation Vision ;
 - scénarios de panne supplémentaires (à conduire sur Konoha) ;
-- fréquence des expertises Katsuyu : à remesurer après déploiement (objectif :
-  plus d'expertise quotidienne pour des anomalies inchangées).
+- fréquence des expertises Katsuyu : 4 inférences par jour les 23 et 24
+  septembre, 17 le 26 (journée de pannes contrôlées, nouvelles anomalies) ; à
+  remesurer après une journée calme (objectif : plus d'expertise quotidienne
+  pour des anomalies inchangées) ;
+- jobs jamais démarrés (worker endormi) déclarés `TIMEOUT` des heures après
+  leur délai : 255 minutes pour un délai de 15 minutes le 26 septembre, 8 cas
+  depuis le 20.
 
 Vérifiés le 25 septembre sans défaut à corriger :
 
@@ -793,7 +800,13 @@ Preuves datées : [document de suivi de la Phase 2](docs/Phase-2-Reparations-sup
   suivant ;
 - Vision : carte titrée « timed out » au lieu du service, page Services
   « Sain » pendant un incident critique, bandeau « vérification en attente »
-  resté affiché, conclusion déterministe attribuée à « Analyse Katsuyu ».
+  resté affiché, conclusion déterministe attribuée à « Analyse Katsuyu » ;
+- Vision : carte figée après une décision ; après l'autorisation Z-Wave JS,
+  « En attente de validation » et ses boutons sont restés affichés sur
+  l'incident résolu jusqu'au rechargement, alors que l'API renvoyait `failed` ;
+- `zwave_js.restart` déclaré refusé 10 secondes après l'autorisation alors
+  que l'add-on redémarrait : délai par défaut de `supervisor/api` dans Home
+  Assistant (corrigé dans l'Agent, non publié) ; essai réel à refaire.
 
 Traités (Platform 1.0.124 et 1.0.125) :
 
