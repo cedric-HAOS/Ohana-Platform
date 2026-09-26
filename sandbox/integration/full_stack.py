@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import secrets
@@ -78,45 +79,32 @@ def _wait(label, predicate, *, timeout, worker=None, page=None):
             page.wait_for_timeout(200)
     raise TimeoutError(f"Délai dépassé ({timeout}s) : {label}")
 
-def _stop_vision(server, thread, listener):
-    """Stop Uvicorn without cancelling a pending Windows Proactor accept."""
+def _serve_vision(server, listener):
+    """Serve Vision on a selector loop, as it runs on Linux in production.
+
+    Uvicorn picks the Windows Proactor loop by default. When a Chromium
+    connection is reset (WinError 10054), CPython 3.13's
+    ``_ProactorBasePipeTransport._call_connection_lost`` raises on
+    ``socket.shutdown()`` before ``Server._detach()``: the server keeps a
+    phantom connection and ``wait_closed()`` — awaited by Uvicorn even under
+    ``force_exit`` — never returns. The selector transport only closes its
+    socket, so every connection is detached and shutdown completes.
+    """
+
+    asyncio.run(server.serve(sockets=[listener]), loop_factory=asyncio.SelectorEventLoop)
+
+
+def _stop_vision(server, thread):
+    """Stop Uvicorn; the selector loop needs no wake-up of a pending accept."""
 
     server.should_exit = True
-
-    # Sous Windows, fermer directement le socket pendant qu'un accept()
-    # Proactor est en attente provoque WinError 995.
-    #
-    # Une connexion locale très brève réveille proprement l'accept() sans
-    # invalider le socket. Uvicorn peut alors observer should_exit et terminer
-    # son cycle normalement.
-    try:
-        address = listener.getsockname()
-        with socket.create_connection(address, timeout=1):
-            pass
-    except OSError:
-        pass
-
     thread.join(timeout=10)
-
     if thread.is_alive():
-        # Dernier recours : demander l'arrêt forcé, mais toujours réveiller
-        # l'accept() plutôt que fermer son socket depuis un autre thread.
         server.force_exit = True
-        server.should_exit = True
-
-        try:
-            address = listener.getsockname()
-            with socket.create_connection(address, timeout=1):
-                pass
-        except OSError:
-            pass
-
         thread.join(timeout=5)
-
     if thread.is_alive():
-        raise RuntimeError(
-            "Vision ne s'est pas arrêté après arrêt forcé"
-        )
+        raise RuntimeError("Vision ne s'est pas arrêté après arrêt forcé")
+
 
 def _model_settings(args):
     cache = args.katsuyu.resolve() / ".benchmark-cache"
@@ -273,16 +261,9 @@ def run(*, args):
             listener.listen(128)
             vision_url = f"http://127.0.0.1:{listener.getsockname()[1]}"
             server = uvicorn.Server(uvicorn.Config(app, log_level="warning"))
-            thread = Thread(
-                target=server.run, kwargs={"sockets": [listener]}, daemon=True
-            )
+            thread = Thread(target=_serve_vision, args=(server, listener), daemon=True)
             thread.start()
-            stack.callback(
-                _stop_vision,
-                server,
-                thread,
-                listener,
-            )
+            stack.callback(_stop_vision, server, thread)
             _wait("démarrage Vision", lambda: server.started, timeout=20)
 
             stop_file = root / "worker.stop"
