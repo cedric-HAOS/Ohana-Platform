@@ -13,10 +13,12 @@ import tempfile
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import uuid4
 
 from ohana_agent.api.service import AdministrationService
 from ohana_agent.host.chrony import ChronyRestartRequester
+from ohana_agent.host.helper_outcome import HelperOutcome
 from ohana_agent.infrastructure.repository import InfrastructureConfigurationRepository
 from ohana_agent.observation import Observation, ObservationStatus
 from ohana_agent.tsunade import configuration_inspection
@@ -142,8 +144,43 @@ class Lab:
         return self.incidents.get(incident.incident_id)
 
 
+def _masked_helper(root: Path) -> HelperOutcome:
+    """systemd as on Konoha with chrony masked: the helper run fails."""
+    systemctl = root / "systemctl"
+    systemctl.write_text("", encoding="utf-8")
+    runs = iter(
+        [
+            {"ExecMainExitTimestampMonotonic": "100", "ActiveState": "inactive"},
+            {
+                "ActiveState": "failed",
+                "Result": "exit-code",
+                "ExecMainStatus": "1",
+                "ExecMainExitTimestampMonotonic": "200",
+            },
+        ]
+    )
+
+    def systemd(command, **_kwargs):
+        values = (
+            {"LoadState": "masked", "UnitFileState": "masked"}
+            if command[2] == "chrony.service"
+            else next(runs)
+        )
+        names = [part.split("=", 1)[1] for part in command[3:]]
+        stdout = "\n".join(f"{name}={values.get(name, '')}" for name in names)
+        return SimpleNamespace(stdout=stdout, returncode=0)
+
+    return HelperOutcome(
+        "ohana-chrony-restart.service",
+        "chrony.service",
+        systemctl_path=systemctl,
+        runner=systemd,
+        sleep=lambda _seconds: None,
+    )
+
+
 @contextmanager
-def _lab(konoha: Konoha, *, helper_installed: bool = True):
+def _lab(konoha: Konoha, *, helper_installed: bool = True, masked: bool = False):
     original = configuration_inspection.supervisor_api
     configuration_inspection.supervisor_api = konoha.supervisor_api()
     with tempfile.TemporaryDirectory(prefix="ohana-sandbox-catalogue-") as temporary:
@@ -153,7 +190,11 @@ def _lab(konoha: Konoha, *, helper_installed: bool = True):
         if helper_installed:
             path_unit.write_text("[Path]\n", encoding="utf-8")
         request = root / "run" / "chrony-restart.request"
-        chrony = ChronyRestartRequester(request_path=request, path_unit=path_unit)
+        chrony = ChronyRestartRequester(
+            request_path=request,
+            path_unit=path_unit,
+            outcome=_masked_helper(root) if masked else None,
+        )
 
         def restart_addon(incident, target):
             configuration_inspection.restart_addon(object(), incident.node_id, target)
@@ -379,6 +420,22 @@ def _chrony(checks, details):
                 failed.status == "failed"
                 and "n’est pas installé" in (failed.result or "")
                 and not lab.request.exists(),
+            )
+        )
+    konoha = Konoha(results=stopped)
+    with _lab(konoha, masked=True) as lab:
+        _outcome, incident = lab.diagnose("chrony")
+        failed = lab.authorize(incident)
+        checks.append(
+            (
+                "chrony masqué : l'assistant échoue, la réparation échoue avec "
+                "sa cause et n'est pas reproposée",
+                failed.status == "failed"
+                and "chrony.service est masqué" in (failed.result or "")
+                and lab.service.propose_incident_repair(
+                    str(incident.incident_id), {}, automatic=True
+                )
+                is None,
             )
         )
     details["chrony"] = "demande écrite vers un fichier temporaire"

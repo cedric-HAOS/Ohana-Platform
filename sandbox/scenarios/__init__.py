@@ -94,6 +94,13 @@ SCENARIOS = {
             "attendre le cycle NTP horaire (bootstrap de production)."
         ),
     ),
+    "dns-cascade": (
+        "scenarios.dns_cascade",
+        (
+            "Panne dnsmasq vue d'abord comme échec de résolution Z-Wave : "
+            "observation DHCP immédiate, rattachement, aucune réparation aval."
+        ),
+    ),
     "recurring-log-review": (
         "scenarios.recurring_log_review",
         (
