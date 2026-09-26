@@ -6,6 +6,21 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.127] - 2026-09-26
+
+### Composition
+
+- Ohana-Vision 1.26.0 → 1.27.0 :
+  - section « Réparations à confirmer » : une réparation vérifiée par
+    Shikamaru s'enregistre comme réparation connue sans chercher le dossier
+    de l'incident résolu ; même bouton dans le bandeau de résultat et sur la
+    carte ;
+  - Vision ne sature plus INFRA-01 : chronologie lue par un index couvrant
+    (1 211 ms → 49 ms) et rechargée seulement sur changement de statut.
+- Ohana-Agent 1.36.0 et Shizune 0.3.0 inchangés.
+- Sandbox : scénario `vision-ingestion-load` ; le parcours `--full-stack`
+  enregistre la réparation dnsmasq depuis « Réparations à confirmer ».
+
 ## [1.0.126] - 2026-09-26
 
 ### Composition
