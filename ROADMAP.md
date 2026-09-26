@@ -578,7 +578,9 @@ Vérifiés le 25 septembre sans défaut à corriger :
 - reprises rares après interruption : aucun défaut constaté depuis la
   validation `followup-restart` de la Phase 1.
 
-Traités depuis la clôture :
+Traités depuis la clôture (les mentions « non publié » datent du 25
+septembre : tout est publié depuis, au plus tard dans Agent 1.34.0,
+Vision 1.25.0 et Katsuyu 0.8.16) :
 
 - réparation automatique NTP : sonde locale `chrony.status` et redémarrage
   supervisé de chrony par l'assistant `ohana-chrony-restart.path` qu'installe
@@ -656,7 +658,17 @@ Elle exige qu’aucun défaut bloquant connu ne remette en cause les invariants 
 
 Suivi : [validations réelles et état des critères](docs/Phase-2-Reparations-supervisees.md).
 
-Phase démarrée le 25 septembre 2026.
+Phase démarrée le 25 septembre 2026, **clôturée le 26 septembre 2026 : 10
+critères de sortie sur 10 démontrés en réel sur Konoha** (Agent 1.35.0) et
+dans Sandbox. Les validations ne sont pas rejouées ; elles ne se rouvrent que
+sur une nouvelle preuve contradictoire.
+
+- réparation de référence dnsmasq de bout en bout, report compris ;
+- Mosquitto et chrony par le même mécanisme ;
+- refus Mosquitto conservé, jamais exécuté ni reproposé ;
+- vérification par Shikamaru dans les 20 secondes suivant l'exécution grâce
+  aux observations demandées après une réparation (Agent 1.35.0) ;
+- échec réel (chrony masqué) : « Échec confirmé », jamais reproposé.
 
 État au 25 septembre (Platform 1.0.120 : Agent 1.31.0, Vision 1.23.0, déployés) :
 
@@ -671,9 +683,9 @@ Phase démarrée le 25 septembre 2026.
   fin (`unverified` après 15 minutes), aucune répétition automatique ;
 - réparation Mosquitto validée en réel le 25 septembre (Agent 1.31.0) ;
 - le 26 septembre (Agent 1.34.0), réparation de référence dnsmasq, refus
-  Mosquitto et chrony validés en réel : 9 critères de sortie sur 10 acquis.
-  Reste l'échec exploitable : une réparation chrony réussie finit
-  `unverified`, car la vérification attend l'observation planifiée.
+  Mosquitto et chrony validés en réel ; une réparation chrony réussie finissait
+  `unverified`, la vérification attendant l'observation planifiée (NTP
+  horaire) : corrigé dans Agent 1.35.0, puis échec réel validé.
 
 ## Objectif
 
@@ -753,16 +765,18 @@ Une réparation ayant échoué ne doit pas être répétée automatiquement sans
 
 ## Critères de sortie de la Phase 2
 
-- [ ] Une première réparation supervisée de référence fonctionne de bout en bout.
+- [x] Une première réparation supervisée de référence fonctionne de bout en bout.
 - [x] Une deuxième réparation suffisamment différente utilise le même mécanisme.
-- [ ] Le cycle `diagnostic → proposition → autorisation → exécution → vérification` ne contient aucun état ambigu.
-- [ ] Une action non autorisée ne peut pas être exécutée.
-- [ ] Une action refusée ou différée reste explicitement dans cet état.
+- [x] Le cycle `diagnostic → proposition → autorisation → exécution → vérification` ne contient aucun état ambigu.
+- [x] Une action non autorisée ne peut pas être exécutée.
+- [x] Une action refusée ou différée reste explicitement dans cet état.
 - [x] Shikamaru vérifie le résultat réel de la réparation.
-- [ ] Un échec laisse l’incident dans un état explicite et exploitable.
-- [ ] Une réparation échouée n’est pas répétée automatiquement sans nouvelle décision.
+- [x] Un échec laisse l’incident dans un état explicite et exploitable.
+- [x] Une réparation échouée n’est pas répétée automatiquement sans nouvelle décision.
 - [x] Vision et/ou Shizune permettent de comprendre l’action proposée et son résultat.
-- [ ] Tsunade reste propriétaire de la décision finale.
+- [x] Tsunade reste propriétaire de la décision finale.
+
+Preuves datées : [document de suivi de la Phase 2](docs/Phase-2-Reparations-supervisees.md).
 
 ---
 
@@ -770,7 +784,23 @@ Une réparation ayant échoué ne doit pas être répétée automatiquement sans
 
 - rollback lorsque nécessaire (sans objet pour les redémarrages actuels) ;
 - réparations Home Assistant supplémentaires ;
-- gestion de réparations plus complexes.
+- gestion de réparations plus complexes ;
+- exercer en réel `teleinfo2mqtt.restart` et `zwave_js.restart` ;
+- remonter la cause d'un échec d'assistant (chrony masqué : seul Shikamaru
+  constate l'échec) ;
+- rattacher la cascade d'une panne DNS (DNS, Z-Wave JS, MQTT, télémétrie
+  « Name or service not known ») à dnsmasq, identifié seulement au cycle DHCP
+  suivant ;
+- Vision : carte titrée « timed out » au lieu du service, page Services
+  « Sain » pendant un incident critique, bandeau « vérification en attente »
+  resté affiché, conclusion déterministe attribuée à « Analyse Katsuyu ».
+
+Traités (Platform 1.0.124 et 1.0.125) :
+
+- vérification immédiate : observations du service réparé demandées 20 s et
+  75 s après l'exécution, délai de stabilisation de 60 s (Agent 1.35.0) ;
+- « Tsunade est indisponible : Unexpected administration failure » : lectures
+  concurrentes de la base Tsunade sous verrou (Agent 1.35.1).
 
 Traités (Platform 1.0.123) :
 

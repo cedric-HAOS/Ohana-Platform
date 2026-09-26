@@ -9,9 +9,14 @@ Vision 1.23.0, Shizune 0.3.0.
 Les validations de la Phase 1 ne sont pas rejouées. Elles ne se rouvrent que
 sur une nouvelle preuve contradictoire.
 
-## État des critères de sortie — 26 septembre 2026
+## Clôture et état des critères de sortie — 26 septembre 2026
 
-**Les 10 critères démontrés en réel et dans Sandbox.**
+**Phase 2 clôturée le 26 septembre 2026 : les 10 critères démontrés en réel
+et dans Sandbox.** Les validations ne sont pas rejouées ; elles ne se
+rouvrent que sur une nouvelle preuve contradictoire. Les constats restants
+(réparations teleinfo2mqtt et Z-Wave JS à exercer, cause d'échec d'assistant,
+cascade DNS, présentation Vision) relèvent du durcissement continu du
+[ROADMAP](../ROADMAP.md).
 
 | Critère | Réel (Konoha) | Sandbox (Agent 1.33.0, Vision 1.24.0) |
 | --- | --- | --- |
