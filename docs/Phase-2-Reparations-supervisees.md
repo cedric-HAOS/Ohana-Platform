@@ -9,22 +9,22 @@ Vision 1.23.0, Shizune 0.3.0.
 Les validations de la Phase 1 ne sont pas rejouées. Elles ne se rouvrent que
 sur une nouvelle preuve contradictoire.
 
-## État des critères de sortie — 25 septembre 2026
+## État des critères de sortie — 26 septembre 2026
 
-**3 critères sur 10 démontrés en réel ; les 10 démontrés dans Sandbox.**
+**9 critères sur 10 démontrés en réel ; les 10 démontrés dans Sandbox.**
 
 | Critère | Réel (Konoha) | Sandbox (Agent 1.33.0, Vision 1.24.0) |
 | --- | --- | --- |
-| Première réparation de référence de bout en bout | ouvert | **démontré** : dnsmasq proposé, autorisé depuis Vision, exécuté, vérifié, appris |
+| Première réparation de référence de bout en bout | **acquis** (dnsmasq, 26 septembre) | **démontré** : dnsmasq proposé, autorisé depuis Vision, exécuté, vérifié, appris |
 | Deuxième réparation différente, même mécanisme | **acquis** (Mosquitto, 25 septembre) | — |
-| Cycle sans état ambigu | partiel (chemin nominal) | **démontré** : `expired`, `refused`, `failed`, `unverified`, reprise SQLite |
-| Action non autorisée non exécutable | partiel | **démontré** : proposition inconnue, expirée ou refusée jamais exécutée |
-| Refus ou report conservé | ouvert | **démontré** : report Vision, refus Shizune et Vision |
+| Cycle sans état ambigu | **acquis** : `refused`, report, `unverified`, `succeeded` | **démontré** : `expired`, `refused`, `failed`, `unverified`, reprise SQLite |
+| Action non autorisée non exécutable | **acquis** : proposition reportée puis refusée jamais exécutée | **démontré** : proposition inconnue, expirée ou refusée jamais exécutée |
+| Refus ou report conservé | **acquis** (refus Mosquitto, report dnsmasq) | **démontré** : report Vision, refus Shizune et Vision |
 | Vérification réelle par Shikamaru | **acquis** | — |
-| Échec explicite et exploitable | ouvert | **démontré** : échec d'exécution et vérification non confirmée |
-| Pas de répétition automatique après échec | partiel | **démontré** : aucune nouvelle proposition après refus ou échec |
+| Échec explicite et exploitable | partiel : `unverified` explicite, mais sur une réparation réussie (chrony) | **démontré** : échec d'exécution et vérification non confirmée |
+| Pas de répétition automatique après échec | **acquis** : rien de reproposé après `unverified` ni après refus | **démontré** : aucune nouvelle proposition après refus ou échec |
 | Vision ou Shizune rendent l'action compréhensible | **acquis** | **démontré** dans Chromium : report, autorisation, refus et états sur la carte |
-| Tsunade propriétaire de la décision finale | partiel | **démontré** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie |
+| Tsunade propriétaire de la décision finale | **acquis** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie | **démontré** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie |
 
 Sandbox ne remplace pas la validation réelle : les critères restent ouverts ou
 partiels tant qu'ils n'ont pas été exercés sur Konoha.
@@ -110,6 +110,76 @@ Constats de durcissement, non bloquants :
   à jour, le champ « Dépend de » est resté vide jusqu'au vidage du cache du
   navigateur.
 
+### Chrony, refus Mosquitto, dnsmasq — 26 septembre 2026
+
+Platform 1.0.123 (Agent 1.34.0, Vision 1.25.0) et Installer 1.15.0 déployés ;
+`.\sandbox\run.ps1 post-deploy agent 1.34.0 --exercise-logs` PASS. Pannes
+provoquées par l'utilisateur ; décisions prises dans Vision
+(`http://192.168.1.10:8000/ui/`). En production, le plugin NTP observe toutes
+les heures et le plugin DHCP toutes les 30 minutes.
+
+**Chrony — chemin nominal, vérification manquée.**
+
+| Heure | Événement |
+| --- | --- |
+| 16:07:54 | arrêt de `chrony.service` |
+| 16:25:42 | cycle NTP : incident ouvert (`timed out`) |
+| 16:25:57 | `ntp.status` et `chrony.status` : exécutées, résultat en échec ; diagnostic déterministe, confiance 100 %, sans IA |
+| 16:25:58 | Tsunade propose le redémarrage supervisé de chrony (risque faible) |
+| 16:28:24 | autorisation depuis Vision, exécution ; `ohana-chrony-restart.service` relance chrony (actif à 16:28:25) |
+| 16:43:41 | réparation `unverified` : « Aucune observation Shikamaru n'a confirmé le résultat dans les 15 minutes suivant l'exécution. La réparation n'est pas répétée automatiquement. » |
+| 17:25:39 | cycle NTP : incident résolu (décalage 0,068 ms) ; la réparation reste `unverified` |
+
+**Refus depuis Vision — Mosquitto.** Arrêt de l'add-on ; incident
+`mqtt.roundtrip` ouvert à 16:53:05, proposition `core_mosquitto` à 16:53:31,
+refus confirmé dans Vision par l'utilisateur. État « Refusée, aucune action
+exécutée » ; pendant 50 minutes de cycles MQTT (toutes les 2 minutes), rien
+n'est exécuté ni reproposé. Seules restent « Actualiser l'analyse » et
+« Demander la réparation connue ».
+
+**Réparation de référence — dnsmasq.**
+
+| Heure | Événement |
+| --- | --- |
+| 17:25:42 | arrêt de `dnsmasq.service` ; incidents DNS et Z-Wave JS « Name or service not known » dans la minute |
+| 17:26:03 | cycle DHCP : incident `DHCP service is not active: inactive` |
+| 17:26:11 | diagnostic déterministe, confiance 100 % ; proposition du redémarrage supervisé de dnsmasq |
+| 17:28:26 | « Plus tard » depuis Vision : reportée jusqu'à 18:28:26, rien n'est exécuté |
+| 17:42:24 | autorisation depuis Vision ; dnsmasq actif à 17:42:25 |
+| 17:56:03 | cycle DHCP : 8 baux actifs (8 % du pool) ; réparation « Réussie et confirmée par Shikamaru », incident résolu |
+
+L'autorisation a été placée à 17:42 pour que le cycle DHCP suivant tombe dans
+le délai de vérification ; DHCP et DNS local ont été coupés 17 minutes.
+
+Acquis :
+
+- première réparation de référence dnsmasq de bout en bout en réel, report
+  compris ;
+- refus humain conservé, jamais exécuté, sans nouvelle proposition ;
+- `unverified` explicite et non répété ; résolution ultérieure sans réécriture
+  en succès ;
+- `chrony.restart` exécuté en réel par l'assistant de l'Installer.
+
+Défauts constatés :
+
+- **vérification liée à la cadence planifiée.** Shikamaru attend l'observation
+  suivante, mais le délai de vérification est plafonné à 30 minutes et vaut
+  15 minutes avec une seule observation. Avec un NTP horaire, une réparation
+  chrony réussie finit toujours `unverified` ; pour dnsmasq, tout dépend de
+  l'heure d'autorisation. Une sonde de vérification immédiate après
+  l'exécution est nécessaire ; « Tester maintenant » ne publie pas
+  d'observation ;
+- **cause amont DNS non rattachée.** L'arrêt de dnsmasq ouvre des incidents DNS,
+  Z-Wave JS, MQTT et télémétrie « Name or service not known », rattachés à
+  aucun incident amont. dnsmasq n'est identifié qu'au cycle DHCP suivant ;
+- la carte d'incident chrony est titrée « timed out » au lieu du service ;
+- la page Services affiche Chrony « Sain » pendant l'incident critique ;
+- le bandeau « Réparation autorisée ; vérification Shikamaru en attente »
+  reste affiché après le passage en `unverified` ;
+- le dossier attribue à « Analyse Katsuyu » une conclusion déterministe ;
+- `GET /api/administration/tsunade/incidents?state=all` renvoie par moments 502
+  via Vision.
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
@@ -158,15 +228,9 @@ proposition automatique après un refus ou un échec.
 
 ## Prochaines validations
 
-Après déploiement de Platform 1.0.122 (Agent 1.33.0, Vision 1.24.0) et
-`.\sandbox\run.ps1 post-deploy agent 1.33.0` :
-
-1. Réparation de référence dnsmasq en réel : arrêt contrôlé de dnsmasq sur
-   INFRA-01 (interruption du DHCP pendant l'essai), « Plus tard » puis
-   « Autoriser depuis Vision », vérification par Shikamaru.
-2. Refus depuis Vision : nouvel arrêt contrôlé (Mosquitto ou dnsmasq),
-   « Refuser » ; l'état reste `refused`, rien n'est exécuté, Tsunade ne
-   repropose pas ; remise en service manuelle.
-3. Échec réel : réparation autorisée dont le résultat n'est pas confirmé par
-   Shikamaru dans les 15 minutes (`unverified`) ou exécution refusée
-   (`failed`), sans nouvelle proposition automatique.
+1. Corriger la vérification : sonde immédiate de la capacité après
+   l'exécution, puis rejouer chrony en réel jusqu'à `succeeded`.
+2. Échec réel exploitable : `unverified` sur une réparation réellement
+   inefficace, ou `failed` sur une exécution refusée.
+3. Réparations `teleinfo2mqtt.restart` et `zwave_js.restart` : arrêt de
+   l'add-on dans Home Assistant par l'utilisateur, autorisation depuis Vision.

@@ -669,8 +669,11 @@ Phase démarrée le 25 septembre 2026.
   le Supervisor (sonde `mqtt.status`, aller-retour en échec) ;
 - aucune autorisation tardive (proposition `expired`), aucune vérification sans
   fin (`unverified` après 15 minutes), aucune répétition automatique ;
-- réparation Mosquitto validée en réel le 25 septembre (Agent 1.31.0) : 3 critères
-  de sortie sur 10 acquis.
+- réparation Mosquitto validée en réel le 25 septembre (Agent 1.31.0) ;
+- le 26 septembre (Agent 1.34.0), réparation de référence dnsmasq, refus
+  Mosquitto et chrony validés en réel : 9 critères de sortie sur 10 acquis.
+  Reste l'échec exploitable : une réparation chrony réussie finit
+  `unverified`, car la vérification attend l'observation planifiée.
 
 ## Objectif
 
