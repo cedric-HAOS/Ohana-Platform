@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.124] - 2026-09-26
+
+### Composition
+
+- Ohana-Agent 1.34.0 → 1.35.0 : vérification immédiate des réparations
+  (observations du service réparé demandées 20 s et 75 s après l'exécution,
+  délai de stabilisation de 60 s). Une réparation chrony réussie ne finit plus
+  `unverified` faute d'observation NTP avant l'échéance.
+- Ohana-Vision 1.25.0 et Shizune 0.3.0 inchangés.
+- Sandbox : scénario `repair-verification-probe` (bootstrap de production,
+  NTP horaire) ; validations réelles du 26 septembre consignées dans la
+  Phase 2.
+
 ## [1.0.123] - 2026-09-25
 
 ### Composition
