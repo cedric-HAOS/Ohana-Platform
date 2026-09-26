@@ -569,7 +569,11 @@ Restent à suivre :
   pour des anomalies inchangées) ;
 - jobs jamais démarrés (worker endormi) déclarés `TIMEOUT` des heures après
   leur délai : 255 minutes pour un délai de 15 minutes le 26 septembre, 8 cas
-  depuis le 20.
+  depuis le 20 ;
+- Vision saturé sur INFRA-01 : processus à 90–110 % de CPU, 353 Mo de
+  mémoire sur 905 Mo, `vision.db` de 267 Mo ; 432 livraisons d'observations
+  expirées entre 12 h et 21 h le 26 septembre, d'où des états affichés en
+  retard et des 502 de l'administration.
 
 Vérifiés le 25 septembre sans défaut à corriger :
 
@@ -792,21 +796,23 @@ Preuves datées : [document de suivi de la Phase 2](docs/Phase-2-Reparations-sup
 - rollback lorsque nécessaire (sans objet pour les redémarrages actuels) ;
 - réparations Home Assistant supplémentaires ;
 - gestion de réparations plus complexes ;
-- exercer en réel `teleinfo2mqtt.restart` et `zwave_js.restart` ;
-- remonter la cause d'un échec d'assistant (chrony masqué : seul Shikamaru
-  constate l'échec) ;
-- rattacher la cascade d'une panne DNS (DNS, Z-Wave JS, MQTT, télémétrie
-  « Name or service not known ») à dnsmasq, identifié seulement au cycle DHCP
-  suivant ;
-- Vision : carte titrée « timed out » au lieu du service, page Services
-  « Sain » pendant un incident critique, bandeau « vérification en attente »
-  resté affiché, conclusion déterministe attribuée à « Analyse Katsuyu » ;
-- Vision : carte figée après une décision ; après l'autorisation Z-Wave JS,
-  « En attente de validation » et ses boutons sont restés affichés sur
-  l'incident résolu jusqu'au rechargement, alors que l'API renvoyait `failed` ;
-- `zwave_js.restart` déclaré refusé 10 secondes après l'autorisation alors
-  que l'add-on redémarrait : délai par défaut de `supervisor/api` dans Home
-  Assistant (corrigé dans l'Agent, non publié) ; essai réel à refaire.
+- exercer en réel `zwave_js.restart` après Agent 1.36.0 (`teleinfo2mqtt.restart`
+  validé le 26 septembre).
+
+Traités (Platform 1.0.126 : Agent 1.36.0, Vision 1.26.0) :
+
+- cause d'un échec d'assistant : résultat de `ohana-chrony-restart.service`
+  et `ohana-dhcp-reload.service` lu par `systemctl show`, la réparation
+  échoue avec sa cause (« chrony.service est masqué ») ;
+- cascade d'une panne DNS : un échec de résolution de nom est rattaché à
+  l'incident DNS ou dnsmasq actif, sans réparation du service touché ; une
+  observation DNS et DHCP immédiate est demandée au premier échec ;
+- `zwave_js.restart` : Home Assistant attend la réponse du Supervisor au lieu
+  de ses 10 secondes par défaut ; au-delà de 45 secondes, Shikamaru tranche ;
+- Vision : carte à jour après une décision, bandeau fidèle au résultat, titre
+  par service et équipement, procédure déterministe distinguée de l'analyse
+  Katsuyu. La page Services « Sain » pendant un incident s'explique par le
+  retard de livraison des observations vers Vision saturé (voir Phase 1).
 
 Traités (Platform 1.0.124 et 1.0.125) :
 
