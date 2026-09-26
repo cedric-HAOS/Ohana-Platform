@@ -259,6 +259,14 @@ Constats :
   actifs, sur l'incident résolu, jusqu'au rechargement de la page ; l'API
   renvoyait déjà `failed`.
 
+Second essai, watchdog de l'add-on désactivé : arrêt à 20:11:28, incident à
+20:12:35, proposition à 20:13:04, autorisation à 20:13:25, puis de nouveau
+`failed` à 20:13:35 (« Le Supervisor a refusé le redémarrage »), sans nouvelle
+proposition. L'utilisateur a relancé l'add-on ; incident résolu à 20:14:36. Le
+refus est reproductible et ne vient pas du watchdog. Hypothèse à vérifier dans
+le journal du Supervisor de ZWAVE-01 : `restart` refusé sur un add-on arrêté,
+qui demanderait `start`. La réparation `zwave_js.restart` n'est pas validée.
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
