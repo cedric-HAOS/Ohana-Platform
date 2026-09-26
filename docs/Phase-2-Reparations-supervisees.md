@@ -21,7 +21,7 @@ sur une nouvelle preuve contradictoire.
 | Action non autorisée non exécutable | **acquis** : proposition reportée puis refusée jamais exécutée | **démontré** : proposition inconnue, expirée ou refusée jamais exécutée |
 | Refus ou report conservé | **acquis** (refus Mosquitto, report dnsmasq) | **démontré** : report Vision, refus Shizune et Vision |
 | Vérification réelle par Shikamaru | **acquis** | — |
-| Échec explicite et exploitable | partiel : `unverified` explicite, mais sur une réparation réussie (chrony) | **démontré** : échec d'exécution et vérification non confirmée |
+| Échec explicite et exploitable | partiel : `unverified` explicite ; le faux `unverified` de chrony est corrigé (1.35.0), un vrai échec reste à exercer | **démontré** : échec d'exécution et vérification non confirmée |
 | Pas de répétition automatique après échec | **acquis** : rien de reproposé après `unverified` ni après refus | **démontré** : aucune nouvelle proposition après refus ou échec |
 | Vision ou Shizune rendent l'action compréhensible | **acquis** | **démontré** dans Chromium : report, autorisation, refus et états sur la carte |
 | Tsunade propriétaire de la décision finale | **acquis** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie | **démontré** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie |
@@ -180,6 +180,24 @@ Défauts constatés :
 - `GET /api/administration/tsunade/incidents?state=all` renvoie par moments 502
   via Vision.
 
+### Chrony après correction — 26 septembre 2026, soir
+
+Agent 1.35.0 (Platform 1.0.124) déployé par `sudo ohana update --yes` ;
+post-deploy PASS. Après l'exécution d'une réparation, l'Agent demande deux
+observations du service réparé, à +20 s et +75 s.
+
+| Heure | Événement |
+| --- | --- |
+| 18:25:14 | arrêt de `chrony.service` |
+| 19:21:56 | cycle NTP horaire : incident ouvert |
+| 19:22:20 | `ntp.status` et `chrony.status` en échec ; diagnostic déterministe, confiance 100 % |
+| 19:22:21 | Tsunade propose le redémarrage supervisé de chrony |
+| 19:26:24 | autorisation depuis Vision, exécution ; chrony actif à 19:26:24 |
+| 19:26:44 | observation demandée à +20 s : « Shikamaru confirme que la capacité est redevenue saine » ; réparation `succeeded`, incident résolu (décalage 0,754 ms) |
+
+Le défaut de vérification liée à la cadence est corrigé en réel : la
+confirmation arrive 20 secondes après l'exécution au lieu du cycle horaire.
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
@@ -228,8 +246,8 @@ proposition automatique après un refus ou un échec.
 
 ## Prochaines validations
 
-1. Corriger la vérification : sonde immédiate de la capacité après
-   l'exécution, puis rejouer chrony en réel jusqu'à `succeeded`.
+1. ~~Corriger la vérification~~ : fait (Agent 1.35.0), chrony `succeeded` en
+   réel 20 secondes après l'exécution.
 2. Échec réel exploitable : `unverified` sur une réparation réellement
    inefficace, ou `failed` sur une exécution refusée.
 3. Réparations `teleinfo2mqtt.restart` et `zwave_js.restart` : arrêt de
