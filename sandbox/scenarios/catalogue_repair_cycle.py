@@ -54,8 +54,13 @@ class Konoha:
     results: dict[str, dict] = field(default_factory=dict)
     addons: list[dict] | None = None
     supervisor_accepts: bool = True
+    # Seconds the Supervisor needs to restart the add-on. Like Home Assistant,
+    # the simulated ``supervisor/api`` gives up after 10 s unless the message
+    # carries its own timeout (``None`` waits for the Supervisor).
+    restart_seconds: float = 0
     snapshots: list[str] = field(default_factory=list)
     supervisor_calls: list[tuple[str, str, str]] = field(default_factory=list)
+    supervisor_timeouts: list[object] = field(default_factory=list)
 
     def execute(self, payload):
         now = paris_now()
@@ -78,11 +83,16 @@ class Konoha:
     def supervisor_api(self):
         @asynccontextmanager
         async def api(_config, node_id, *, timeout_seconds=8):
-            async def call(endpoint, method):
+            async def call(endpoint, method, **options):
                 self.supervisor_calls.append((node_id, endpoint, method))
-                if self.supervisor_accepts:
-                    return {"success": True}
-                return {"success": False, "error": {"message": "add-on occupé"}}
+                timeout = options.get("timeout", 10)
+                self.supervisor_timeouts.append(timeout)
+                if not self.supervisor_accepts:
+                    return {"success": False, "error": {"message": "add-on occupé"}}
+                if timeout is not None and timeout < self.restart_seconds:
+                    # The Supervisor keeps restarting; HA answers a bare error.
+                    return {"success": False, "error": {"code": "unknown_error"}}
+                return {"success": True}
 
             yield call
 
@@ -233,9 +243,11 @@ def _teleinformation(checks, details):
 
 
 def _zwave(checks, details):
+    # Z-Wave JS UI took about a minute to restart on Konoha (26 September).
     konoha = Konoha(
         results={"zwave.status": {"success": False, "message": "Connection refused"}},
         addons=[{"addon": ZWAVE, "state": "started"}],
+        restart_seconds=60,
     )
     with _lab(konoha) as lab:
         outcome, incident = lab.diagnose("zwave")
@@ -255,7 +267,15 @@ def _zwave(checks, details):
                 == ("proposed", ZWAVE, "medium"),
             ),
         ]
-        lab.authorize(incident)
+        executed = lab.authorize(incident)
+        checks.append(
+            (
+                "Z-Wave JS : redémarrage d'une minute attendu, pas déclaré refusé "
+                "au bout des 10 s par défaut de Home Assistant",
+                executed.status == "verifying"
+                and konoha.supervisor_timeouts == [None],
+            )
+        )
         final = lab.verify("zwave", incident)
         checks.append(
             (
