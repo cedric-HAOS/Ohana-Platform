@@ -214,6 +214,15 @@ def _parse_args() -> argparse.Namespace:
         "--report-dir", type=Path, default=Path(__file__).parent / "runs"
     )
 
+    live = subparsers.add_parser(
+        "live",
+        help="Rapports en lecture seule sur Konoha.",
+    )
+    live.add_argument("report", choices=["jobs-report"])
+    live.add_argument(
+        "--days", type=int, default=8, help="Nombre de jours analysés."
+    )
+
     post_deploy = subparsers.add_parser(
         "post-deploy",
         help=("Contrôler un déploiement réel en lecture seule."),
@@ -288,6 +297,12 @@ def main() -> int:
         passed = _run_post_deploy(args)
 
         return 0 if passed else 1
+
+    if args.command == "live":
+        from production.live import jobs_report, print_jobs_report
+
+        print_jobs_report(jobs_report(args.days))
+        return 0
 
     _add_python_repo(
         args.agent,
