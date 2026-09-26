@@ -94,7 +94,27 @@ for row in connection.execute(
             if isinstance(source.get("fetched_bytes"), int):
                 source_bytes[name].append(source["fetched_bytes"])
             findings = source.get("findings")
+            result = loads(row["result_json"])
+            dated = [
+                moment(item.get(key))
+                for item in (findings if isinstance(findings, list) else [])
+                if isinstance(item, dict)
+                for key in ("first_at", "last_at")
+            ]
+            dated = [value for value in dated if value is not None]
             latest[name] = {
+                "fenêtre": " → ".join(
+                    moment(result.get(key)).strftime("%d %H:%M")
+                    if moment(result.get(key))
+                    else "?"
+                    for key in ("window_started_at", "window_ended_at")
+                ),
+                "anomalies datées": (
+                    f"{min(dated).strftime('%d %H:%M')} → "
+                    f"{max(dated).strftime('%d %H:%M')}"
+                    if dated
+                    else "aucune"
+                ),
                 "le": created.strftime("%Y-%m-%d %H:%M"),
                 "tronquée": source.get("truncated"),
                 "octets": source.get("fetched_bytes"),

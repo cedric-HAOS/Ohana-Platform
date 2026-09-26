@@ -95,6 +95,11 @@ def print_jobs_report(report: dict) -> None:
             f"octets={item['octets']} lignes={item['lignes analysées']} "
             f"groupes={item['groupes']}"
         )
+        if "fenêtre" in item:
+            print(
+                f"             fenêtre {item['fenêtre']}, "
+                f"anomalies datées {item['anomalies datées']}"
+            )
     print()
     print("Workers : " + ", ".join(
         f"{worker['worker']} {worker['version']} (vu {worker['vu']})"
