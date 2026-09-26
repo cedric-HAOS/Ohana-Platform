@@ -221,6 +221,20 @@ Vision pour la durée de l'essai.
 Limite : l'Agent dépose la demande et ne lit pas le résultat de l'assistant
 systemd ; l'échec est établi par l'observation, sans sa cause (unité masquée).
 
+### Réparation teleinfo2mqtt — 26 septembre 2026, soir
+
+Durcissement après clôture. Agent 1.35.1 (Platform 1.0.125) déployé par
+l'utilisateur ; post-deploy PASS. Add-on teleinfo2mqtt arrêté dans Home
+Assistant (LINKY-01).
+
+| Heure | Événement |
+| --- | --- |
+| 19:59:31 | incident `teleinformation.freshness` : aucune trame depuis 80 secondes |
+| 20:00:04 | Tsunade inspecte le Supervisor de LINKY-01 : `6fc079ce_teleinfo2mqtt_ohana` en erreur ; diagnostic déterministe, proposition de redémarrage (risque faible) |
+| 20:01:19 | autorisation depuis Vision |
+| 20:01:25 | redémarrage accepté par le Supervisor ; vérification en cours |
+| 20:01:36 | trames de nouveau reçues : « Shikamaru confirme que la capacité est redevenue saine » ; incident résolu |
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
