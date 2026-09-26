@@ -235,6 +235,30 @@ Assistant (LINKY-01).
 | 20:01:25 | redémarrage accepté par le Supervisor ; vérification en cours |
 | 20:01:36 | trames de nouveau reçues : « Shikamaru confirme que la capacité est redevenue saine » ; incident résolu |
 
+### Réparation Z-Wave JS — 26 septembre 2026, soir — NON CONCLUANTE
+
+Add-on Z-Wave JS UI arrêté dans Home Assistant (ZWAVE-01) à 20:03:27.
+Autorisation et confirmation (risque moyen) par l'utilisateur dans son
+navigateur.
+
+| Heure | Événement |
+| --- | --- |
+| 20:04:32 | incident `zwave.status` : `Cannot connect to host zwave-01.ohana.lan:3000` |
+| 20:04:47 | `zwave.status` en échec, `network.ping` sain |
+| 20:04:54 | inspection du Supervisor de ZWAVE-01 ; diagnostic déterministe ; proposition de redémarrage de `a0d7b954_zwavejs2mqtt` (risque moyen) |
+| 20:05:39 | autorisation depuis Vision, après confirmation |
+| 20:05:50 | réparation `failed` : « Le Supervisor a refusé le redémarrage de a0d7b954_zwavejs2mqtt », sans message du Supervisor |
+| 20:06:34 | le pilote Z-Wave JS répond de nouveau (20 nœuds) ; incident résolu |
+
+Constats :
+
+- le Supervisor a répondu par un refus sans détail, mais l'add-on a
+  redémarré une quarantaine de secondes plus tard : cause du refus et origine
+  du redémarrage à établir dans les journaux du Supervisor de ZWAVE-01 ;
+- Vision a continué d'afficher « En attente de validation », avec les boutons
+  actifs, sur l'incident résolu, jusqu'au rechargement de la page ; l'API
+  renvoyait déjà `failed`.
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
