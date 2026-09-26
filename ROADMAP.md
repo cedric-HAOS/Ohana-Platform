@@ -557,27 +557,43 @@ Relèvent d’une phase ultérieure :
 
 Restent à suivre :
 
-- grosses fenêtres : mesuré le 26 septembre (`run.ps1 live jobs-report`),
-  HA-01 n'est plus tronqué (0/4) mais LINKY-01 et ZWAVE-01 le restent (3/3) :
-  le Supervisor renvoie au plus 10 000 lignes et 24 h de journaux de
-  teleinfo2mqtt et Z-Wave JS UI les dépassent ; INFRA-01 partiellement (3/8) ;
-- raffinements de présentation Vision ;
-- scénarios de panne supplémentaires (à conduire sur Konoha) ;
+- scénarios de panne supplémentaires, à conduire sur Konoha avec
+  l'utilisateur : Vision indisponible (`host.health` → Tsunade, jamais exercé
+  en réel), communication Linky coupée (add-on démarré, aucune trame : aucune
+  réparation attendue), Home Assistant Core arrêté sur HA-01, surcharge
+  d'INFRA-01 ;
 - fréquence des expertises Katsuyu : 4 inférences par jour les 23 et 24
   septembre, 17 le 26 (journée de pannes contrôlées, nouvelles anomalies) ; à
   remesurer après une journée calme (objectif : plus d'expertise quotidienne
   pour des anomalies inchangées) ;
-- jobs jamais démarrés (worker endormi) déclarés `TIMEOUT` des heures après
-  leur délai : 255 minutes pour un délai de 15 minutes le 26 septembre, 8 cas
-  depuis le 20 ;
-- Vision saturé sur INFRA-01 : processus à 90–110 % de CPU, 432 livraisons
-  d'observations expirées le 26 septembre. Cause : chaque page rechargeait à
-  chaque observation une chronologie de 24 h qui coûtait environ 18 s sur
-  INFRA-01. Corrigé dans Vision (non publié) : chronologie lue par changements
-  de statut (1 211 ms → 49 ms), rechargement sur changement de statut
-  seulement ; scénario `vision-ingestion-load` (ingestion p95 2 347 ms en
-  1.26.0, 36 ms corrigé). Reste : `vision.db` de 267 Mo pour environ 45 Mo de
-  données (pages libérées par la purge, jamais récupérées).
+- ZWAVE-01 : collecte déclarée tronquée quand plus de 64 signatures
+  d'anomalies distinctes apparaissent (44 le 26 septembre à 21:15), à suivre
+  après correction de LINKY-01.
+
+Traités le 26 septembre au soir (Platform 1.0.128 : Agent 1.36.1,
+Katsuyu 0.8.17, Vision 1.27.1 ; Installer 1.15.1) :
+
+- jobs jamais démarrés déclarés `TIMEOUT` des heures après leur délai
+  (255 minutes pour 15 le 26 septembre, 8 cas depuis le 20) : l'expiration
+  n'était calculée qu'à la lecture de la file ; la tâche interne de réveil
+  règle les échéances toutes les 30 secondes (Agent) ;
+- troncature de LINKY-01 : ce n'était pas le plafond du Supervisor. Une
+  collecte d'une heure rapportait 1,4 Mo, mais les lignes de teleinfo2mqtt
+  ne portent que l'heure : la couverture n'était jamais démontrée dès 10 000
+  lignes. La plus ancienne ligne est désormais datée en remontant depuis la
+  plus récente (Katsuyu). INFRA-01 : troncatures réelles de l'époque où
+  aiohttp inondait le journal, disparues depuis Agent 1.34.0 ;
+- `vision.db` de 267 Mo pour environ 45 Mo de données : `auto_vacuum`
+  incrémental activé par une reconstruction unique, puis pages rendues après
+  chaque purge (Vision) ;
+- présentation Vision : libellé d'évaluation répété sur la carte d'incident
+  (Vision) ;
+- complexité : `roundtrip` MQTT 31 → 16, `diagnostic_snapshot` 28 → 21
+  (Agent), menu `interactive.run` 30 → 19 (Installer) ;
+- Vision saturé sur INFRA-01 (90–110 % de CPU) : Vision 1.27.0 déployé à
+  21:46, 0 à 5 % de CPU avec une page ouverte ;
+- rapport `run.ps1 live jobs-report` : fenêtre et première/dernière anomalie
+  datée de la dernière collecte de chaque source.
 
 Vérifiés le 25 septembre sans défaut à corriger :
 
@@ -800,8 +816,27 @@ Preuves datées : [document de suivi de la Phase 2](docs/Phase-2-Reparations-sup
 - rollback lorsque nécessaire (sans objet pour les redémarrages actuels) ;
 - réparations Home Assistant supplémentaires ;
 - gestion de réparations plus complexes ;
-- exercer en réel `zwave_js.restart` après Agent 1.36.0 (`teleinfo2mqtt.restart`
-  validé le 26 septembre).
+
+Traités le 26 septembre au soir (Platform 1.0.128 : Agent 1.36.1,
+Katsuyu 0.8.17, Vision 1.27.1 ; Installer 1.15.1) :
+
+- échec d'assistant rejoué en réel (chrony masqué, 22:04) : cause remontée
+  une seconde après l'exécution ; l'assistant resté `failed` ouvrait un
+  incident `systemd_units_failed` durable, il n'est plus compté dans la santé
+  de l'hôte (Agent) ; la cause s'affiche sur la carte fermée (Vision).
+
+Traités (Platform 1.0.127 : Vision 1.27.0) :
+
+- enregistrement d'une réparation connue difficile à trouver : section
+  « Réparations à confirmer » au-dessus de la liste des incidents, même
+  bouton dans le bandeau de résultat et sur la carte fermée. Validé en réel
+  le 26 septembre après déploiement : la section listait les réparations
+  vérifiées et l'utilisateur les a enregistrées.
+
+Validés en réel le 26 septembre : `teleinfo2mqtt.restart` (20:01, Agent
+1.35.1) et `zwave_js.restart` (21:16, Agent 1.36.0, Supervisor en 31
+secondes, confirmé par Shikamaru 20 secondes plus tard) ; les cinq
+réparations du catalogue sont validées.
 
 Traités (Platform 1.0.126 : Agent 1.36.0, Vision 1.26.0) :
 

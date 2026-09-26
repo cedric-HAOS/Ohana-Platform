@@ -13,10 +13,12 @@ sur une nouvelle preuve contradictoire.
 
 **Phase 2 clôturée le 26 septembre 2026 : les 10 critères démontrés en réel
 et dans Sandbox.** Les validations ne sont pas rejouées ; elles ne se
-rouvrent que sur une nouvelle preuve contradictoire. Les constats restants
-(réparations teleinfo2mqtt et Z-Wave JS à exercer, cause d'échec d'assistant,
-cascade DNS, présentation Vision) relèvent du durcissement continu du
-[ROADMAP](../ROADMAP.md).
+rouvrent que sur une nouvelle preuve contradictoire. Les constats relevés
+après la clôture (cause d'échec d'assistant, cascade DNS, attente du
+Supervisor pour Z-Wave JS, présentation Vision) sont traités dans Agent 1.36.0
+et Vision 1.26.0 et 1.27.0 ; les cinq réparations du catalogue sont validées
+en réel (Z-Wave JS le 26 septembre à 21:16). Le reste relève du durcissement
+continu du [ROADMAP](../ROADMAP.md).
 
 | Critère | Réel (Konoha) | Sandbox (Agent 1.33.0, Vision 1.24.0) |
 | --- | --- | --- |
@@ -26,7 +28,7 @@ cascade DNS, présentation Vision) relèvent du durcissement continu du
 | Action non autorisée non exécutable | **acquis** : proposition reportée puis refusée jamais exécutée | **démontré** : proposition inconnue, expirée ou refusée jamais exécutée |
 | Refus ou report conservé | **acquis** (refus Mosquitto, report dnsmasq) | **démontré** : report Vision, refus Shizune et Vision |
 | Vérification réelle par Shikamaru | **acquis** | — |
-| Échec explicite et exploitable | **acquis** : chrony masqué, réparation « Échec confirmé » par Shikamaru, jamais reproposée ; la cause côté assistant n'est pas remontée | **démontré** : échec d'exécution et vérification non confirmée |
+| Échec explicite et exploitable | **acquis** : chrony masqué, réparation « Échec confirmé » par Shikamaru, jamais reproposée ; cause de l'assistant remontée en réel le 26 septembre à 22:04 (« chrony.service est masqué », Agent 1.36.0) | **démontré** : échec d'exécution et vérification non confirmée |
 | Pas de répétition automatique après échec | **acquis** : rien de reproposé après `unverified` ni après refus | **démontré** : aucune nouvelle proposition après refus ou échec |
 | Vision ou Shizune rendent l'action compréhensible | **acquis** | **démontré** dans Chromium : report, autorisation, refus et états sur la carte |
 | Tsunade propriétaire de la décision finale | **acquis** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie | **démontré** : Tsunade propose, l'utilisateur décide, Shikamaru vérifie |
@@ -221,6 +223,34 @@ Vision pour la durée de l'essai.
 Limite : l'Agent dépose la demande et ne lit pas le résultat de l'assistant
 systemd ; l'échec est établi par l'observation, sans sa cause (unité masquée).
 
+### Échec d'assistant rejoué — chrony masqué — 26 septembre 2026, 22:04 — VALIDÉ
+
+Platform 1.0.127 déployé (Agent 1.36.0, Vision 1.27.0). Intervalle du plugin
+NTP réduit à 30 s par l'utilisateur, chrony arrêté puis masqué.
+
+| Heure | Événement |
+| --- | --- |
+| 22:03:11 | incident `ntp.query` ouvert |
+| 22:03:22 | diagnostic déterministe, confiance 100 % |
+| 22:03:23 | Tsunade propose le redémarrage supervisé de chrony |
+| 22:04:37 | autorisation depuis Vision (utilisateur) |
+| 22:04:38 | réparation `failed` une seconde après l'exécution : « L’assistant ohana-chrony-restart.service a échoué (exit-code, code 1) : chrony.service est masqué » |
+| 22:04:45 | second incident `host.health` d'INFRA-01 : `systemd_units_failed` (l'assistant lui-même) |
+| 22:06:41 | chrony démasqué et relancé par l'utilisateur ; incident NTP résolu, rien de reproposé |
+
+Le 26 à 19:34, l'échec n'était établi que par l'observation 45 secondes plus
+tard, sans sa cause. Il est maintenant immédiat et expliqué.
+
+Constats corrigés (Platform 1.0.128 : Agent 1.36.1, Vision 1.27.1) :
+
+- l'unité `oneshot` de l'assistant reste `failed` jusqu'à sa prochaine
+  exécution : l'incident `systemd_units_failed` restait ouvert après la remise
+  en état. Les assistants de réparation (`ohana-chrony-restart.service`,
+  `ohana-dhcp-reload.service`) ne comptent plus dans la santé de l'hôte, leur
+  échec étant porté par la réparation (Agent) ;
+- la cause n'apparaissait que dans le dossier ; la carte fermée affichait
+  seulement « Échec confirmé ». Elle s'affiche désormais sous l'état (Vision).
+
 ### Réparation teleinfo2mqtt — 26 septembre 2026, soir
 
 Durcissement après clôture. Agent 1.35.1 (Platform 1.0.125) déployé par
@@ -275,6 +305,32 @@ L'Agent prend cette expiration pour un refus. La réparation
 `zwave_js.restart` n'est pas validée : l'exécution est déclarée en échec alors
 qu'elle réussit.
 
+Correction (Agent 1.36.0, Platform 1.0.126) : Home Assistant attend la réponse
+du Supervisor au-delà de ses 10 secondes par défaut ; au-delà de 45 secondes,
+Shikamaru tranche. Vision 1.26.0 met la carte à jour après la décision.
+
+### Réparation Z-Wave JS — 26 septembre 2026, 21:15 — VALIDÉE
+
+Platform 1.0.126 déployé (Agent 1.36.0, Vision 1.26.0). Add-on Z-Wave JS UI
+arrêté par l'utilisateur dans Home Assistant.
+
+| Heure | Événement |
+| --- | --- |
+| 21:15:10 | incident `zwave.status` ouvert |
+| 21:15:33 | proposition de redémarrage de `a0d7b954_zwavejs2mqtt` (risque moyen) |
+| 21:15:42 | autorisation depuis Vision, après confirmation |
+| 21:16:13 | exécution acceptée : le Supervisor a répondu après 31 secondes, sous le plafond de 45 secondes |
+| 21:16:35 | observation demandée à +20 s : « Shikamaru confirme que la capacité est redevenue saine » ; incident résolu |
+
+L'utilisateur a ensuite enregistré la réparation comme réparation connue
+(une réparation apprise). Le bouton étant difficile à trouver, Vision 1.27.0
+(Platform 1.0.127) ajoute la section « Réparations à confirmer » au-dessus de
+la liste des incidents.
+
+Les cinq réparations du catalogue (`dnsmasq.restart`, `mosquitto.restart`,
+`teleinfo2mqtt.restart`, `zwave_js.restart`, `chrony.restart`) sont désormais
+validées en réel.
+
 ## Qualification Sandbox — 25 septembre 2026
 
 Agent 1.33.0 ajoute le refus et le report depuis l'API d'administration ;
@@ -326,6 +382,11 @@ proposition automatique après un refus ou un échec.
 1. ~~Corriger la vérification~~ : fait (Agent 1.35.0), chrony `succeeded` en
    réel 20 secondes après l'exécution.
 2. ~~Échec réel exploitable~~ : fait, chrony masqué, « Échec confirmé »
-   sans nouvelle proposition. Reste à remonter la cause côté assistant.
-3. Réparations `teleinfo2mqtt.restart` et `zwave_js.restart` : arrêt de
-   l'add-on dans Home Assistant par l'utilisateur, autorisation depuis Vision.
+   sans nouvelle proposition. Cause côté assistant remontée depuis
+   Agent 1.36.0 (« chrony.service est masqué »), rejouée en réel le
+   26 septembre à 22:04.
+3. ~~Réparations `teleinfo2mqtt.restart` et `zwave_js.restart`~~ : faites le
+   26 septembre (teleinfo2mqtt à 20:01, Z-Wave JS à 21:16 sous Agent 1.36.0).
+4. ~~Section « Réparations à confirmer »~~ : faite après déploiement de
+   Platform 1.0.127 le 26 septembre ; les réparations vérifiées y figuraient
+   et l'utilisateur les a enregistrées.
