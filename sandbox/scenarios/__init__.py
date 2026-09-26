@@ -87,6 +87,13 @@ SCENARIOS = {
             "autorisation, exécution, vérification, refus et garde-fous."
         ),
     ),
+    "repair-verification-probe": (
+        "scenarios.repair_verification_probe",
+        (
+            "Vérifier une réparation chrony par une sonde immédiate, sans "
+            "attendre le cycle NTP horaire (bootstrap de production)."
+        ),
+    ),
     "recurring-log-review": (
         "scenarios.recurring_log_review",
         (
