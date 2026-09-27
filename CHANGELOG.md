@@ -6,13 +6,34 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.129] - 2026-09-27
+
+### Composition
+
+- Ohana-Agent 1.36.1 → 1.37.0 :
+  - DNS : `infra-01.ohana.lan` n'est plus servi en `127.0.1.1` au réseau
+    (`no-hosts`, `interface-name`), configuration mise à niveau au démarrage ;
+    cause des 2 764 trames Linky refusées par jour ;
+  - écritures SQLite hors de la boucle de l'Agent, en `synchronous=NORMAL` :
+    fin des gels de 20 s sur la carte SD d'INFRA-01 et des « Unable to
+    deliver observation » toutes les 4 minutes ;
+  - un rafraîchissement de l'infrastructure en échec ne coupe plus la
+    surveillance ;
+  - incidents `logs.health` réservés aux erreurs et aux avertissements
+    répétés au moins 100 fois en 24 h ; anomalies acceptées comme connues ;
+  - capteurs hôte Home Assistant : mesure absente publiée `None`.
+- Ohana-Vision 1.27.1 → 1.28.0 : santé des journaux « Sain », « Bruit de
+  fond » ou « À examiner » ; « Accepter comme connue » dans le dossier d'un
+  incident de journaux et « Compter à nouveau » dans le bilan.
+- Shizune 0.3.0 inchangé. Hors composition : Katsuyu 0.8.18 (lignes INFO
+  d'Ohana, déploiements et sauvegarde NVM Z-Wave ne sont plus des anomalies).
 - Sandbox : scénario `log-noise-triage`. Il rejoue les quatre sources de
   journaux du 27 septembre et vérifie trois points : le bruit Ohana, la
   sauvegarde NVM et les avertissements rares n'ouvrent pas d'incident ; les
   refus Linky en ouvrent un, résolu après le correctif DNS ; l'erreur Kasa,
   acceptée comme connue, résout l'incident HA-01 et ne rouvre rien. Rejoué
   sur Agent 1.36.1 et Katsuyu 0.8.17, il échoue. Le parcours `--full-stack`
-  accepte les anomalies depuis la carte Vision.
+  accepte les anomalies depuis le dossier Vision.
 
 ## [1.0.128] - 2026-09-26
 
