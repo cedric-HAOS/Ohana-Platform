@@ -599,6 +599,29 @@ def run(*, args):
                 saved_ok
                 and incidents.get(repair_incident_id).experience_candidate is None,
             )
+            # Phase 3: the saved repair is listed with its history and can be
+            # disabled from Vision.
+            experiences = page.locator("#tsunade-experiences")
+            experiences.evaluate("element => element.closest('details').open = true")
+            expect(experiences).to_contain_text(
+                "Redémarrage de dnsmasq.service", timeout=15000
+            )
+            expect(experiences).to_contain_text("1 tentative(s) · 1 réussite(s)")
+            disable = experiences.locator('[data-state="disabled"]')
+            disabled_ok = post("/state", disable)
+            expect(experiences).to_contain_text("Désactivée", timeout=15000)
+            experiences.scroll_into_view_if_needed()
+            page.screenshot(path=str(output / "vision-known-repairs.png"))
+            report["screenshots"].append("vision-known-repairs.png")
+            check(
+                "Réparation connue listée avec son historique puis désactivée",
+                disabled_ok
+                and [
+                    item["state"]
+                    for item in service.list_experiences()["experiences"]
+                ]
+                == ["disabled"],
+            )
             reload_request.unlink()  # The helper consumes each request.
             refused_incident_id, refused_id = proposal()
             page.once("dialog", lambda dialog: dialog.accept())

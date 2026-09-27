@@ -115,6 +115,13 @@ SCENARIOS = {
             "expertise, en heure de Paris, et relancer sur aggravation."
         ),
     ),
+    "known-repair-history": (
+        "scenarios.known_repair_history",
+        (
+            "Phase 3 : chaque exécution d'une réparation connue est comptée avec "
+            "son résultat ; une réparation désactivée n'est plus proposée."
+        ),
+    ),
     "log-noise-triage": (
         "scenarios.log_noise_triage",
         (

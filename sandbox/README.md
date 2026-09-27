@@ -102,6 +102,12 @@ reprise, sans job IA ni collecte complémentaire. Aucune sonde réelle ni aucun
 arrêt/redémarrage d'add-on n'est effectué. Ce scénario ne remplace pas la
 requalification de la panne contrôlée sur Konoha après déploiement.
 
+`known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
+connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
+est comptée avec son résultat, y compris un échec d'exécution et après
+reprise, qu'une réparation déjà connue ne redemande pas d'enregistrement, et
+qu'une réparation désactivée n'est plus proposée ni comptée.
+
 `log-noise-triage` passe deux contrôles quotidiens des quatre sources par le
 véritable `LogsHealthCheckHandler`, avec les lignes du 27 septembre. Il
 vérifie trois points :
