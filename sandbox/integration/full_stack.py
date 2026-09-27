@@ -620,6 +620,37 @@ def run(*, args):
             )
             page.screenshot(path=str(output / "vision-repairs.png"), full_page=True)
             report["screenshots"].append("vision-repairs.png")
+            # Known log noise: every remaining anomaly accepted from the dossier
+            # resolves the log incident, and the daily report lists them.
+            page.reload(wait_until="networkidle")
+            page.locator('[data-navigation-target="incidents"]').click()
+            page.locator(f'[data-tsunade-details="{incident_id}"]').click()
+            page.locator(f'[data-tsunade-log-anomalies="{incident_id}"]').click()
+            accept = page.locator(f'[data-tsunade-accept-log="{incident_id}"]')
+            expect(accept.first).to_be_visible(timeout=15000)
+            accept.first.scroll_into_view_if_needed()
+            page.screenshot(path=str(output / "vision-log-anomalies.png"))
+            report["screenshots"].append("vision-log-anomalies.png")
+            accepted_ok = True
+            while remaining := accept.count():
+                accepted_ok = post("/logs/accepted", accept.first) and accepted_ok
+                expect(accept).to_have_count(remaining - 1, timeout=15000)
+            expect(page.locator("#tsunade-log-health")).to_contain_text(
+                "Anomalies acceptées comme connues", timeout=15000
+            )
+            page.locator("#tsunade-log-health").evaluate(
+                "element => { element.closest('details').open = true;"
+                " element.querySelector('details').open = true;"
+                " element.scrollIntoView(); }"
+            )
+            page.screenshot(path=str(output / "vision-log-report.png"))
+            report["screenshots"].append("vision-log-report.png")
+            check(
+                "Anomalies acceptées depuis Vision : l'incident de journaux est résolu",
+                accepted_ok
+                and incidents.get(incident.incident_id).state == "resolved"
+                and len(service.list_accepted_log_signatures()["signatures"]) >= 1,
+            )
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page.set_viewport_size({"width": width, "height": height})
                 expect(page.locator("#incidents-heading")).to_be_visible()

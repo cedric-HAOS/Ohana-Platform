@@ -66,7 +66,7 @@ $Runner = Join-Path $SandboxDir "runner.py"
 
 # Le parcours de développement et les scénarios de journaux utilisent aussi le
 # code et les dépendances Katsuyu.
-$NeedsKatsuyu = ($SandboxArgs -contains "--exercise-logs") -or ($SandboxArgs -contains "all") -or ($SandboxArgs -contains "recurring-log-review")
+$NeedsKatsuyu = ($SandboxArgs -contains "--exercise-logs") -or ($SandboxArgs -contains "all") -or ($SandboxArgs -contains "recurring-log-review") -or ($SandboxArgs -contains "log-noise-triage")
 if (($SandboxArgs -contains "run") -and $NeedsKatsuyu) {
     $KatsuyuDir = Join-Path $WorkspaceDir "Ohana-Katsuyu"
     $KatsuyuIndex = [Array]::IndexOf($SandboxArgs, "--katsuyu")

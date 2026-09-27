@@ -115,6 +115,13 @@ SCENARIOS = {
             "expertise, en heure de Paris, et relancer sur aggravation."
         ),
     ),
+    "log-noise-triage": (
+        "scenarios.log_noise_triage",
+        (
+            "Les 4 sources du 27 septembre : bruit Ohana, sauvegarde NVM et "
+            "avertissements rares sans incident ; erreur acceptée comme connue."
+        ),
+    ),
     "ambiguous-katsuyu-cycle": (
         "scenarios.ambiguous_katsuyu_cycle",
         (

@@ -658,6 +658,19 @@ Vision 1.25.0 et Katsuyu 0.8.16) :
 - audit étendu des secrets : seules deux collectes du 27 août gardaient des
   sessions de caméra `/stok=` ; les résultats de jobs sont désormais masqués à
   la lecture (Agent, non publié).
+- incidents de journaux ouverts depuis août (examen du 27 septembre) : ils
+  mêlaient du bruit et deux vraies pannes. Le bruit : lignes INFO d'Ohana,
+  déploiements, sauvegarde NVM Z-Wave, intégrations tierces de HA-01. Les
+  pannes : le DNS servait `infra-01.ohana.lan → 127.0.1.1` (2 764 trames Linky
+  refusées par jour), et la carte SD d'INFRA-01 (2017, 284 ms par écriture)
+  figeait l'Agent et Vision jusqu'à 20 s. Correctifs : `no-hosts` et
+  `interface-name` pour dnsmasq ; écritures SQLite de l'Agent hors de sa boucle,
+  en `NORMAL` ; rafraîchissement de l'infrastructure sans couper la
+  surveillance ; incident `logs.health` réservé aux erreurs et aux
+  avertissements répétés au moins 100 fois en 24 h ; anomalies acceptées comme
+  connues depuis Vision ; faux positifs INFO filtrés par Katsuyu (Agent,
+  Vision, Katsuyu, non publiés). Reste à la charge de l'utilisateur : remplacer
+  la carte SD d'INFRA-01.
 
 ---
 

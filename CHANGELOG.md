@@ -6,6 +6,14 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `log-noise-triage`. Il rejoue les quatre sources de
+  journaux du 27 septembre et vérifie trois points : le bruit Ohana, la
+  sauvegarde NVM et les avertissements rares n'ouvrent pas d'incident ; les
+  refus Linky en ouvrent un, résolu après le correctif DNS ; l'erreur Kasa,
+  acceptée comme connue, résout l'incident HA-01 et ne rouvre rien. Rejoué
+  sur Agent 1.36.1 et Katsuyu 0.8.17, il échoue. Le parcours `--full-stack`
+  accepte les anomalies depuis la carte Vision.
+
 ## [1.0.128] - 2026-09-26
 
 ### Composition

@@ -102,6 +102,16 @@ reprise, sans job IA ni collecte complémentaire. Aucune sonde réelle ni aucun
 arrêt/redémarrage d'add-on n'est effectué. Ce scénario ne remplace pas la
 requalification de la panne contrôlée sur Konoha après déploiement.
 
+`log-noise-triage` passe deux contrôles quotidiens des quatre sources par le
+véritable `LogsHealthCheckHandler`, avec les lignes du 27 septembre. Il
+vérifie trois points :
+
+- les lignes INFO de l'Agent, les déploiements, 20 délais et la sauvegarde NVM
+  de Z-Wave n'ouvrent pas d'incident ;
+- 150 refus Linky en ouvrent un, résolu une fois le DNS corrigé ;
+- l'erreur Kasa, acceptée comme connue, résout l'incident HA-01 et ne rouvre
+  rien le lendemain.
+
 `recurring-log-review` passe trois contrôles quotidiens de HA-01 par le véritable
 `LogsHealthCheckHandler` de Katsuyu, avec des horodatages sans fuseau en heure de
 Paris comme dans Home Assistant. Il vérifie que ces lignes tombent dans la
