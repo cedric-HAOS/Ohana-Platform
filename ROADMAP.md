@@ -942,7 +942,7 @@ Aucune commande libre saisie par l’utilisateur ne devient automatiquement une 
 
 ## Critères de sortie de la Phase 3
 
-Suivi au 27 septembre 2026 (lots 1 et 2 livrés localement, non publiés) :
+Suivi au 27 septembre 2026 (lots 1 à 3 livrés localement, non publiés) :
 
 - lot 1 : historique par réparation connue (tentatives, réussites, échecs,
   dernières dates) ; désactivation, obsolescence ou réactivation depuis
@@ -953,9 +953,14 @@ Suivi au 27 septembre 2026 (lots 1 et 2 livrés localement, non publiés) :
   invoquer la proximité temporelle, et l'autorisation de la Phase 2 reste
   requise.
 
-Démontrés en Sandbox (`known-repair-history`, `--full-stack`). Restent le
-lot 3 (résolution manuelle dans Vision), puis les validations réelles sur
-Konoha.
+- lot 3 : résolution manuelle déclarée dans Vision (Shizune plus tard),
+  confirmée par Shikamaru, conservée seulement après accord explicite comme
+  piste, c'est-à-dire une note jamais exécutable. La proximité temporelle est
+  signalée comme non probante.
+
+Les dix critères sont démontrés en Sandbox (`known-repair-history`,
+`manual-resolution`, `--full-stack`). Restent les validations réelles sur
+Konoha après déploiement.
 
 - [ ] Au moins une réparation connue peut être retrouvée à partir de symptômes et preuves explicites.
 - [ ] Tentatives, réussites, échecs et dernière réussite sont historisés.

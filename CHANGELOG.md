@@ -6,6 +6,13 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `manual-resolution` (Phase 3, lot 3). Une action
+  manuelle est déclarée, confirmée par Shikamaru, puis conservée seulement
+  après accord, avec l'avertissement sur la causalité. La piste ressemble à
+  une commande et n'est pourtant jamais rattachée à une réparation ni
+  comptée. Une action non suivie d'un retour sain n'est pas confirmée. Le
+  parcours `--full-stack` déclare l'action depuis Vision et conserve la
+  piste depuis « Réparations à confirmer ».
 - Sandbox : scénario `known-repair-history` (Phase 3, lots 1 et 2). La proposition
   suivante cite la réparation connue sur preuve confirmée, et la demande
   d'autorisation cite son historique. Rejoué sans le lot 2, il échoue. La réparation

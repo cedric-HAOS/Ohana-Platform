@@ -122,6 +122,13 @@ SCENARIOS = {
             "son résultat ; une réparation désactivée n'est plus proposée."
         ),
     ),
+    "manual-resolution": (
+        "scenarios.manual_resolution",
+        (
+            "Phase 3 : action manuelle déclarée, confirmée par Shikamaru, "
+            "conservée sur accord comme note jamais exécutable."
+        ),
+    ),
     "log-noise-triage": (
         "scenarios.log_noise_triage",
         (

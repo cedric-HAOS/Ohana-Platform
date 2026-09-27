@@ -102,6 +102,13 @@ reprise, sans job IA ni collecte complémentaire. Aucune sonde réelle ni aucun
 arrêt/redémarrage d'add-on n'est effectué. Ce scénario ne remplace pas la
 requalification de la panne contrôlée sur Konoha après déploiement.
 
+`manual-resolution` (Phase 3) déclare une action manuelle sur un incident
+dnsmasq. Il vérifie que Shikamaru confirme le retour sain et que Tsunade
+demande avant de conserver la piste, en signalant que la proximité dans le
+temps ne prouve pas la cause. La piste « sudo systemctl restart … » ne doit
+jamais devenir une réparation exécutable ni être comptée. Une action non
+suivie d'un retour sain n'est pas confirmée.
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

@@ -660,6 +660,43 @@ def run(*, args):
                 ]
                 == ["disabled"],
             )
+            # Phase 3, lot 3: the refused dnsmasq incident is fixed by hand.
+            page.reload(wait_until="networkidle")
+            page.locator('[data-navigation-target="incidents"]').click()
+            page.locator(f'[data-tsunade-manual-open="{refused_incident_id}"]').click()
+            manual = page.locator(f'[data-tsunade-manual-form="{refused_incident_id}"]')
+            manual.locator("textarea").fill("sudo systemctl restart dnsmasq.service")
+            declared_ok = post(
+                "/manual-resolution", manual.locator('button[type="submit"]')
+            )
+            expect(page.locator("#incidents-list")).to_contain_text(
+                "Vérification Shikamaru en attente", timeout=15000
+            )
+            dnsmasq(ObservationStatus.HEALTHY)
+            page.reload(wait_until="networkidle")
+            page.locator('[data-navigation-target="incidents"]').click()
+            pending_section = page.locator("#incidents-experience-pending")
+            keep = pending_section.locator(
+                f'[data-tsunade-experience="{refused_incident_id}"]'
+            )
+            expect(keep).to_contain_text("Conserver comme piste connue", timeout=20000)
+            expect(pending_section).to_contain_text("ne prouve pas à elle seule")
+            page.screenshot(path=str(output / "vision-manual-lead.png"))
+            report["screenshots"].append("vision-manual-lead.png")
+            kept_ok = post("/experience", keep)
+            expect(pending_section).to_be_hidden(timeout=15000)
+            check(
+                "Action manuelle déclarée dans Vision, confirmée par Shikamaru, "
+                "conservée sur accord comme note",
+                declared_ok
+                and kept_ok
+                and incidents.get(refused_incident_id).manual_actions[0].status
+                == "confirmed"
+                and any(
+                    item["action"].get("kind") == "manual"
+                    for item in service.list_experiences()["experiences"]
+                ),
+            )
             # Known log noise: every remaining anomaly accepted from the dossier
             # resolves the log incident, and the daily report lists them.
             page.reload(wait_until="networkidle")
