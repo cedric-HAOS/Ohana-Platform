@@ -599,6 +599,44 @@ def run(*, args):
                 saved_ok
                 and incidents.get(repair_incident_id).experience_candidate is None,
             )
+            reload_request.unlink()  # The helper consumes each request.
+            refused_incident_id, refused_id = proposal()
+            # Phase 3: the new proposal cites the saved repair and its record.
+            known = page.locator("#incidents-list .incident-card__known-repair")
+            expect(known).to_contain_text(
+                "1 réussite(s) et 0 échec(s) sur 1 tentative(s)", timeout=15000
+            )
+            expect(known).to_contain_text("Même preuve : diagnostic confirmé")
+            # The list re-renders on each refresh: scroll by selector, not handle.
+            page.evaluate(
+                "document.querySelector('#incidents-list .incident-card__known-repair')"
+                "?.scrollIntoView({block: 'center'})"
+            )
+            page.screenshot(path=str(output / "vision-known-repair-proposal.png"))
+            report["screenshots"].append("vision-known-repair-proposal.png")
+            check(
+                "La proposition cite la réparation connue et ses critères explicites",
+                incidents.get(refused_incident_id).repairs[0].known_repair is not None,
+            )
+            page.once("dialog", lambda dialog: dialog.accept())
+            refused_ok = post(
+                "/repairs/refuse",
+                page.locator(
+                    f'[data-tsunade-repair-decision="refuse"]'
+                    f'[data-repair-id="{refused_id}"]'
+                ),
+            )
+            expect(page.locator("#incidents-list")).to_contain_text(
+                "Refusée, aucune action exécutée", timeout=15000
+            )
+            check(
+                "Réparation refusée depuis Vision après confirmation, sans exécution",
+                refused_ok
+                and incidents.get(refused_incident_id).repairs[0].status == "refused"
+                and not reload_request.exists(),
+            )
+            page.screenshot(path=str(output / "vision-repairs.png"), full_page=True)
+            report["screenshots"].append("vision-repairs.png")
             # Phase 3: the saved repair is listed with its history and can be
             # disabled from Vision.
             experiences = page.locator("#tsunade-experiences")
@@ -622,27 +660,6 @@ def run(*, args):
                 ]
                 == ["disabled"],
             )
-            reload_request.unlink()  # The helper consumes each request.
-            refused_incident_id, refused_id = proposal()
-            page.once("dialog", lambda dialog: dialog.accept())
-            refused_ok = post(
-                "/repairs/refuse",
-                page.locator(
-                    f'[data-tsunade-repair-decision="refuse"]'
-                    f'[data-repair-id="{refused_id}"]'
-                ),
-            )
-            expect(page.locator("#incidents-list")).to_contain_text(
-                "Refusée, aucune action exécutée", timeout=15000
-            )
-            check(
-                "Réparation refusée depuis Vision après confirmation, sans exécution",
-                refused_ok
-                and incidents.get(refused_incident_id).repairs[0].status == "refused"
-                and not reload_request.exists(),
-            )
-            page.screenshot(path=str(output / "vision-repairs.png"), full_page=True)
-            report["screenshots"].append("vision-repairs.png")
             # Known log noise: every remaining anomaly accepted from the dossier
             # resolves the log incident, and the daily report lists them.
             page.reload(wait_until="networkidle")

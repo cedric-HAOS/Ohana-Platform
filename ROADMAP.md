@@ -942,12 +942,20 @@ Aucune commande libre saisie par l’utilisateur ne devient automatiquement une 
 
 ## Critères de sortie de la Phase 3
 
-Suivi au 27 septembre 2026 (lot 1 livré localement, non publié) :
-historique par réparation connue (tentatives, réussites, échecs, dernières
-dates) et désactivation, obsolescence ou réactivation depuis Vision, démontrés
-en Sandbox (`known-repair-history`, `--full-stack`). Restent le lot 2
-(proposition fondée sur les preuves) et le lot 3 (résolution manuelle dans
-Vision), puis les validations réelles sur Konoha.
+Suivi au 27 septembre 2026 (lots 1 et 2 livrés localement, non publiés) :
+
+- lot 1 : historique par réparation connue (tentatives, réussites, échecs,
+  dernières dates) ; désactivation, obsolescence ou réactivation depuis
+  Vision ;
+- lot 2 : une proposition du catalogue est rattachée à la réparation connue
+  active qui partage le symptôme, la preuve confirmée et l'action. La
+  demande d'autorisation cite ces critères et l'historique, sans jamais
+  invoquer la proximité temporelle, et l'autorisation de la Phase 2 reste
+  requise.
+
+Démontrés en Sandbox (`known-repair-history`, `--full-stack`). Restent le
+lot 3 (résolution manuelle dans Vision), puis les validations réelles sur
+Konoha.
 
 - [ ] Au moins une réparation connue peut être retrouvée à partir de symptômes et preuves explicites.
 - [ ] Tentatives, réussites, échecs et dernière réussite sont historisés.

@@ -6,12 +6,15 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
-- Sandbox : scénario `known-repair-history` (Phase 3, lot 1). La réparation
+- Sandbox : scénario `known-repair-history` (Phase 3, lots 1 et 2). La proposition
+  suivante cite la réparation connue sur preuve confirmée, et la demande
+  d'autorisation cite son historique. Rejoué sans le lot 2, il échoue. La réparation
   dnsmasq connue est exécutée quatre fois par les vrais services Agent et
   SQLite. Chaque exécution est comptée avec son résultat, même après reprise.
   Une réparation déjà connue ne redemande pas d'enregistrement. Une fois
   désactivée, elle n'est plus proposée ni comptée. Le parcours `--full-stack`
-  vérifie la liste dans Vision et y désactive la réparation.
+  vérifie l'encadré « Réparation connue » d'une nouvelle proposition, puis la
+  liste dans Vision, où il désactive la réparation.
 
 ## [1.0.129] - 2026-09-27
 
