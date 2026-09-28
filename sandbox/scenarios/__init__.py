@@ -150,6 +150,13 @@ SCENARIOS = {
             "avertissements rares sans incident ; erreur acceptée comme connue."
         ),
     ),
+    "supervisor-log-window": (
+        "scenarios.supervisor_log_window",
+        (
+            "ZWAVE-01 : plus de 10 000 lignes en 24 h lues par le Supervisor, "
+            "fenêtre couverte sans troncature ni erreur de la veille."
+        ),
+    ),
     "ambiguous-katsuyu-cycle": (
         "scenarios.ambiguous_katsuyu_cycle",
         (

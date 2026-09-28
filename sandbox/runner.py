@@ -314,7 +314,8 @@ def main() -> int:
     if (
         args.exercise_logs
         or args.full_stack
-        or args.scenario in {"all", "recurring-log-review", "log-noise-triage"}
+        or args.scenario
+        in {"all", "recurring-log-review", "log-noise-triage", "supervisor-log-window"}
     ):
         katsuyu_root = args.katsuyu.resolve()
         if not (katsuyu_root / "ohana_katsuyu").is_dir():

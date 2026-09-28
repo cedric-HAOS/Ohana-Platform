@@ -570,6 +570,24 @@ Restent à suivre :
   d'anomalies distinctes apparaissent (44 le 26 septembre à 21:15), à suivre
   après correction de LINKY-01.
 
+Traités le 28 septembre, non publiés (contrôle manuel des journaux de
+12:08) :
+
+- délais de livraison Agent → Vision : un seul depuis le déploiement de
+  Platform 1.0.130 (10:23:58, pendant le premier checkpoint après
+  démarrage), contre un toutes les 4 minutes avant ; l'anomalie sort de la
+  fenêtre de 24 h le 29 septembre vers 10:24 ;
+- contrôles quotidiens de ZWAVE-01 et d'INFRA-01 toujours tronqués : plus de
+  10 000 lignes en 24 h. Katsuyu lit jusqu'à 50 000 lignes du Supervisor et
+  n'applique le budget d'octets qu'aux lignes de la fenêtre (scénario
+  `supervisor-log-window`, Katsuyu 0.8.19 échoue) ; l'Agent n'écrit plus
+  une ligne `INFO` par tâche planifiée réussie (26 000 lignes par jour, dont
+  14 500 pour `jobs.wake.dispatch`) ;
+- LINKY-01 après Katsuyu 0.8.19 : la signature des 2 763 trames refusées a
+  disparu ; restent deux refus datés des déploiements (27 septembre 20:41,
+  28 septembre 10:16) et les coupures MQTT de la mise à jour d'HA-01
+  (11:44–11:45).
+
 Traités le 26 septembre au soir (Platform 1.0.128 : Agent 1.36.1,
 Katsuyu 0.8.17, Vision 1.27.1 ; Installer 1.15.1) :
 
