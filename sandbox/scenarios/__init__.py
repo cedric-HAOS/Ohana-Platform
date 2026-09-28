@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "ohana-self-supervision": (
+        "scenarios.ohana_self_supervision",
+        "Phase 5 : vue Ohana de Vision alimentée par l'Agent, Katsuyu et Shizune réels.",
+    ),
     "katsuyu-shizune-vitals": (
         "scenarios.katsuyu_shizune_vitals",
         "Phase 5 : runtime et dernier job de Katsuyu, passerelle et synchronisation Shizune.",

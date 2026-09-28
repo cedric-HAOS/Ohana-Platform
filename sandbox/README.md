@@ -170,6 +170,17 @@ Agent 1.39.0, Katsuyu 0.9.0 et Vision 1.30.0 échouent chacun au scénario.
 .\sandbox\run.ps1 run katsuyu-shizune-vitals
 ```
 
+`ohana-self-supervision` (Phase 5, lot 5) ouvre la vue **Ohana** de Vision
+dans Chromium, alimentée par l'Agent HTTP, un vrai worker Katsuyu, un vrai
+serveur Vision et un appareil Shizune associé. Il vérifie les quatre cartes,
+puis un composant de l'Agent muet, le PC Katsuyu éteint, l'API de l'Agent
+arrêtée (les autres cartes restent lisibles), le rendu mobile et l'absence
+d'incident. Captures dans `sandbox/runs/`.
+
+```powershell
+.\sandbox\run.ps1 run ohana-self-supervision
+```
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

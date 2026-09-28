@@ -47,7 +47,7 @@ l'observation des autres.
 | 2 — L'Agent observe Vision | démarrage sans Vision, sonde HTTP et ingestion, notification d'escalade | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
 | 3 — Vision observe l'Agent | « Agent silencieux » calculé par Vision avec sa propre horloge | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
 | 4 — Katsuyu et Shizune | dernier travail réussi et runtime par capacité ; passerelle et dernière synchronisation | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
-| 5 — Vision, Sandbox, documentation | section « Ohana » dans Vision, scénarios, validations réelles | à faire |
+| 5 — Vision, Sandbox, documentation | section « Ohana » dans Vision, scénarios, validations réelles | vue « Ohana » développée et validée en Sandbox le 28 septembre ; publication et validations réelles à faire |
 
 ### Lot 1 — vitaux de l'Agent
 
@@ -277,6 +277,84 @@ Katsuyu 0.9.0 (aucun rapport de runtime) et Vision 1.30.0 (vitaux absents).
 Tests : Agent **1 751 PASS, 1 skipped** ; Katsuyu **224 PASS** ; Vision
 **916 PASS** ; lint et format conformes.
 
+### Lot 5 — vue « Ohana » dans Vision
+
+Nouvelle entrée de navigation **Ohana** (après « Hôte ») : une carte par
+composant, chacune lue à **sa propre source** ; une source indisponible rend
+sa carte « Inconnu » sans masquer les autres.
+
+| Carte | Source | Contenu | États |
+| --- | --- | --- | --- |
+| Agent | vitaux de Vision (`agent`), `host.health` (`agent_components`) | dernière livraison reçue par Vision, composants internes et dernière activité | Opérationnel, À surveiller (composant muet), Hors service (Agent silencieux), Inconnu |
+| Vision | `GET /api/runtime/vitals`, `host.health` (`vision`) | démarrage, dernière ingestion, vu par l'Agent (sonde) | Opérationnel, À surveiller (ingestion muette), Hors service |
+| Katsuyu | `GET /api/administration/workers` | worker, dernier contact, runtimes déclarés ; par capacité : runtime, dernier succès, dernier échec | Opérationnel, À surveiller (runtime absent ou en échec), **Hors ligne** (PC éteint : normal), Inconnu |
+| Shizune | vitaux de Vision (`shizune_gateway`), `GET /api/administration/companions` | passerelle, dernier relais, dernier échec, appareils et dernière synchronisation | Opérationnel, À surveiller (pont en échec), Inconnu |
+
+- Relecture à l'ouverture de la vue, avec le bouton Actualiser et à chaque
+  lecture de présence de l'Agent (15 s) tant que la vue est ouverte.
+- Heures affichées à l'heure de Paris quel que soit le fuseau du navigateur.
+- La version d'un appareil Shizune est celle **de l'association**, pas celle
+  qui tourne : libellé « Associé en x.y.z ».
+- La page Hôte nomme les nouvelles raisons (`agent_components_stale`,
+  `vision_http_unavailable`, `vision_ingestion_stale`,
+  `systemd_units_inactive`).
+- Aucune action : la vue constate, elle ne redémarre rien et n'ouvre aucun
+  incident.
+
+Vérification sur les données de production (proxy local en lecture seule,
+Vision 1.30.0) : Katsuyu réel affiché « Hors ligne » (Bubule éteint), les
+trois autres cartes « Inconnu » faute des vitaux en 1.30.0, sans erreur
+JavaScript, sans débordement à 375 px. Deux appareils Shizune se
+synchronisaient, dont l'iPhone associé en 0.2.2.
+
+Sandbox **`ohana-self-supervision` PASS** : Agent HTTP, Katsuyu, serveur
+Vision (uvicorn, SQLite) avec ses clients d'administration et Shizune,
+vrais `AgentVitals` et `VisionVitalsProbe`, Chromium. Vérifie les quatre
+cartes, Katsuyu « À surveiller » (modèle IA absent) avec son dernier succès,
+puis un composant de l'Agent muet, le PC Katsuyu éteint (« Hors ligne »,
+normal), l'API d'administration de l'Agent arrêtée (Katsuyu « Inconnu »,
+Agent et Vision toujours lisibles), le rendu mobile, aucune erreur
+JavaScript et aucun incident créé. Coût mesuré sur le poste de
+développement : `/api/runtime/vitals` ~1 ms, `/api/administration/workers`
+~6 ms. Captures : `sandbox/runs/*-ohana-self-supervision/`.
+
+Tests Vision : **920 PASS**.
+
+## Charge sur INFRA-01 (estimation avant mesure réelle)
+
+| Source | Fréquence | Coût |
+| --- | --- | --- |
+| Battements des vitaux de l'Agent | à chaque travail réel ; boucle d'administration toutes les 10 s | mise à jour en mémoire |
+| Sonde de Vision par l'Agent | 60 s, fil dédié | 1 GET local, sans écriture |
+| Présence de l'Agent dans Vision | à chaque ingestion | horloge monotone, sans écriture |
+| Runtimes de Katsuyu | après enregistrement, après job, au plus toutes les 5 min si changement | 1 UPDATE SQLite |
+| Activité par capacité | à la lecture de `/v1/jobs/workers` | 1 requête sur les jobs conservés |
+| Passerelle Shizune | à chaque appel relayé | mémoire |
+| Vue Ohana ouverte | 15 s | 4 GET |
+
+Aucune écriture périodique nouvelle sur la carte SD, hors rapport de
+runtimes quand il change. Mesure réelle à faire après déploiement : CPU des
+services Ohana et écritures disque sur une heure, comparées à la veille.
+
+## Validation réelle (après publication et déploiement)
+
+Ordre de déploiement : **Vision avant l'Agent** (l'Agent traite un Vision
+sans vitaux comme indisponible), Agent avant Katsuyu. Essais proposés, tous
+contrôlés et réversibles :
+
+1. Vue Ohana sur Konoha : quatre cartes renseignées, heures de Paris.
+2. **Vision arrêté** quelques minutes : incident `host.health` critique
+   `vision_http_unavailable` confirmé par `vision.status`, notification
+   Shizune/MQTT sans Vision ; au retour, observations livrées et incident
+   résolu.
+3. **Agent arrêté** plus de 5 minutes : bandeau « Agent silencieux » et
+   carte Agent « Hors service » ; au retour, disparition automatique.
+4. **Katsuyu** : Bubule allumé → runtimes déclarés et dernier job réussi ;
+   Bubule éteint → « Hors ligne », aucun incident.
+5. **Shizune** : dernière synchronisation de l'iPhone à jour ; passerelle
+   « Opérationnel ».
+6. **Charge** : mesure sur une heure (CPU, écritures) comparée à la veille.
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |
@@ -285,8 +363,8 @@ Tests : Agent **1 751 PASS, 1 skipped** ; Katsuyu **224 PASS** ; Vision
 | Vision expose un état vital exploitable | `vision-startup-recovery` (lot 2) | à valider |
 | Katsuyu expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | à valider |
 | Shizune expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | à valider |
-| La dernière activité repère un composant silencieusement figé | `agent-component-stale`, `agent-silent` (absence de livraison vue de Vision) | à valider |
+| La dernière activité repère un composant silencieusement figé | `agent-component-stale`, `agent-silent`, `ohana-self-supervision` | à valider |
 | Une défaillance Ohana produit une observation exploitable | `agent-component-stale`, `vision-startup-recovery` | à valider |
-| L'indisponibilité d'un composant n'empêche pas d'observer les autres | `vision-startup-recovery` : planificateur et santé actifs sans Vision | à valider |
+| L'indisponibilité d'un composant n'empêche pas d'observer les autres | `vision-startup-recovery` : planificateur et santé actifs sans Vision ; `ohana-self-supervision` : API Agent arrêtée, autres cartes lisibles | à valider |
 | Pas de dépendance circulaire critique | `vision-startup-recovery` : incident et notification sans Vision, transport APNs simulé | à valider |
-| Charge compatible avec INFRA-01 | à mesurer | à mesurer |
+| Charge compatible avec INFRA-01 | estimation ci-dessus ; vitaux ~1 ms, workers ~6 ms | à mesurer |

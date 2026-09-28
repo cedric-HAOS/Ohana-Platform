@@ -6,6 +6,10 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Phase 5, lot 5 : scénario `ohana-self-supervision` (vue Ohana dans
+  Chromium alimentée par l'Agent, Katsuyu, Vision et Shizune réels ;
+  composant muet, PC éteint, API Agent arrêtée, mobile). Doc de phase :
+  lot 5, estimation de charge et plan de validation réelle.
 - Phase 5, lot 4 : scénario `katsuyu-shizune-vitals`, Agent HTTP, worker
   Katsuyu et pont Shizune de Vision réels ; runtimes et dernier job par
   capacité, passerelle et dernière synchronisation Shizune, aucun incident.

@@ -322,6 +322,7 @@ def main() -> int:
             "supervisor-log-window",
             "slow-completion-reads",
             "katsuyu-shizune-vitals",
+            "ohana-self-supervision",
         }
     ):
         katsuyu_root = args.katsuyu.resolve()
@@ -335,6 +336,7 @@ def main() -> int:
         "vision-startup-recovery",
         "agent-silent",
         "katsuyu-shizune-vitals",
+        "ohana-self-supervision",
     }:
         _add_python_repo(args.vision, "ohana_vision")
     if args.full_stack:
