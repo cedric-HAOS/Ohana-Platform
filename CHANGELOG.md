@@ -6,6 +6,24 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.133] - 2026-09-28
+
+### Composition
+
+Publiée le jour même de 1.0.132, à la demande de l'utilisateur.
+
+- Ohana-Agent 1.39.0 → 1.40.0 : vitaux des composants internes, démarrage
+  sans Vision, sonde de Vision (incident sans réparation, notification
+  d'escalade), runtimes et dernier travail de Katsuyu, dates des appareils
+  Shizune à l'heure de Paris.
+- Ohana-Vision 1.30.0 → 1.31.0 : vitaux (`/api/runtime/vitals`), bandeau
+  « Agent silencieux », passerelle Shizune mesurée, vue **Ohana** ; Shizune
+  servi avec revalidation (carte « Prévention » absente sur iPhone).
+- Ohana-Shizune 0.4.0 inchangé.
+- Hors composition : Katsuyu 0.10.0 déclare ses runtimes.
+- **Ordre de déploiement : Vision avant l'Agent** (la sonde de l'Agent 1.40.0
+  traite un Vision sans vitaux comme indisponible), puis Katsuyu.
+
 - Phase 5, lot 5 : scénario `ohana-self-supervision` (vue Ohana dans
   Chromium alimentée par l'Agent, Katsuyu, Vision et Shizune réels ;
   composant muet, PC éteint, API Agent arrêtée, mobile). Doc de phase :
