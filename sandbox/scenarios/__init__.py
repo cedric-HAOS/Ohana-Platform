@@ -108,6 +108,13 @@ SCENARIOS = {
             "rechargent la chronologie 24 h, latences d'ingestion mesurées."
         ),
     ),
+    "home-assistant-restart-grace": (
+        "scenarios.home_assistant_restart_grace",
+        (
+            "Une entité introuvable pendant un redémarrage de Home Assistant "
+            "est dégradée, critique seulement après 10 minutes."
+        ),
+    ),
     "vision-checkpoint-off-ingestion": (
         "scenarios.vision_checkpoint_off_ingestion",
         (

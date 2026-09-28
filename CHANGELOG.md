@@ -6,6 +6,11 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `home-assistant-restart-grace`. Un Home Assistant
+  simulé en HTTP répond « Entity not found » : l'incident doit s'ouvrir
+  dégradé, devenir critique après 10 minutes, se résoudre au retour de la
+  valeur, et une valeur périmée doit rester critique aussitôt. Agent 1.38.0
+  ouvre un incident critique dès le début et échoue.
 - Sandbox : `manual-resolution` déclare aussi une action juste après le
   retour à l'état sain. Elle doit être acceptée comme déclarée après coup.
   Agent 1.38.0 la refuse et le scénario échoue.
