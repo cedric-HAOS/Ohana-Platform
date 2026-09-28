@@ -570,8 +570,9 @@ Restent à suivre :
   d'anomalies distinctes apparaissent (44 le 26 septembre à 21:15), à suivre
   après correction de LINKY-01.
 
-Traités le 28 septembre, non publiés (contrôle manuel des journaux de
-12:08) :
+Traités le 28 septembre (contrôle manuel des journaux de 12:08), publiés
+dans Platform 1.0.131 (Agent 1.38.1, Vision 1.29.1) et Katsuyu 0.8.20, à
+déployer :
 
 - délais de livraison Agent → Vision : un seul depuis le déploiement de
   Platform 1.0.130 (10:23:58, pendant le premier checkpoint après
