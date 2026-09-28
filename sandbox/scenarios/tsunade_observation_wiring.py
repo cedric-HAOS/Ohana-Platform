@@ -262,6 +262,9 @@ administration:
 
                 if service.incident_repository is not None:
                     service.incident_repository.close()
+                # Agent 1.39.0: the preventive monitor shares the control DB.
+                if getattr(service, "preventive_monitor", None) is not None:
+                    service.preventive_monitor.close()
 
         log_job = (
             jobs_after_log_source[0]

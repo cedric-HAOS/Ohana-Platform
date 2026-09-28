@@ -143,6 +143,13 @@ SCENARIOS = {
             "conservée sur accord comme note jamais exécutable."
         ),
     ),
+    "preventive-trends": (
+        "scenarios.preventive_trends",
+        (
+            "Phase 4 : disque, redémarrages et coupures réseau détectés sur 7 "
+            "jours ; semaine normale « aucune intervention », sans Katsuyu."
+        ),
+    ),
     "log-noise-triage": (
         "scenarios.log_noise_triage",
         (

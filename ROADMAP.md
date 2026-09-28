@@ -1024,6 +1024,9 @@ Tsunade applique des règles simples et explicables.
 
 Katsuyu n’est utilisé que lorsqu’un traitement historique ou volumineux justifie réellement le déport.
 
+Suivi : [Phase 4 — Maintenance préventive](docs/Phase-4-Maintenance-preventive.md)
+(démarrée le 28 septembre 2026).
+
 ---
 
 ## Périmètre initial

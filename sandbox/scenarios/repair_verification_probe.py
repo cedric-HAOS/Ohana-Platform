@@ -273,6 +273,9 @@ def run() -> dict:
                     service.job_repository.close()
                 if service.incident_repository is not None:
                     service.incident_repository.close()
+                # Agent 1.39.0: the preventive monitor shares the control DB.
+                if getattr(service, "preventive_monitor", None) is not None:
+                    service.preventive_monitor.close()
 
     return {
         "passed": all(passed for _, passed in checks),

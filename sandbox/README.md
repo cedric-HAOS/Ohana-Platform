@@ -109,6 +109,14 @@ temps ne prouve pas la cause. La piste « sudo systemctl restart … » ne doit
 jamais devenir une réparation exécutable ni être comptée. Une action non
 suivie d'un retour sain n'est pas confirmée.
 
+`preventive-trends` (Phase 4) envoie une semaine de santé d'INFRA-01 par le
+vrai mapper et l'événement `HostHealthObserved`, et des coupures réseau par le
+vrai magasin d'incidents. Semaine normale (hausse lente, saut unique au-dessus
+de 70 %) : « Konoha est stable » et « Aucune intervention nécessaire ». Semaine
+dérivante : disque, redémarrages et interruptions réseau signalés, même
+verdict après redémarrage de l'Agent, aucune ligne d'incident, de réparation
+ou de demande créée. L'Agent n'a pas de file Katsuyu.
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

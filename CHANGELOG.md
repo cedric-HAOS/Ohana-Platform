@@ -6,6 +6,20 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Phase 4, maintenance préventive (Agent, Vision, Shizune, non publiés) :
+  Tsunade garde un historique journalier compact de la santé d'INFRA-01 et
+  applique trois règles explicables sur 7 jours — croissance du disque
+  (hausse médiane), redémarrages répétés, interruptions réseau répétées.
+  Synthèse « Konoha est stable. / À surveiller / Aucune intervention
+  nécessaire. », détail et règles dans Vision, essentiel dans Shizune ;
+  jamais d'incident ni de réparation. Suivi :
+  [docs/Phase-4-Maintenance-preventive.md](docs/Phase-4-Maintenance-preventive.md).
+- Sandbox : scénario `preventive-trends` (semaine normale sans alerte, trois
+  dérives détectées, même verdict après redémarrage de l'Agent, lectures sans
+  effet, sans Katsuyu) ; `--full-stack` vérifie la section Vision et la carte
+  Shizune avec le vrai résumé de l'Agent. `repair-verification-probe` et
+  `tsunade-observation-wiring` ferment aussi le moniteur préventif, qui partage
+  la base de contrôle (Windows refusait la suppression du répertoire).
 - Sandbox : scénario `icloud-connectivity-mqtt`. Le contrôle iCloud et le
   publieur MQTT réels de l'Agent tournent avec un rclone et un broker
   simulés : jeton expiré au démarrage (message réel d'INFRA-01 du 28

@@ -11,7 +11,7 @@ import subprocess
 import sys
 from collections import Counter
 from contextlib import ExitStack
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Thread
@@ -31,6 +31,7 @@ from ohana_agent.plugins.backup.config import BackupConfig
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
 from ohana_agent.tsunade.local_time import paris_now
+from ohana_agent.tsunade.preventive import TsunadePreventiveMonitor
 from ohana_vision.configuration import ApplicationConfiguration
 from ohana_vision.web.bootstrap import build_application
 from playwright.sync_api import expect, sync_playwright
@@ -122,6 +123,96 @@ def _model_settings(args):
     return runtime.resolve(), model.resolve(), digest
 
 
+def _preventive_views(page, context, browser, preventive, service, output, report, check):
+    """Phase 4: detail and rules in Vision, the essential in Shizune."""
+    today = datetime.now(ZoneInfo("Europe/Paris"))
+    boot = today - timedelta(days=30)
+    for day, disk in enumerate((70.0, 71.2, 72.1, 73.4, 74.5)):
+        at = today - timedelta(days=4 - day)
+        preventive.record_host_health(
+            Observation(
+                node="infra-01",
+                service="ohana-host",
+                capability="host.health",
+                status=ObservationStatus.HEALTHY,
+                success=True,
+                message="Host healthy",
+                source="host-health",
+                timestamp=at,
+                metadata={
+                    "host_health": {
+                        "disk_percent": disk,
+                        "host_uptime_seconds": int((at - boot).total_seconds()),
+                        "agent_restarts": 0,
+                    }
+                },
+            )
+        )
+    title = "INFRA-01 : espace disque en hausse depuis 5 jours"
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    section = page.locator("#tsunade-preventive")
+    expect(section).to_contain_text(title, timeout=15000)
+    expect(section).to_contain_text("Aucune intervention nécessaire.")
+    section.locator("summary").click()
+    expect(section).to_contain_text("hausse médiane d'au moins 0,5 point par jour")
+    expect(section).to_contain_text("INFRA-01 : 74,5 %, +1,2 point/jour")
+    section.scroll_into_view_if_needed()
+    page.screenshot(path=str(output / "vision-preventive.png"))
+    report["screenshots"].append("vision-preventive.png")
+    check("Vision détaille la maintenance préventive et ses règles", True)
+
+    # Shizune renders the real companion payload of the Agent service.
+    summary = service.read_companion_summary()
+    shizune = browser.new_context(
+        viewport={"width": 390, "height": 844}, service_workers="block"
+    )
+    try:
+        phone = shizune.new_page()
+        payloads = {
+            "/summary": summary,
+            "/requests": {"requests": []},
+            "/activity": {"activity": []},
+        }
+
+        def fulfil(route):
+            path = route.request.url.split("/api/shizune", 1)[1].split("?")[0]
+            route.fulfill(json=payloads.get(path, {}))
+
+        phone.route("**/api/shizune/**", fulfil)
+        base = page.url.split("/ui/")[0]
+        phone.goto(base + "/shizune/", wait_until="networkidle")
+        phone.evaluate(
+            """() => new Promise((resolve, reject) => {
+                localStorage.setItem('ohana-shizune-device-id', 'pwa-sandbox');
+                const request = indexedDB.open('ohana-shizune', 1);
+                request.onupgradeneeded = () => request.result.createObjectStore('secrets');
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    const tx = request.result.transaction('secrets', 'readwrite');
+                    tx.objectStore('secrets').put('sandbox-token', 'companion-token');
+                    tx.oncomplete = () => { request.result.close(); resolve(); };
+                    tx.onerror = () => reject(tx.error);
+                };
+            })"""
+        )
+        phone.reload(wait_until="networkidle")
+        card = phone.locator(".section.preventive")
+        expect(card).to_contain_text(title, timeout=15000)
+        expect(card).to_contain_text("Aucune intervention nécessaire.")
+        phone.screenshot(path=str(output / "shizune-preventive.png"), full_page=True)
+        report["screenshots"].append("shizune-preventive.png")
+        check(
+            "Shizune affiche la synthèse préventive courte, sans les preuves",
+            "hausse médiane" not in card.inner_text()
+            and phone.evaluate(
+                "document.documentElement.scrollWidth <= window.innerWidth + 1"
+            ),
+        )
+    finally:
+        shizune.close()
+
+
 def run(*, args):
     stamp = datetime.now(ZoneInfo("Europe/Paris")).strftime("%Y%m%d-%H%M%S")
     output = args.report_dir.resolve() / f"{stamp}-{uuid4().hex[:8]}"
@@ -157,6 +248,8 @@ def run(*, args):
             stack.callback(jobs.close)
             incidents = TsunadeIncidentRepository(root / "incidents.db")
             stack.callback(incidents.close)
+            preventive = TsunadePreventiveMonitor(root / "incidents.db")
+            stack.callback(preventive.close)
             infrastructure = root / "infrastructure.yaml"
             infrastructure.write_text(
                 "infrastructure:\n  id: sandbox\n  name: Ohana Sandbox\n"
@@ -191,6 +284,7 @@ def run(*, args):
                 ),
                 job_repository=jobs,
                 incident_repository=incidents,
+                preventive_monitor=preventive,
                 # Real dnsmasq executor; its restart request stays in the lab.
                 dhcp_repository=DnsmasqDHCPRepository(
                     main_config_path=root / "dnsmasq.conf",
@@ -728,6 +822,7 @@ def run(*, args):
                 and incidents.get(incident.incident_id).state == "resolved"
                 and len(service.list_accepted_log_signatures()["signatures"]) >= 1,
             )
+            _preventive_views(page, context, browser, preventive, service, output, report, check)
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page.set_viewport_size({"width": width, "height": height})
                 expect(page.locator("#incidents-heading")).to_be_visible()
