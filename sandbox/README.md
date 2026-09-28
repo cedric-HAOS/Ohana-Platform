@@ -132,6 +132,32 @@ taire la boucle d'administration au-delà de sa borne. Un incident
 avec une seule expertise. Seules les réponses systemctl sont simulées ; un
 Agent entièrement figé n'est pas couvert (il relève de Vision).
 
+`vision-startup-recovery` (Phase 5, lot 2) démarre le vrai `ProductionAgent`
+sans serveur Vision, puis démarre Vision/uvicorn en HTTP local. Il vérifie
+le planificateur actif, l'incident confirmé par `vision.status` sans IA,
+une seule notification critique, la conservation SQLite puis la livraison
+effective de toutes les observations de panne dans la base Vision et la
+résolution au retour. Les métriques de l'hôte et le transport APNs sont
+simulés ; les intervalles sont raccourcis. Les vitaux de Vision doivent
+indiquer une ingestion récente à l'heure de Paris. Agent 1.39.0 ne possède
+pas la sonde ; Vision 1.30.0 ne possède pas l'endpoint et échoue au scénario.
+
+```powershell
+.\sandbox\run.ps1 run vision-startup-recovery
+```
+
+`agent-silent` (Phase 5, lot 3) utilise Vision HTTP, SQLite et Chromium sans
+API Agent configurée. Il avance uniquement l'horloge monotone de Vision
+pour simuler cinq minutes sans ingestion. Le vrai polling du navigateur
+doit afficher « Agent silencieux » sur une page déjà ouverte, sans nouveau
+message WebSocket, et invalider l'ancienne santé de l'hôte. Il vérifie aussi
+le retour d'activité sur rejeu, le bandeau sur mobile, et l'état inconnu
+si la lecture de Vision échoue. Captures et rapport dans `sandbox/runs/`.
+
+```powershell
+.\sandbox\run.ps1 run agent-silent
+```
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

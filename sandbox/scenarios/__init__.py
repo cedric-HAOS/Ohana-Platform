@@ -1,4 +1,12 @@
 SCENARIOS = {
+    "agent-silent": (
+        "scenarios.agent_silent",
+        "Phase 5 : Vision détecte l'Agent silencieux et avertit sans événement Agent.",
+    ),
+    "vision-startup-recovery": (
+        "scenarios.vision_startup_recovery",
+        "Phase 5 : démarrage sans Vision, diagnostic HTTP et livraison au retour.",
+    ),
     "teleinformation-supervisor-cycle": (
         "scenarios.teleinformation_supervisor_cycle",
         "Confirmer l'arrêt Téléinformation sans IA, conserver le diagnostic et résoudre l'incident.",

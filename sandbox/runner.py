@@ -331,6 +331,8 @@ def main() -> int:
         "all",
         "vision-ingestion-load",
         "vision-checkpoint-off-ingestion",
+        "vision-startup-recovery",
+        "agent-silent",
     }:
         _add_python_repo(args.vision, "ohana_vision")
     if args.full_stack:

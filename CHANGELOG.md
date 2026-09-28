@@ -6,6 +6,14 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Phase 5, lot 3 : scénario `agent-silent`, Vision HTTP/SQLite et Chromium
+  sans API Agent ; silence détecté avec l'horloge de Vision, avertissement
+  sans événement entrant, reprise et distinction d'une panne de lecture.
+- Phase 5, lot 2 validé localement : scénario `vision-startup-recovery`
+  avec Agent, file SQLite et serveur Vision HTTP réels ; démarrage sans
+  Vision, diagnostic, notification, livraison des observations et résolution.
+  31/31 scénarios, parcours journaux et full-stack PASS. Validation réelle
+  sur Konoha encore à faire.
 - Phase 5 démarrée : document de suivi
   `docs/Phase-5-Ohana-supervise-Ohana.md`, lien et choix de l'utilisateur
   dans la roadmap.
