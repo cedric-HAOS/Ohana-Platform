@@ -141,20 +141,46 @@ Vision 1.30.0, Katsuyu 0.9.0, Shizune 0.4.0, Platform 1.0.132. Agent démarré
   Shizune v0.3.0 (cache du navigateur) alors que 0.4.0 est servie. Corrigé
   localement (Vision b366997), pour la prochaine publication.
 
+### Dérive réelle provoquée et Katsuyu arrêté — 28 septembre
+
+SHE-04 avait 2 interruptions réseau sur 7 jours (22 septembre). Une coupure
+contrôlée (prise débranchée par l'utilisateur) devait faire passer la règle à
+« À surveiller ».
+
+| Étape | Heure |
+| --- | --- |
+| SHE-04 débranché ; premier contrôle en échec (1/3, contrôle toutes les 6 min) | 15:37:22 |
+| Incident `network.reachable` ouvert (3/3) | 15:49:23 |
+| Synthèse : « À surveiller : SHE-04 : 3 interruptions réseau en 7 jours. » | 15:49 |
+| Katsuyu arrêté sur Bubule ; worker indisponible (dernier contact) | 15:50:36 |
+| Rattrapage demandé depuis Vision : travail en attente de Katsuyu | 15:51:27 |
+| Synthèse recalculée sans Katsuyu, SHE-04 toujours signalé | 15:52:27 |
+| Katsuyu redémarré : rattrapage exécuté seul (30 jours lus) | 15:53:27 |
+| SHE-04 rebranché, incident résolu | 15:55:22 |
+
+- La synthèse est restée « Aucune intervention nécessaire. » ; aucune
+  réparation proposée sur l'incident SHE-04, aucune demande créée.
+- Vision : « en attente de Katsuyu », bouton désactivé pendant l'attente,
+  détail « la plus longue 1 h 06, une toujours en cours » puis sans « en
+  cours » après la résolution. Aucun réveil Wake-on-LAN tenté.
+- Le second rattrapage n'a rien remplacé : 6 jours reconstruits, 7 jours
+  lus par la règle du disque, comme après le premier.
+- Shizune : carte « Prévention » affichée sur l'iPhone de l'utilisateur.
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |
 | --- | --- | --- |
-| Au moins trois tendances simples détectées de manière reproductible | `preventive-trends` : disque, redémarrages, réseau ; même verdict après redémarrage de l'Agent | à provoquer (aucune dérive réelle au 28 septembre) |
+| Au moins trois tendances simples détectées de manière reproductible | `preventive-trends` : disque, redémarrages, réseau ; même verdict après redémarrage de l'Agent | **partiel** : interruptions réseau détectées en réel (SHE-04, 15:49) ; disque et redémarrages démontrés en Sandbox seulement |
 | Une évolution normale n'est pas transformée en anomalie | hausse lente, saut unique au-dessus de 70 % | **acquis** : 30 jours réels de disque (baisse du 26 incluse) « Normal » |
 | Règles ou seuils explicables | chaque règle est énoncée avec son seuil et ses preuves | **acquis** : règles et faits par nœud affichés dans Vision |
 | Données déjà disponibles privilégiées | santé de l'hôte et incidents existants | **acquis** : santé de l'hôte, incidents, statistiques HA-01 existantes |
 | Traitement historique lourd déportable vers Katsuyu | `preventive-backfill`, `--full-stack` : 31 jours de statistiques horaires lus et agrégés par Katsuyu | **acquis** : 720 lignes de HA-01 agrégées par Katsuyu à 15:10 |
-| Indisponibilité de Katsuyu sans effet sur les contrôles simples | Agent sans file Katsuyu ; travail de rattrapage en attente | à valider |
-| Synthèse courte dans Shizune | carte « Prévention » (`--full-stack`) | à valider |
+| Indisponibilité de Katsuyu sans effet sur les contrôles simples | Agent sans file Katsuyu ; travail de rattrapage en attente | **acquis** : Katsuyu arrêté, synthèse et SHE-04 toujours fournis, travail repris au retour |
+| Synthèse courte dans Shizune | carte « Prévention » (`--full-stack`) | **acquis** : carte vue sur l'iPhone |
 | Détail dans Vision | section « Maintenance préventive » (`--full-stack`) | **acquis** |
 | Situation stable : « aucune intervention nécessaire » | semaine normale | **acquis** |
-| Aucune réparation déclenchée par la seule maintenance préventive | aucune ligne d'incident, de réparation ou de demande créée | **acquis** jusqu'ici (aucun incident ni demande créés) |
+| Aucune réparation déclenchée par la seule maintenance préventive | aucune ligne d'incident, de réparation ou de demande créée | **acquis** : SHE-04 « À surveiller » sans réparation ni demande |
 
 ### Données réelles au démarrage
 
