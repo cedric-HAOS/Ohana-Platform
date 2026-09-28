@@ -583,6 +583,10 @@ Traités le 28 septembre, non publiés (contrôle manuel des journaux de
   `supervisor-log-window`, Katsuyu 0.8.19 échoue) ; l'Agent n'écrit plus
   une ligne `INFO` par tâche planifiée réussie (26 000 lignes par jour, dont
   14 500 pour `jobs.wake.dispatch`) ;
+- SUN-01 critique pendant la mise à jour d'HA-01 (11:46–11:51, API « Entity
+  not found ») : sans valeur de Home Assistant, l'observation est dégradée
+  10 minutes avant de devenir critique ; une valeur périmée reste critique
+  aussitôt (Agent, scénario `home-assistant-restart-grace`) ;
 - 502 de Vision sur la liste des incidents (16 entre 10:21 et 12:14, dont 8
   entre 12:09 et 12:12) : le traitement d'un résultat Katsuyu tenait le
   verrou du cycle worker jusqu'à 38 s, et chaque lecture de page l'attendait
@@ -992,6 +996,18 @@ Konoha. Détail : [Phase 3 — Mémoire opérationnelle](docs/Phase-3-Memoire-op
 - obsolescence automatique assistée ;
 - comparaison plus fine entre incidents ;
 - historique avancé dans Vision.
+
+Traités le 28 septembre après les validations réelles (Platform 1.0.131 :
+Agent 1.38.1, Vision 1.29.1) :
+
+- « Réactiver » inaccessible : la zone « Contrôles, bilan et réparations
+  connues » défile et indique le chargement des réparations connues
+  (Vision) ;
+- action manuelle faite avant sa déclaration : elle peut être déclarée
+  jusqu'à 10 minutes après la résolution, confirmée par l'observation saine
+  qui a clos l'incident (Agent, scénario `manual-resolution`) ;
+- dernière réussite d'une réparation connue : date de la résolution
+  constatée par Shikamaru, et non de l'enregistrement (Agent).
 
 ---
 

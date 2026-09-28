@@ -98,3 +98,11 @@ réactivée ; six entrées actives en fin d'essai.
   résolution.
 - La piste manuelle conservée compte 1 tentative et 1 réussite, datée de son
   enregistrement plutôt que de la vérification de Shikamaru.
+
+Traités le 28 septembre, à publier dans Platform 1.0.131 (Agent 1.38.1,
+Vision 1.29.1) : la zone « Contrôles, bilan et réparations connues » défile
+jusqu'à « Réactiver » et indique son chargement ; une action manuelle peut
+être déclarée jusqu'à 10 minutes après la résolution, confirmée par
+l'observation saine qui a clos l'incident (scénario `manual-resolution`) ;
+la dernière réussite d'une réparation connue est la résolution constatée
+par Shikamaru.

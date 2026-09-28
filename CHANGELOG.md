@@ -6,6 +6,15 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `slow-completion-reads`. L'écriture d'une revue de
+  journaux prend 3 s, comme sur la carte SD d'INFRA-01 ; la liste et le
+  détail des incidents, la synthèse et les demandes Shizune, lus en même
+  temps, doivent répondre en moins d'une seconde. Agent 1.38.0 attend 3 s
+  à chaque lecture (502 de Vision le 28 septembre).
+- Sandbox : scénario `supervisor-log-window`. Un faux Supervisor renvoie
+  30 000 lignes sur 25 heures : la fenêtre de 24 h doit être couverte sans
+  troncature, et l'erreur de la veille écartée. Katsuyu 0.8.19 demande
+  10 001 lignes et déclare la collecte tronquée.
 - Sandbox : scénario `home-assistant-restart-grace`. Un Home Assistant
   simulé en HTTP répond « Entity not found » : l'incident doit s'ouvrir
   dégradé, devenir critique après 10 minutes, se résoudre au retour de la
