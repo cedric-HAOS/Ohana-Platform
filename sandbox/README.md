@@ -125,6 +125,13 @@ simulé via le descripteur de l'Agent ; cinq jours sont reconstruits, les
 jours mesurés par l'Agent sont gardés, la croissance du disque est signalée
 sans incident ni réparation, et aucune nouvelle demande ne suit.
 
+`agent-component-stale` (Phase 5) déclare les vitaux réels de l'Agent et fait
+taire la boucle d'administration au-delà de sa borne. Un incident
+`host.health` (`agent_components_stale`) doit s'ouvrir, confirmé par la sonde
+`agent.vitals` sans IA, puis se résoudre seul quand la boucle bat de nouveau,
+avec une seule expertise. Seules les réponses systemctl sont simulées ; un
+Agent entièrement figé n'est pas couvert (il relève de Vision).
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

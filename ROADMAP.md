@@ -1106,6 +1106,11 @@ faute de dérive réelle. Détail :
 
 # Phase 5 — Ohana supervise Ohana
 
+Suivi : [Phase 5 — Ohana supervise Ohana](docs/Phase-5-Ohana-supervise-Ohana.md)
+(démarrée le 28 septembre 2026). Choix de l'utilisateur : un Agent figé est
+détecté, jamais redémarré automatiquement ; une panne de Vision ouvre un
+incident Tsunade sans réparation au catalogue.
+
 ## Objectif
 
 Faire des composants Ohana eux-mêmes des éléments observables de Konoha, **sans construire immédiatement une introspection complète de chaque processus interne**.

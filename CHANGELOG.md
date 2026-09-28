@@ -6,6 +6,13 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Phase 5 démarrée : document de suivi
+  `docs/Phase-5-Ohana-supervise-Ohana.md`, lien et choix de l'utilisateur
+  dans la roadmap.
+- Sandbox : scénario `agent-component-stale` (un composant interne de
+  l'Agent muet ouvre un incident `host.health` déterministe, résolu à sa
+  reprise ; Agent 1.39.0 échoue).
+
 ## [1.0.132] - 2026-09-28
 
 ### Composition
