@@ -571,8 +571,8 @@ Restent à suivre :
   après correction de LINKY-01.
 
 Traités le 28 septembre (contrôle manuel des journaux de 12:08), publiés
-dans Platform 1.0.131 (Agent 1.38.1, Vision 1.29.1) et Katsuyu 0.8.20, à
-déployer :
+dans Platform 1.0.131 (Agent 1.38.1, Vision 1.29.1) et Katsuyu 0.8.20,
+déployés le 28 septembre :
 
 - délais de livraison Agent → Vision : un seul depuis le déploiement de
   Platform 1.0.130 (10:23:58, pendant le premier checkpoint après
@@ -1472,7 +1472,24 @@ L’existence du fichier de sauvegarde n’est pas une validation suffisante.
 - alertes sur dernier test trop ancien ;
 - simulations régulières ;
 - tests plus complets de restauration HAOS ;
-- intégration à la maintenance préventive.
+- intégration à la maintenance préventive ;
+- état iCloud exploitable par Tsunade et Vision (aujourd'hui publié
+  seulement vers Home Assistant).
+
+Constat du 28 septembre : la session iCloud de rclone sur INFRA-01 avait
+expiré (« trust token expired, please reauth », HTTP 421 « Invalid global
+session ») sans que rien ne le signale. Elle a arrêté le premier
+déploiement de Platform 1.0.131, qui recopie la clé de récupération `age`
+dans iCloud.
+
+- Installer 1.15.2 (publié) : si l'identité `age` existait déjà, un échec de
+  cette copie devient un avertissement et la mise à jour continue ; il reste
+  bloquant pour une identité créée pendant la mise à jour ;
+- surveillance de la session iCloud (Agent, non publié, prévu dans
+  Agent 1.39.0) : contrôle au démarrage puis toutes les heures, publié par
+  MQTT à Home Assistant (« Connexion iCloud », « État iCloud » sur Ohana
+  Platform) pour une automatisation d'alerte ; scénario
+  `icloud-connectivity-mqtt`, Agent 1.38.1 échoue.
 
 ---
 
