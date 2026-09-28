@@ -6,7 +6,24 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
-- Phase 4, maintenance préventive (Agent, Vision, Shizune, non publiés) :
+## [1.0.132] - 2026-09-28
+
+### Composition
+
+Publiée le jour même de 1.0.131, à la demande de l'utilisateur.
+
+- Ohana-Agent 1.38.1 → 1.39.0 : maintenance préventive de Tsunade (trois
+  règles sur 7 jours, `GET /v1/preventive`, essentiel pour Shizune),
+  rattrapage de l'historique par Katsuyu (`trends.history_backfill`),
+  connexion iCloud surveillée et publiée à Home Assistant.
+- Ohana-Vision 1.29.1 → 1.30.0 : section « Maintenance préventive » avec les
+  règles, l'état du rattrapage et le bouton « Rattraper l'historique avec
+  Katsuyu ».
+- Ohana-Shizune 0.3.0 → 0.4.0 : carte « Prévention » dans l'essentiel.
+- Hors composition : Katsuyu 0.9.0 exécute le rattrapage. Déployer Platform
+  avant de mettre Katsuyu à jour ; un Katsuyu mis à jour avant l'Agent
+  continue sans ce type de travail.
+- Phase 4, maintenance préventive :
   Tsunade garde un historique journalier compact de la santé d'INFRA-01 et
   applique trois règles explicables sur 7 jours — croissance du disque
   (hausse médiane), redémarrages répétés, interruptions réseau répétées.
@@ -20,7 +37,7 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
   Shizune avec le vrai résumé de l'Agent. `repair-verification-probe` et
   `tsunade-observation-wiring` ferment aussi le moniteur préventif, qui partage
   la base de contrôle (Windows refusait la suppression du répertoire).
-- Phase 4, lot 3 (Agent, Katsuyu, Vision, non publiés) : les jours manquants
+- Phase 4, lot 3 : les jours manquants
   de l'historique du disque sont reconstruits par Katsuyu depuis les
   statistiques horaires de HA-01 (travail `trends.history_backfill`),
   automatiquement toutes les 6 h s'il manque un jour, ou depuis Vision ; un
