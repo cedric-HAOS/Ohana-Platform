@@ -158,6 +158,18 @@ si la lecture de Vision échoue. Captures et rapport dans `sandbox/runs/`.
 .\sandbox\run.ps1 run agent-silent
 ```
 
+`katsuyu-shizune-vitals` (Phase 5, lot 4) démarre les listeners HTTP de
+l'Agent (administration/worker et compagnon), la vraie boucle Katsuyu et
+l'application Vision avec son pont Shizune. Il vérifie le runtime déclaré
+par capacité (modèle IA et `age` absents, puis modèle déposé), le dernier job
+réussi daté à Paris, la passerelle Shizune `unused` → `available` →
+`failing` et la dernière synchronisation de l'appareil, sans aucun incident.
+Agent 1.39.0, Katsuyu 0.9.0 et Vision 1.30.0 échouent chacun au scénario.
+
+```powershell
+.\sandbox\run.ps1 run katsuyu-shizune-vitals
+```
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

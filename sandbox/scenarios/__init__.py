@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "katsuyu-shizune-vitals": (
+        "scenarios.katsuyu_shizune_vitals",
+        "Phase 5 : runtime et dernier job de Katsuyu, passerelle et synchronisation Shizune.",
+    ),
     "agent-silent": (
         "scenarios.agent_silent",
         "Phase 5 : Vision détecte l'Agent silencieux et avertit sans événement Agent.",

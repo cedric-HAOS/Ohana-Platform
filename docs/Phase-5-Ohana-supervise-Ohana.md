@@ -46,7 +46,7 @@ l'observation des autres.
 | 1 — Vitaux de l'Agent | dernière activité utile des composants internes critiques | commits Agent 96773aa, Platform 56538e9 présents dans les références locales origin/main ; non publié |
 | 2 — L'Agent observe Vision | démarrage sans Vision, sonde HTTP et ingestion, notification d'escalade | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
 | 3 — Vision observe l'Agent | « Agent silencieux » calculé par Vision avec sa propre horloge | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
-| 4 — Katsuyu et Shizune | dernier travail réussi et runtime par capacité ; passerelle et dernière synchronisation | à faire |
+| 4 — Katsuyu et Shizune | dernier travail réussi et runtime par capacité ; passerelle et dernière synchronisation | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
 | 5 — Vision, Sandbox, documentation | section « Ohana » dans Vision, scénarios, validations réelles | à faire |
 
 ### Lot 1 — vitaux de l'Agent
@@ -223,14 +223,68 @@ serveur). Rapport : `sandbox/runs/20260928-164951-d94e6e46/report.json`.
 
 Publication, déploiement et panne réelle contrôlée sur Konoha restent à faire.
 
+### Lot 4 — Katsuyu et Shizune
+
+Choix : l'absence de Katsuyu (Bubule éteint) ou de Shizune est normale ; elle
+est **informative**, sans incident Tsunade ni réparation.
+
+**Katsuyu — runtime par capacité.** Katsuyu contrôle à bas coût le runtime
+local des capacités qui en dépendent et le déclare à l'Agent :
+
+| Capacité | Runtime contrôlé | États |
+| --- | --- | --- |
+| `ai.inference` | moteur llama-server, modèle IA | `missing` (fichier absent), `unverified` (présent, SHA-256 vérifiée au premier job), `ready` (vérifié), `failed` (empreinte invalide, moteur arrêté ou lent au démarrage) |
+| `backup.encrypt`, `backup.infra` | binaire `age` (chemin configuré ou `PATH`) | `ready`, `missing` |
+
+Les autres capacités n'ont pas de runtime local à déclarer. Envoi après
+l'enregistrement, après chaque job et, au repos, toutes les 5 minutes si
+l'état a changé. Route worker dédiée `POST /v1/jobs/workers/runtimes` :
+un ré-enregistrement périodique aurait effacé `woken_by_ohana` après
+l'échéance de réveil, et l'Agent n'aurait plus éteint Bubule. La réponse
+d'enregistrement reste identique, Katsuyu 0.9.0 la lisant strictement.
+L'Agent 1.39.0 répond 401 à cette route inconnue : Katsuyu la redemande
+alors toutes les heures, sans avertissement répété, et reprend dès la mise à
+jour de l'Agent sans redémarrage.
+
+**Katsuyu — dernier travail.** `GET /v1/jobs/workers` ajoute pour chaque
+worker `runtimes`, `runtimes_reported_at` et `activity` : par capacité
+annoncée, dernier job réussi, dernier échec (`FAILED` ou `TIMEOUT`, avec le
+message), à l'heure de Paris. Calcul à la lecture sur les jobs conservés
+(30 jours) : au-delà, la date redevient inconnue, jamais inventée. Tri par
+instant (`julianday`), correct au changement d'heure.
+
+**Shizune — passerelle et synchronisation.** Vision mesure son pont
+`/api/shizune` vers l'Agent (`shizune_gateway` dans
+`GET /api/runtime/vitals`) : `unconfigured`, `unused` (aucun appel depuis le
+démarrage), `available`, `failing`, dernier succès et dernier échec avec la
+cause. Un refus de l'Agent (4xx, session révoquée) prouve que le pont
+fonctionne ; seuls un Agent injoignable ou une 5xx comptent comme panne.
+État en mémoire : un redémarrage de Vision repart sans preuve. La dernière
+synchronisation d'un appareil est le `last_seen_at` de l'Agent
+(`GET /v1/companions`), mis à jour à chaque appel authentifié ; il est
+désormais exposé à l'heure de Paris (il sortait en UTC).
+
+Sandbox **`katsuyu-shizune-vitals` PASS** : Agent HTTP (listeners
+administration/worker et compagnon), boucle `KatsuyuWorker` et vrais
+gestionnaires sur HTTP, application Vision et vrai `AgentCompanionClient`.
+Modèle et `age` absents → `missing` avec la cause ; job `system.health` →
+dernier succès daté à Paris ; modèle déposé → `unverified` sans redémarrage ;
+passerelle `unused` → `available` → `failing` (502) à l'arrêt du listener
+compagnon ; dernière synchronisation de l'appareil à Paris ; aucun incident.
+Échoue sur Agent 1.39.0 (`activity` absent, route refusée en 401),
+Katsuyu 0.9.0 (aucun rapport de runtime) et Vision 1.30.0 (vitaux absents).
+
+Tests : Agent **1 751 PASS, 1 skipped** ; Katsuyu **224 PASS** ; Vision
+**916 PASS** ; lint et format conformes.
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |
 | --- | --- | --- |
 | Agent expose un état vital exploitable | `agent-component-stale` (lot 1) | à valider après déploiement |
 | Vision expose un état vital exploitable | `vision-startup-recovery` (lot 2) | à valider |
-| Katsuyu expose un état vital exploitable | à venir (lot 4) | à valider |
-| Shizune expose un état vital exploitable | à venir (lot 4) | à valider |
+| Katsuyu expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | à valider |
+| Shizune expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | à valider |
 | La dernière activité repère un composant silencieusement figé | `agent-component-stale`, `agent-silent` (absence de livraison vue de Vision) | à valider |
 | Une défaillance Ohana produit une observation exploitable | `agent-component-stale`, `vision-startup-recovery` | à valider |
 | L'indisponibilité d'un composant n'empêche pas d'observer les autres | `vision-startup-recovery` : planificateur et santé actifs sans Vision | à valider |

@@ -6,6 +6,9 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Phase 5, lot 4 : scénario `katsuyu-shizune-vitals`, Agent HTTP, worker
+  Katsuyu et pont Shizune de Vision réels ; runtimes et dernier job par
+  capacité, passerelle et dernière synchronisation Shizune, aucun incident.
 - Phase 5, lot 3 : scénario `agent-silent`, Vision HTTP/SQLite et Chromium
   sans API Agent ; silence détecté avec l'horloge de Vision, avertissement
   sans événement entrant, reprise et distinction d'une panne de lecture.
