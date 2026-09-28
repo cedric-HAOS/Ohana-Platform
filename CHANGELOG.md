@@ -6,6 +6,30 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.131] - 2026-09-28
+
+### Composition
+
+Publiée le jour même de 1.0.130, au titre de l'exception « défaut constaté
+en production » de la politique de versions.
+
+- Ohana-Agent 1.38.0 → 1.38.1 :
+  - pages lisibles pendant le traitement d'un résultat Katsuyu : les lectures
+    d'incidents et de Shizune n'attendent plus le cycle worker (seize 502 de
+    Vision le 28 septembre, jusqu'à 38 s de verrou) ;
+  - journal d'INFRA-01 allégé : plus de ligne `INFO` par tâche planifiée
+    réussie (environ 26 000 lignes par jour) ;
+  - télémétrie Home Assistant dégradée 10 minutes quand l'entité manque
+    pendant un redémarrage (SUN-01 critique à tort pendant la mise à jour
+    d'HA-01) ;
+  - résolution manuelle déclarable jusqu'à 10 minutes après la résolution ;
+    dernière réussite d'une réparation connue datée de la résolution.
+- Ohana-Vision 1.29.0 → 1.29.1 : « Réactiver » accessible dans « Contrôles,
+  bilan et réparations connues », chargement indiqué, formulaire manuel
+  après la résolution ; cause d'un 502 de l'Agent journalisée.
+- Shizune 0.3.0 inchangé. Hors composition : Katsuyu 0.8.20 lit la fenêtre
+  entière des journaux du Supervisor (ZWAVE-01 tronqué chaque jour depuis le
+  20 septembre).
 - Sandbox : scénario `slow-completion-reads`. L'écriture d'une revue de
   journaux prend 3 s, comme sur la carte SD d'INFRA-01 ; la liste et le
   détail des incidents, la synthèse et les demandes Shizune, lus en même
