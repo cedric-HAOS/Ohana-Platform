@@ -110,20 +110,51 @@ publié par l'Agent depuis des mois : ce sont des données déjà disponibles.
   déclare un type inconnu. Katsuyu se réenregistre désormais sans les types
   que l'Agent nomme ; déployer l'Agent avant Katsuyu reste l'ordre normal.
 
+## Déploiement et premiers constats réels — 28 septembre 2026
+
+Publiées le 28 septembre à la demande de l'utilisateur : Agent 1.39.0,
+Vision 1.30.0, Katsuyu 0.9.0, Shizune 0.4.0, Platform 1.0.132. Agent démarré
+à 15:05:02 sur INFRA-01.
+
+| Étape | Heure |
+| --- | --- |
+| Katsuyu 0.9.0 enregistré avec `trends.history_backfill` | 15:09:33 |
+| Rattrapage demandé automatiquement (tâche 5 min après le démarrage) | 15:10:29 |
+| Rattrapage terminé par Katsuyu (Bubule) | 15:10:30 |
+
+- Katsuyu a lu dans HA-01 **720 lignes horaires sur 30 jours** (29 août →
+  28 septembre) et renvoyé 30 jours. Le capteur réel est
+  `sensor.ohana_host_utilisation_disque_racine` et non
+  `sensor.ohana_host_disk_usage` : la recherche par `unique_id` dans le
+  registre des entités était nécessaire.
+- 6 jours reconstruits dans la fenêtre, le jour en cours mesuré par l'Agent.
+  Disque d'INFRA-01 entre 24,2 et 25,6 % sur 30 jours, légère baisse le 26 :
+  médiane 0 point par jour, règle « Normal ». Aucun redémarrage sur 7 jours ;
+  SHE-04 : 2 interruptions réseau (seuil 3).
+- Synthèse réelle : « 4 incidents en cours, suivis par Tsunade. / Aucune
+  dérive détectée. / Aucune intervention nécessaire. » Les 4 incidents sont
+  les contrôles de journaux déjà ouverts (ZWAVE-01, INFRA-01, HA-01,
+  LINKY-01) ; la maintenance préventive n'en a créé aucun.
+- Vision : section, règles, faits par nœud et état du rattrapage conformes.
+  Journal de l'Agent sans erreur ni échec de livraison vers Vision.
+- Défaut mineur constaté : le pied de page de Vision affichait encore
+  Shizune v0.3.0 (cache du navigateur) alors que 0.4.0 est servie. Corrigé
+  localement (Vision b366997), pour la prochaine publication.
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |
 | --- | --- | --- |
-| Au moins trois tendances simples détectées de manière reproductible | `preventive-trends` : disque, redémarrages, réseau ; même verdict après redémarrage de l'Agent | à valider après déploiement |
-| Une évolution normale n'est pas transformée en anomalie | hausse lente, saut unique au-dessus de 70 % | à valider |
-| Règles ou seuils explicables | chaque règle est énoncée avec son seuil et ses preuves | à valider |
-| Données déjà disponibles privilégiées | santé de l'hôte et incidents existants | acquis par conception |
-| Traitement historique lourd déportable vers Katsuyu | `preventive-backfill`, `--full-stack` : 31 jours de statistiques horaires lus et agrégés par Katsuyu | à valider (HA-01 réel) |
+| Au moins trois tendances simples détectées de manière reproductible | `preventive-trends` : disque, redémarrages, réseau ; même verdict après redémarrage de l'Agent | à provoquer (aucune dérive réelle au 28 septembre) |
+| Une évolution normale n'est pas transformée en anomalie | hausse lente, saut unique au-dessus de 70 % | **acquis** : 30 jours réels de disque (baisse du 26 incluse) « Normal » |
+| Règles ou seuils explicables | chaque règle est énoncée avec son seuil et ses preuves | **acquis** : règles et faits par nœud affichés dans Vision |
+| Données déjà disponibles privilégiées | santé de l'hôte et incidents existants | **acquis** : santé de l'hôte, incidents, statistiques HA-01 existantes |
+| Traitement historique lourd déportable vers Katsuyu | `preventive-backfill`, `--full-stack` : 31 jours de statistiques horaires lus et agrégés par Katsuyu | **acquis** : 720 lignes de HA-01 agrégées par Katsuyu à 15:10 |
 | Indisponibilité de Katsuyu sans effet sur les contrôles simples | Agent sans file Katsuyu ; travail de rattrapage en attente | à valider |
 | Synthèse courte dans Shizune | carte « Prévention » (`--full-stack`) | à valider |
-| Détail dans Vision | section « Maintenance préventive » (`--full-stack`) | à valider |
-| Situation stable : « aucune intervention nécessaire » | semaine normale | à valider |
-| Aucune réparation déclenchée par la seule maintenance préventive | aucune ligne d'incident, de réparation ou de demande créée | à valider |
+| Détail dans Vision | section « Maintenance préventive » (`--full-stack`) | **acquis** |
+| Situation stable : « aucune intervention nécessaire » | semaine normale | **acquis** |
+| Aucune réparation déclenchée par la seule maintenance préventive | aucune ligne d'incident, de réparation ou de demande créée | **acquis** jusqu'ici (aucun incident ni demande créés) |
 
 ### Données réelles au démarrage
 
