@@ -108,6 +108,13 @@ SCENARIOS = {
             "rechargent la chronologie 24 h, latences d'ingestion mesurées."
         ),
     ),
+    "vision-checkpoint-off-ingestion": (
+        "scenarios.vision_checkpoint_off_ingestion",
+        (
+            "Vision ne recopie jamais le WAL SQLite dans vision.db pendant "
+            "une requête d'ingestion : la carte SD d'INFRA-01 la bloquait 5 s."
+        ),
+    ),
     "recurring-log-review": (
         "scenarios.recurring_log_review",
         (

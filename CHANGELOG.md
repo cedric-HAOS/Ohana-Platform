@@ -6,6 +6,11 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `vision-checkpoint-off-ingestion`. 600 observations
+  franchissent plusieurs fois le seuil de checkpoint automatique de SQLite, et
+  `vision.db` ne doit jamais être écrit pendant une requête d'ingestion. Le
+  WAL doit aussi être recopié à l'arrêt. Vision 1.28.0 écrit `vision.db`
+  pendant 7 requêtes et échoue.
 - Sandbox : scénario `manual-resolution` (Phase 3, lot 3). Une action
   manuelle est déclarée, confirmée par Shikamaru, puis conservée seulement
   après accord, avec l'avertissement sur la causalité. La piste ressemble à

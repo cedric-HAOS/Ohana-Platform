@@ -320,7 +320,11 @@ def main() -> int:
         if not (katsuyu_root / "ohana_katsuyu").is_dir():
             raise SystemExit(f"Checkout Katsuyu invalide : {katsuyu_root}")
         sys.path.insert(0, str(katsuyu_root))
-    if args.scenario in {"all", "vision-ingestion-load"}:
+    if args.scenario in {
+        "all",
+        "vision-ingestion-load",
+        "vision-checkpoint-off-ingestion",
+    }:
         _add_python_repo(args.vision, "ohana_vision")
     if args.full_stack:
         _add_python_repo(args.vision, "ohana_vision")
