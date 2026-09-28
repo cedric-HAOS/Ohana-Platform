@@ -164,6 +164,13 @@ SCENARIOS = {
             "le traitement lent d'un résultat Katsuyu (502 du 28 septembre)."
         ),
     ),
+    "icloud-connectivity-mqtt": (
+        "scenarios.icloud_connectivity_mqtt",
+        (
+            "Session iCloud expirée, reconnectée puis lente : état publié à Home "
+            "Assistant par MQTT sans bloquer le planificateur."
+        ),
+    ),
     "ambiguous-katsuyu-cycle": (
         "scenarios.ambiguous_katsuyu_cycle",
         (

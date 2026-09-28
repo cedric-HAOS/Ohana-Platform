@@ -6,6 +6,15 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `icloud-connectivity-mqtt`. Le contrôle iCloud et le
+  publieur MQTT réels de l'Agent tournent avec un rclone et un broker
+  simulés : jeton expiré au démarrage (message réel d'INFRA-01 du 28
+  septembre), reconnexion une heure plus tard, puis iCloud lent (2 s,
+  HTTP 421). Home Assistant doit découvrir « Connexion iCloud » et « État
+  iCloud » sur Ohana Platform, recevoir chaque état retenu, et le tick du
+  planificateur ne doit ni attendre rclone ni lancer un second contrôle.
+  Agent 1.38.1 n'a pas ce contrôle et échoue.
+
 ## [1.0.131] - 2026-09-28
 
 ### Composition
