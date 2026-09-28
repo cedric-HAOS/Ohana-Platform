@@ -6,6 +6,10 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : `manual-resolution` déclare aussi une action juste après le
+  retour à l'état sain. Elle doit être acceptée comme déclarée après coup.
+  Agent 1.38.0 la refuse et le scénario échoue.
+
 ## [1.0.130] - 2026-09-28
 
 ### Composition

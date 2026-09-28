@@ -118,6 +118,28 @@ def run() -> dict:
                     and unconfirmed.experience_candidate is None,
                 )
             )
+
+            # Konoha, 28 September: the service fixed by hand recovered before
+            # the declaration was sent, and the closed incident refused it.
+            late = lab.observe(ObservationStatus.UNHEALTHY)
+            lab.observe(ObservationStatus.HEALTHY)
+            try:
+                late_action = _declare(lab, late, "Redémarrage de dnsmasq à la main")
+            except ValueError as error:
+                late_action = None
+                details["déclaration tardive"] = f"refusée : {error}"
+            late_incident = lab.incident(late.incident_id)
+            late_candidate = late_incident.experience_candidate
+            checks.append(
+                (
+                    "déclaration juste après le retour sain : acceptée comme telle",
+                    late_action is not None
+                    and late_action.status == "confirmed"
+                    and late_candidate is not None
+                    and "déclarée après" in (late_candidate.caution or "")
+                    and "ne prouve pas à elle seule" in (late_candidate.caution or ""),
+                )
+            )
             details["piste"] = f"« {COMMAND} » conservée comme note, jamais exécutée"
         finally:
             lab.incidents.close()
