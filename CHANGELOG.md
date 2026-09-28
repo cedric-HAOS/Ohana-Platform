@@ -20,6 +20,16 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
   Shizune avec le vrai résumé de l'Agent. `repair-verification-probe` et
   `tsunade-observation-wiring` ferment aussi le moniteur préventif, qui partage
   la base de contrôle (Windows refusait la suppression du répertoire).
+- Phase 4, lot 3 (Agent, Katsuyu, Vision, non publiés) : les jours manquants
+  de l'historique du disque sont reconstruits par Katsuyu depuis les
+  statistiques horaires de HA-01 (travail `trends.history_backfill`),
+  automatiquement toutes les 6 h s'il manque un jour, ou depuis Vision ; un
+  jour mesuré par l'Agent n'est jamais remplacé. Katsuyu se réenregistre sans
+  les types de travail qu'un Agent plus ancien ne connaît pas.
+- Sandbox : scénario `preventive-backfill` (vrai gestionnaire Katsuyu, Home
+  Assistant simulé, Katsuyu d'abord absent) ; `--full-stack` demande le
+  rattrapage depuis Vision et le fait exécuter par le vrai worker Katsuyu en
+  HTTPS contre un Home Assistant WebSocket local.
 - Sandbox : scénario `icloud-connectivity-mqtt`. Le contrôle iCloud et le
   publieur MQTT réels de l'Agent tournent avec un rclone et un broker
   simulés : jeton expiré au démarrage (message réel d'INFRA-01 du 28

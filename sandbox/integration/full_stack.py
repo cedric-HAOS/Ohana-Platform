@@ -27,7 +27,7 @@ from ohana_agent.infrastructure.repository import InfrastructureConfigurationRep
 from ohana_agent.jobs.log_sources import LogSourceBroker
 from ohana_agent.jobs.repository import DistributedJobRepository
 from ohana_agent.observation import Observation, ObservationStatus
-from ohana_agent.plugins.backup.config import BackupConfig
+from ohana_agent.plugins.backup.config import BackupConfig, BackupTarget
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
 from ohana_agent.tsunade.local_time import paris_now
@@ -40,6 +40,7 @@ from scenarios._support import NoProbes
 from scenarios.supervised_repair_cycle import DnsmasqStopped
 from ohana_agent.tsunade.incident_summary import incident_assessment
 
+from integration.home_assistant import HomeAssistantHistory
 from integration.lifecycle import certificate, stop_worker
 
 DEFAULT_MODEL = "Ministral-3-14B-Reasoning-2512-Q4_K_M.gguf"
@@ -213,6 +214,57 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
         shizune.close()
 
 
+def _preventive_backfill(page, jobs, home_assistant, worker, output, report, check):
+    """Phase 4 lot 3: Vision → Agent → Katsuyu (HTTPS) → Home Assistant."""
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    section = page.locator("#tsunade-preventive")
+    button = section.locator("[data-tsunade-preventive-backfill]")
+    expect(button).to_be_enabled(timeout=15000)
+    with page.expect_response(
+        lambda response: (
+            response.url.endswith("/tsunade/preventive/backfill")
+            and response.request.method == "POST"
+        )
+    ) as response_info:
+        button.click()
+    job = _wait(
+        "rattrapage Katsuyu",
+        lambda: (
+            job
+            if (job := jobs.latest_for_incident("trends.history_backfill", None))
+            and job.status.value in {"SUCCEEDED", "FAILED", "TIMEOUT"}
+            else None
+        ),
+        timeout=60,
+        worker=worker,
+        page=page,
+    )
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    expect(section).to_contain_text("Dernier rattrapage : terminé", timeout=15000)
+    section.locator("details").evaluate("element => { element.open = true; }")
+    expect(section).to_contain_text(
+        "sur 7 jours (dont 2 reconstruit(s) depuis Home Assistant)"
+    )
+    section.scroll_into_view_if_needed()
+    page.screenshot(path=str(output / "vision-preventive-backfill.png"))
+    report["screenshots"].append("vision-preventive-backfill.png")
+    report["backfill_job_id"] = str(job.job_id)
+    check(
+        "Rattrapage demandé dans Vision, exécuté par Katsuyu en HTTPS depuis HA",
+        response_info.value.ok
+        and job.status.value == "SUCCEEDED"
+        and job.result["entity_id"] == "sensor.ohana_host_utilisation_disque_racine"
+        and home_assistant.requests
+        == [
+            "auth",
+            "config/entity_registry/list",
+            "recorder/statistics_during_period",
+        ],
+    )
+
+
 def run(*, args):
     stamp = datetime.now(ZoneInfo("Europe/Paris")).strftime("%Y%m%d-%H%M%S")
     output = args.report_dir.resolve() / f"{stamp}-{uuid4().hex[:8]}"
@@ -272,6 +324,28 @@ def run(*, args):
                 "because its state is unavailable\n"
             )
 
+            # HA-01 for the Phase 4 history backfill: the two oldest days of
+            # the window exist only there; the overlapping days (10 %) must
+            # never replace what the Agent measured.
+            today = datetime.now(ZoneInfo("Europe/Paris")).date()
+            ha_token = secrets.token_urlsafe(24)
+            home_assistant = HomeAssistantHistory(
+                {
+                    (today - timedelta(days=offset)).isoformat(): value
+                    for offset, value in (
+                        (6, 67.6),
+                        (5, 68.8),
+                        (4, 10.0),
+                        (3, 10.0),
+                        (2, 10.0),
+                        (1, 10.0),
+                    )
+                },
+                ha_token,
+            )
+            home_assistant.start()
+            stack.callback(home_assistant.stop)
+
             def read_journal(_start, _end, limit):
                 payload = journal.encode("utf-8")
                 return payload[-limit:].decode("utf-8", errors="replace"), len(
@@ -296,7 +370,23 @@ def run(*, args):
                 log_timeout_seconds=args.stack_timeout,
                 wake_enabled=False,
                 wake_shutdown_after_completion=False,
-                log_source_broker=LogSourceBroker(BackupConfig(), jobs, read_journal),
+                log_source_broker=LogSourceBroker(
+                    BackupConfig(
+                        targets=(
+                            BackupTarget(
+                                id="ha-01",
+                                label="HA-01 Sandbox",
+                                url=home_assistant.url,
+                                schedule="0 3 * * *",
+                                token=ha_token,
+                                timeout=10,
+                            ),
+                        )
+                    ),
+                    jobs,
+                    read_journal,
+                ),
+                agent_node_id="infra-01",
                 expertise_service=TsunadeExpertiseService(
                     incidents=incidents,
                     investigations=NoProbes(),
@@ -823,6 +913,7 @@ def run(*, args):
                 and len(service.list_accepted_log_signatures()["signatures"]) >= 1,
             )
             _preventive_views(page, context, browser, preventive, service, output, report, check)
+            _preventive_backfill(page, jobs, home_assistant, worker, output, report, check)
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page.set_viewport_size({"width": width, "height": height})
                 expect(page.locator("#incidents-heading")).to_be_visible()

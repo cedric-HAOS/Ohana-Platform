@@ -23,8 +23,8 @@ réparer.
 - **Aucune action.** La maintenance préventive n'ouvre pas d'incident, ne crée
   ni proposition ni demande, et ne déclenche aucune réparation.
 - **Sans Katsuyu ni IA.** Les trois règles sont évaluées à la lecture, en
-  quelques requêtes SQLite. Katsuyu reste réservé à un traitement historique
-  lourd (lot 3).
+  quelques requêtes SQLite. Katsuyu ne sert qu'au rattrapage de l'historique
+  (lot 3), jamais à l'évaluation.
 
 ### Les trois tendances (fenêtre de 7 jours)
 
@@ -69,13 +69,46 @@ stable pendant un incident.
 
 ## Lots
 
-- **Lot 1 — règles et synthèse (Agent).** Agent 6ef15a7, 9136d93, 154611f.
-- **Lot 2 — Vision et Shizune.** Section Vision et carte Shizune.
-- **Lot 3 — traitement historique déporté vers Katsuyu.** À définir.
+- **Lot 1 — règles et synthèse (Agent).** Agent 6ef15a7, 9136d93, 154611f,
+  78e60f3.
+- **Lot 2 — Vision et Shizune.** Vision 4bbf4e8, carte Shizune.
+- **Lot 3 — rattrapage de l'historique par Katsuyu.** Agent 6373ab0,
+  Katsuyu add0330 et 45d1551, Vision 023eaf3 (choix de l'utilisateur du
+  28 septembre).
 
-Sandbox : scénario `preventive-trends` (semaine normale, trois dérives,
-redémarrage de l'Agent, lectures sans effet) et `--full-stack` (section
-Vision dans Chromium, carte Shizune avec le vrai résumé de l'Agent).
+Sandbox : `preventive-trends` (semaine normale, trois dérives, redémarrage de
+l'Agent, lectures sans effet), `preventive-backfill` (vrai gestionnaire
+Katsuyu, Home Assistant simulé) et `--full-stack` (section Vision, carte
+Shizune, rattrapage demandé depuis Vision et exécuté par le vrai worker
+Katsuyu en HTTPS contre un Home Assistant WebSocket local).
+
+### Lot 3 — rattrapage de l'historique
+
+La règle du disque demande 4 jours mesurés ; l'Agent ne mesure que depuis son
+déploiement. Home Assistant (HA-01) conserve les statistiques horaires à long
+terme du capteur MQTT `ohana_host_disk_usage` (`state_class: measurement`),
+publié par l'Agent depuis des mois : ce sont des données déjà disponibles.
+
+- Travail Katsuyu `trends.history_backfill` : descripteur lié au travail
+  (`GET /v1/jobs/{id}/history-source/ha-01`, même cible HAOS et même jeton
+  que les sources de journaux), registre des entités pour retrouver
+  l'`entity_id` à partir de l'`unique_id`, puis jusqu'à 31 jours de
+  statistiques horaires (`recorder/statistics_during_period`). Les lignes
+  horaires restent sur le PC ; seul un jour de Paris par ligne revient
+  (minimum, maximum, dernière moyenne, heures).
+- Tsunade enregistre ces jours avec la source `home_assistant` par
+  `INSERT OR IGNORE` : un jour mesuré par l'Agent et le jour en cours ne sont
+  jamais remplacés.
+- Déclenchement : tâche toutes les 6 h (5 min après le démarrage), seulement
+  si un jour passé de la fenêtre de 7 jours manque et si aucune demande n'a
+  eu lieu depuis 24 h ; bouton « Rattraper l'historique avec Katsuyu » dans
+  Vision (`POST /v1/preventive/backfill`).
+- Katsuyu absent ou endormi : le travail attend jusqu'à 12 h ; les contrôles
+  simples répondent avec ce que l'Agent a mesuré (« Historique insuffisant »
+  tant qu'il manque des jours).
+- Compatibilité : un Agent refuse l'enregistrement complet d'un worker qui
+  déclare un type inconnu. Katsuyu se réenregistre désormais sans les types
+  que l'Agent nomme ; déployer l'Agent avant Katsuyu reste l'ordre normal.
 
 ## Critères de sortie
 
@@ -85,8 +118,8 @@ Vision dans Chromium, carte Shizune avec le vrai résumé de l'Agent).
 | Une évolution normale n'est pas transformée en anomalie | hausse lente, saut unique au-dessus de 70 % | à valider |
 | Règles ou seuils explicables | chaque règle est énoncée avec son seuil et ses preuves | à valider |
 | Données déjà disponibles privilégiées | santé de l'hôte et incidents existants | acquis par conception |
-| Traitement historique lourd déportable vers Katsuyu | — | lot 3 |
-| Indisponibilité de Katsuyu sans effet sur les contrôles simples | Agent sans file Katsuyu | à valider |
+| Traitement historique lourd déportable vers Katsuyu | `preventive-backfill`, `--full-stack` : 31 jours de statistiques horaires lus et agrégés par Katsuyu | à valider (HA-01 réel) |
+| Indisponibilité de Katsuyu sans effet sur les contrôles simples | Agent sans file Katsuyu ; travail de rattrapage en attente | à valider |
 | Synthèse courte dans Shizune | carte « Prévention » (`--full-stack`) | à valider |
 | Détail dans Vision | section « Maintenance préventive » (`--full-stack`) | à valider |
 | Situation stable : « aucune intervention nécessaire » | semaine normale | à valider |
@@ -97,6 +130,6 @@ Vision dans Chromium, carte Shizune avec le vrai résumé de l'Agent).
 Lecture seule du 28 septembre (historique des incidents) : sur les 7 derniers
 jours, aucun équipement n'atteint 3 interruptions réseau (SUN-01 : 1,
 SHE-04 : 2). ESP-02 aurait été signalé début septembre (3 interruptions du
-5 au 7 septembre). L'historique du disque
-commence au déploiement : 4 jours sont nécessaires avant la première
-évaluation.
+5 au 7 septembre). L'Agent ne mesure le disque que depuis son déploiement ;
+le rattrapage Katsuyu doit reconstruire les jours précédents depuis HA-01 au
+premier passage du worker, sans attendre 4 jours.

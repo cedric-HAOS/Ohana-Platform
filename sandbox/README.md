@@ -117,6 +117,14 @@ dérivante : disque, redémarrages et interruptions réseau signalés, même
 verdict après redémarrage de l'Agent, aucune ligne d'incident, de réparation
 ou de demande créée. L'Agent n'a pas de file Katsuyu.
 
+`preventive-backfill` (Phase 4) démarre avec deux jours mesurés par l'Agent
+(« Historique insuffisant ») et Katsuyu absent : un seul travail de
+rattrapage attend, les contrôles répondent. Le vrai gestionnaire Katsuyu lit
+ensuite le registre et les statistiques horaires d'un Home Assistant
+simulé via le descripteur de l'Agent ; cinq jours sont reconstruits, les
+jours mesurés par l'Agent sont gardés, la croissance du disque est signalée
+sans incident ni réparation, et aucune nouvelle demande ne suit.
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

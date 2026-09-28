@@ -13,7 +13,11 @@ def main() -> None:
     config = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
     sys.path.insert(0, config["checkout"])
     from ohana_katsuyu.ai import AiInferenceHandler
-    from ohana_katsuyu.handlers import LogsHealthCheckHandler, LogsInvestigateHandler
+    from ohana_katsuyu.handlers import (
+        LogsHealthCheckHandler,
+        LogsInvestigateHandler,
+        TrendsHistoryBackfillHandler,
+    )
     from ohana_katsuyu.status import StatusStore
     from ohana_katsuyu.worker import AgentClient, KatsuyuWorker
 
@@ -31,6 +35,9 @@ def main() -> None:
         handlers={
             "logs.health_check": LogsHealthCheckHandler(client.read_log_source),
             "logs.investigate": LogsInvestigateHandler(client.read_log_source),
+            "trends.history_backfill": TrendsHistoryBackfillHandler(
+                client.read_history_source
+            ),
             "ai.inference": AiInferenceHandler(
                 runtime=Path(config["runtime"]),
                 model=Path(config["model"]),

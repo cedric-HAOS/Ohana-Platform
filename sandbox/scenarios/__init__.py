@@ -150,6 +150,13 @@ SCENARIOS = {
             "jours ; semaine normale « aucune intervention », sans Katsuyu."
         ),
     ),
+    "preventive-backfill": (
+        "scenarios.preventive_backfill",
+        (
+            "Phase 4 : jours manquants reconstruits par Katsuyu depuis les "
+            "statistiques Home Assistant ; sans Katsuyu, contrôles inchangés."
+        ),
+    ),
     "log-noise-triage": (
         "scenarios.log_noise_triage",
         (
