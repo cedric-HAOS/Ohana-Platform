@@ -1,5 +1,22 @@
 # Phase 4 — Maintenance préventive
 
+## Clôture — 28 septembre 2026
+
+**Phase 4 clôturée le 28 septembre 2026, à la demande de l'utilisateur :
+critères démontrés en Sandbox et en réel sur Konoha.** Publication :
+Platform 1.0.132 (Agent 1.39.0, Vision 1.30.0, Shizune 0.4.0) et Katsuyu
+0.9.0.
+
+Limite acceptée : parmi les trois tendances, seules les interruptions réseau
+ont été détectées en réel (SHE-04, coupure contrôlée). La croissance du disque
+et les redémarrages répétés sont démontrés en Sandbox ; Konoha ne dérivait pas
+(disque d'INFRA-01 stable autour de 25 % sur 30 jours, aucun redémarrage).
+Le remplacement prévu de la carte SD d'INFRA-01 fournira un cas réel de
+redémarrages ; il ne rouvre pas la phase.
+
+Reste hors phase : Vision b366997 (version de Shizune au pied de page lue sans
+cache), pour la prochaine publication.
+
 ## Cadre — 28 septembre 2026
 
 Phase démarrée après la clôture de la Phase 3. Référence :
@@ -171,7 +188,7 @@ contrôlée (prise débranchée par l'utilisateur) devait faire passer la règle
 
 | Critère | Sandbox | Réel (Konoha) |
 | --- | --- | --- |
-| Au moins trois tendances simples détectées de manière reproductible | `preventive-trends` : disque, redémarrages, réseau ; même verdict après redémarrage de l'Agent | **partiel** : interruptions réseau détectées en réel (SHE-04, 15:49) ; disque et redémarrages démontrés en Sandbox seulement |
+| Au moins trois tendances simples détectées de manière reproductible | `preventive-trends` : disque, redémarrages, réseau ; même verdict après redémarrage de l'Agent | **acquis avec limite** : interruptions réseau détectées en réel (SHE-04, 15:49) ; disque et redémarrages démontrés en Sandbox seulement |
 | Une évolution normale n'est pas transformée en anomalie | hausse lente, saut unique au-dessus de 70 % | **acquis** : 30 jours réels de disque (baisse du 26 incluse) « Normal » |
 | Règles ou seuils explicables | chaque règle est énoncée avec son seuil et ses preuves | **acquis** : règles et faits par nœud affichés dans Vision |
 | Données déjà disponibles privilégiées | santé de l'hôte et incidents existants | **acquis** : santé de l'hôte, incidents, statistiques HA-01 existantes |

@@ -1025,7 +1025,7 @@ Tsunade applique des règles simples et explicables.
 Katsuyu n’est utilisé que lorsqu’un traitement historique ou volumineux justifie réellement le déport.
 
 Suivi : [Phase 4 — Maintenance préventive](docs/Phase-4-Maintenance-preventive.md)
-(démarrée le 28 septembre 2026).
+(démarrée et clôturée le 28 septembre 2026).
 
 ---
 
@@ -1070,16 +1070,25 @@ Shizune fournit l’essentiel.
 
 ## Critères de sortie de la Phase 4
 
-- [ ] Au moins trois tendances simples peuvent être détectées de manière reproductible.
-- [ ] Une évolution normale n’est pas systématiquement transformée en anomalie.
-- [ ] Les règles ou seuils utilisés restent explicables.
-- [ ] Les données déjà disponibles sont privilégiées.
-- [ ] Un traitement historique lourd peut être déporté vers Katsuyu lorsqu’il le justifie.
-- [ ] L’indisponibilité de Katsuyu n’empêche pas les contrôles préventifs simples.
-- [ ] Une synthèse courte est disponible dans Shizune.
-- [ ] Le détail correspondant est disponible dans Vision.
-- [ ] Une situation stable peut produire explicitement « aucune intervention nécessaire ».
-- [ ] Aucune réparation n’est déclenchée automatiquement par la seule maintenance préventive.
+**Phase 4 clôturée le 28 septembre 2026** : lots 1 à 3 publiés dans
+Platform 1.0.132 (Agent 1.39.0, Vision 1.30.0, Shizune 0.4.0) et Katsuyu
+0.9.0, critères démontrés en Sandbox (`preventive-trends`,
+`preventive-backfill`, `--full-stack`) puis en réel sur Konoha. Limite
+acceptée : seules les interruptions réseau ont été détectées en réel (SHE-04) ;
+la croissance du disque et les redémarrages répétés sont démontrés en Sandbox,
+faute de dérive réelle. Détail :
+[Phase 4 — Maintenance préventive](docs/Phase-4-Maintenance-preventive.md).
+
+- [x] Au moins trois tendances simples peuvent être détectées de manière reproductible.
+- [x] Une évolution normale n’est pas systématiquement transformée en anomalie.
+- [x] Les règles ou seuils utilisés restent explicables.
+- [x] Les données déjà disponibles sont privilégiées.
+- [x] Un traitement historique lourd peut être déporté vers Katsuyu lorsqu’il le justifie.
+- [x] L’indisponibilité de Katsuyu n’empêche pas les contrôles préventifs simples.
+- [x] Une synthèse courte est disponible dans Shizune.
+- [x] Le détail correspondant est disponible dans Vision.
+- [x] Une situation stable peut produire explicitement « aucune intervention nécessaire ».
+- [x] Aucune réparation n’est déclenchée automatiquement par la seule maintenance préventive.
 
 ---
 
