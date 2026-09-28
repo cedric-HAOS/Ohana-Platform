@@ -6,6 +6,29 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.130] - 2026-09-28
+
+### Composition
+
+- Ohana-Agent 1.37.0 → 1.38.0 (Phase 3) :
+  - mémoire opérationnelle : chaque réparation connue compte ses tentatives,
+    réussites et échecs, avec son état actif, désactivé ou obsolète ;
+  - proposition fondée sur une réparation connue : même symptôme, même preuve
+    confirmée et même action, avec son historique dans la demande
+    d'autorisation, qui reste obligatoire ;
+  - résolution manuelle déclarée par l'utilisateur, vérifiée par Shikamaru et
+    conservée comme piste connue seulement après accord, jamais exécutée.
+- Ohana-Vision 1.28.0 → 1.29.0 : « Réparations connues » dans le bilan,
+  encadré « Réparation connue » sur une proposition, formulaire « J'ai
+  corrigé manuellement » ; le WAL SQLite n'est plus recopié dans `vision.db`
+  pendant une requête d'ingestion. Cette recopie bloquait l'ingestion plus de
+  5 s environ toutes les 4 minutes sur la carte SD d'INFRA-01, et l'Agent
+  abandonnait ses livraisons.
+- Shizune 0.3.0 inchangé. Hors composition : Katsuyu 0.8.19 date les lignes
+  d'add-on sans date (teleinfo2mqtt). Correction de la note 1.0.129 : le DNS
+  n'était pas la cause des trames Linky refusées. teleinfo2mqtt envoie vers
+  l'adresse IP, les refus n'avaient lieu que pendant les redémarrages de
+  l'Agent, et Katsuyu recomptait chaque jour tout le journal de l'add-on.
 - Sandbox : `log-noise-triage` rejoue LINKY-01 tel qu'en production, avec des
   lignes sans date et, le jour 2, un journal qui contient encore les refus de
   la veille. Le jour 2 ne doit rien recompter et l'incident doit se résoudre.
