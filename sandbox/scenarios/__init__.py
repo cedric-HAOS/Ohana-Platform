@@ -157,6 +157,13 @@ SCENARIOS = {
             "statistiques Home Assistant ; sans Katsuyu, contrôles inchangés."
         ),
     ),
+    "agent-component-stale": (
+        "scenarios.agent_component_stale",
+        (
+            "Phase 5 : un composant interne de l'Agent sans activité utile "
+            "ouvre un incident host.health déterministe, résolu à sa reprise."
+        ),
+    ),
     "log-noise-triage": (
         "scenarios.log_noise_triage",
         (
