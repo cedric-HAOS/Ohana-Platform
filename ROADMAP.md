@@ -583,6 +583,12 @@ Traités le 28 septembre, non publiés (contrôle manuel des journaux de
   `supervisor-log-window`, Katsuyu 0.8.19 échoue) ; l'Agent n'écrit plus
   une ligne `INFO` par tâche planifiée réussie (26 000 lignes par jour, dont
   14 500 pour `jobs.wake.dispatch`) ;
+- 502 de Vision sur la liste des incidents (16 entre 10:21 et 12:14, dont 8
+  entre 12:09 et 12:12) : le traitement d'un résultat Katsuyu tenait le
+  verrou du cycle worker jusqu'à 38 s, et chaque lecture de page l'attendait
+  pour régler la file. Les lectures n'attendent plus (Agent, scénario
+  `slow-completion-reads`, Agent 1.38.0 échoue) ; Vision journalise la cause
+  d'un 502 ;
 - LINKY-01 après Katsuyu 0.8.19 : la signature des 2 763 trames refusées a
   disparu ; restent deux refus datés des déploiements (27 septembre 20:41,
   28 septembre 10:16) et les coupures MQTT de la mise à jour d'HA-01

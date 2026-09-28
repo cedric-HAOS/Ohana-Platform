@@ -157,6 +157,13 @@ SCENARIOS = {
             "fenêtre couverte sans troncature ni erreur de la veille."
         ),
     ),
+    "slow-completion-reads": (
+        "scenarios.slow_completion_reads",
+        (
+            "Pages Vision et Shizune lisibles en moins d'une seconde pendant "
+            "le traitement lent d'un résultat Katsuyu (502 du 28 septembre)."
+        ),
+    ),
     "ambiguous-katsuyu-cycle": (
         "scenarios.ambiguous_katsuyu_cycle",
         (
