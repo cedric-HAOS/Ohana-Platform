@@ -942,36 +942,21 @@ Aucune commande libre saisie par l’utilisateur ne devient automatiquement une 
 
 ## Critères de sortie de la Phase 3
 
-Suivi au 27 septembre 2026 (lots 1 à 3 livrés localement, non publiés) :
+**Phase 3 clôturée le 28 septembre 2026** : lots 1 à 3 publiés dans
+Platform 1.0.130 (Agent 1.38.0, Vision 1.29.0), critères démontrés en Sandbox
+(`known-repair-history`, `manual-resolution`, `--full-stack`) puis en réel sur
+Konoha. Détail : [Phase 3 — Mémoire opérationnelle](docs/Phase-3-Memoire-operationnelle.md).
 
-- lot 1 : historique par réparation connue (tentatives, réussites, échecs,
-  dernières dates) ; désactivation, obsolescence ou réactivation depuis
-  Vision ;
-- lot 2 : une proposition du catalogue est rattachée à la réparation connue
-  active qui partage le symptôme, la preuve confirmée et l'action. La
-  demande d'autorisation cite ces critères et l'historique, sans jamais
-  invoquer la proximité temporelle, et l'autorisation de la Phase 2 reste
-  requise.
-
-- lot 3 : résolution manuelle déclarée dans Vision (Shizune plus tard),
-  confirmée par Shikamaru, conservée seulement après accord explicite comme
-  piste, c'est-à-dire une note jamais exécutable. La proximité temporelle est
-  signalée comme non probante.
-
-Les dix critères sont démontrés en Sandbox (`known-repair-history`,
-`manual-resolution`, `--full-stack`). Restent les validations réelles sur
-Konoha après déploiement.
-
-- [ ] Au moins une réparation connue peut être retrouvée à partir de symptômes et preuves explicites.
-- [ ] Tentatives, réussites, échecs et dernière réussite sont historisés.
-- [ ] Tsunade peut proposer une réparation connue sans l’exécuter automatiquement.
-- [ ] Une résolution manuelle peut être déclarée par l’utilisateur.
-- [ ] Shikamaru peut confirmer le retour à l’état sain après cette action.
-- [ ] Tsunade demande une confirmation avant de capitaliser cette expérience.
-- [ ] La proximité temporelle n’est jamais présentée comme preuve suffisante de causalité.
-- [ ] Une commande libre ne devient jamais automatiquement exécutable.
-- [ ] Une réparation connue peut être désactivée ou rendue obsolète.
-- [ ] La mémoire opérationnelle respecte toujours les autorisations de Phase 2.
+- [x] Au moins une réparation connue peut être retrouvée à partir de symptômes et preuves explicites.
+- [x] Tentatives, réussites, échecs et dernière réussite sont historisés.
+- [x] Tsunade peut proposer une réparation connue sans l’exécuter automatiquement.
+- [x] Une résolution manuelle peut être déclarée par l’utilisateur.
+- [x] Shikamaru peut confirmer le retour à l’état sain après cette action.
+- [x] Tsunade demande une confirmation avant de capitaliser cette expérience.
+- [x] La proximité temporelle n’est jamais présentée comme preuve suffisante de causalité.
+- [x] Une commande libre ne devient jamais automatiquement exécutable.
+- [x] Une réparation connue peut être désactivée ou rendue obsolète.
+- [x] La mémoire opérationnelle respecte toujours les autorisations de Phase 2.
 
 ---
 
