@@ -6,6 +6,10 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : `log-noise-triage` rejoue LINKY-01 tel qu'en production, avec des
+  lignes sans date et, le jour 2, un journal qui contient encore les refus de
+  la veille. Le jour 2 ne doit rien recompter et l'incident doit se résoudre.
+  Katsuyu 0.8.18 recompte les 150 refus et échoue.
 - Sandbox : scénario `vision-checkpoint-off-ingestion`. 600 observations
   franchissent plusieurs fois le seuil de checkpoint automatique de SQLite, et
   `vision.db` ne doit jamais être écrit pendant une requête d'ingestion. Le

@@ -2,10 +2,15 @@
 
 Production: the four logs.health incidents had stayed open since August. They
 mixed Ohana's own INFO lines and deployments (INFRA-01), the nightly Z-Wave
-NVM backup, third-party Home Assistant errors, and two real faults drowned in
-them: 2 764 refused Linky frames a day (DNS answered 127.0.1.1) and SD card
-stalls. Only errors and frequent warnings may keep an incident open, and a
-signature accepted as known noise must stop counting.
+NVM backup, third-party Home Assistant errors, and SD card stalls. Only errors
+and frequent warnings may keep an incident open, and a signature accepted as
+known noise must stop counting.
+
+LINKY-01 counted about 2 760 refused frames every day. teleinfo2mqtt prints a
+clock without a date and the Supervisor returns every line since the add-on
+started: each earlier day was dated into the last 24 h and counted again,
+although the frames were only refused while the Agent restarted. Day 2 below
+still carries day 1's refused frames, as the real add-on log does.
 """
 
 from __future__ import annotations
@@ -22,7 +27,26 @@ WORKER = "sandbox-worker"
 SOURCES = ("infra-01", "ha-01", "linky-01", "zwave-01")
 
 
-def _lines(now, *, dns_fixed: bool) -> dict[str, list[str]]:
+def _linky_restart(now) -> list[str]:
+    """teleinfo2mqtt during an Agent restart, Paris clock without a date."""
+    refused = (now - timedelta(minutes=30)).strftime("%H:%M:%S.%f")[:-3]
+    restored = (now - timedelta(minutes=20)).strftime("%H:%M:%S.%f")[:-3]
+    return (
+        [f"{refused}  INFO teleinfo2mqtt: reconnecting to the mqtt broker..."] * 3
+        + [
+            f"{refused}  WARN teleinfo2mqtt: Unable to publish frame to Ohana-Agent "
+            "[http://192.168.1.10:8770/v1/teleinformation/frames] "
+            "(connect ECONNREFUSED 192.168.1.10:8770)"
+        ]
+        * 150
+        + [
+            f"{restored}  INFO teleinfo2mqtt: Ohana-Agent ingestion restored "
+            "[http://192.168.1.10:8770/v1/teleinformation/frames]"
+        ]
+    )
+
+
+def _lines(now, *, linky: list[str]) -> dict[str, list[str]]:
     iso = (now - timedelta(minutes=30)).isoformat()
     # Zone-less Paris wall-clock text, exactly as Home Assistant writes it.
     ha = (now - timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -48,17 +72,7 @@ def _lines(now, *, dns_fixed: bool) -> dict[str, list[str]]:
             f"{iso} CNTRLR   reconnected and restarted",
             f"{iso} CNTRLR   starting hardware watchdog...",
         ],
-        "linky-01": [f"{iso} info teleinfo2mqtt: reconnecting to the mqtt broker..."]
-        * 3
-        + (
-            []
-            if dns_fixed
-            else [
-                f"{iso} warn teleinfo2mqtt: unable to publish frame to ohana-agent "
-                "(connect ECONNREFUSED 127.0.1.1:8770)"
-            ]
-            * 150
-        ),
+        "linky-01": linky,
         "ha-01": [
             f"{ha} ERROR (MainThread) [kasa.smart.smartdevice] "
             "Error querying 192.168.1.44 for modules"
@@ -135,7 +149,8 @@ def run() -> dict:
             }
         )
 
-        first = _daily_check(s, _lines(s.clock(), dns_fixed=False))
+        day_one_linky = _linky_restart(s.clock())
+        first = _daily_check(s, _lines(s.clock(), linky=day_one_linky))
         by_source = {source["source"]: source for source in first["sources"]}
         active = _active_log_sources(s)
         checks += [
@@ -148,7 +163,7 @@ def run() -> dict:
                 "zwave-01" not in active and not by_source["zwave-01"]["findings"],
             ),
             (
-                "jour 1 : 150 trames Linky refusées ouvrent un incident",
+                "jour 1 : 150 trames refusées au redémarrage ouvrent un incident",
                 "linky-01" in active,
             ),
             ("jour 1 : l'erreur Kasa ouvre un incident HA-01", "ha-01" in active),
@@ -181,10 +196,30 @@ def run() -> dict:
             )
         )
 
-        _daily_check(s, _lines(s.clock(), dns_fixed=True))
+        day_two = s.clock.advance(days=1)
+        # An incident still open on day 2 asks for an AI review: date that
+        # job on the Sandbox clock, not the real one left a day behind.
+        create_job = s.jobs.create
+        s.expertise.ai_dispatcher = lambda payload: create_job(
+            {**payload, "created_at": s.clock().isoformat()}
+        )
+        quiet = (day_two - timedelta(hours=2)).strftime("%H:%M:%S.%f")[:-3]
+        second = _daily_check(
+            s,
+            _lines(
+                day_two,
+                linky=day_one_linky
+                + [f"{quiet}  INFO teleinfo2mqtt: MQTT broker connected"],
+            ),
+        )
+        linky_two = next(x for x in second["sources"] if x["source"] == "linky-01")
         checks += [
             (
-                "jour 2 : DNS corrigé, l'incident LINKY-01 se résout",
+                "jour 2 : les trames refusées la veille ne sont pas recomptées",
+                linky_two["analyzed_lines"] == 1,
+            ),
+            (
+                "jour 2 : sans nouveau refus, l'incident LINKY-01 se résout",
                 "linky-01" not in _active_log_sources(s),
             ),
             (
