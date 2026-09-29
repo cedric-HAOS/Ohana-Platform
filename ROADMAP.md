@@ -1458,6 +1458,20 @@ Shizune ne doit pas devenir un second Vision.
 
 ---
 
+## Traité en Phase 7
+
+Suivi : [Phase 7 — Shizune](docs/Phase-7-Shizune.md) (démarrée le 29 septembre
+2026 ; audit des dix critères dans le document).
+
+- 29 septembre (Agent 1.44.0, Vision 1.35.0, Shizune 0.5.0, Platform 1.0.138) :
+  nouvel accueil validé sur maquette — état de Konoha avec les icônes de Vision,
+  services essentiels (DNS avec sa durée, DHCP, MQTT, Home Assistant, Z-Wave,
+  Téléinformation), journaux par équipement avec la date du dernier contrôle,
+  prévention ; message de confirmation après une réponse, report daté, suivi de
+  l'issue des décisions (« Décisions récentes ») et heure de la dernière
+  synchronisation réussie sur l'écran « Connexion indisponible ». La Phase 7
+  n'est pas close : validations réelles sur l'iPhone à faire après déploiement.
+
 ## Durcissement continu
 
 - ergonomie ;
