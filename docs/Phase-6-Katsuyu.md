@@ -273,3 +273,26 @@ système, mal attribuées par la requête). Le veto de session reste « session
 seulement », sans changement. Reste à prouver en réel, après déploiement du
 correctif : l'arrêt effectif par `shutdown.exe` et le veto avec une vraie
 session.
+
+## Constat réel du 29 septembre, 18:33 — session rouverte par Windows
+
+Cycle réel déclenché par « Contrôle des journaux » : réveil réussi (47 s), job
+exécuté, arrêt accordé par l'Agent à 18:37:19, **refusé par Katsuyu dans la même
+seconde** (`interactive_session`, 1 session). L'utilisateur n'avait ouvert sa
+session qu'à 18:40.
+
+Cause (journaux Windows, lecture seule) : Windows a rouvert tout seul la session
+`BUBULE\cedri` à 18:33:30, une seconde après l'ouverture, puis l'a verrouillée.
+Aucune clé `AutoAdminLogon` : le mécanisme exact n'est pas prouvé (réutilisation
+des informations de connexion après démarrage rapide, probable). Le veto « session
+Windows seulement » y voyait un usage : Bubule ne s'éteignait jamais seul.
+
+Choix de l'utilisateur : **ignorer une session verrouillée jamais touchée.**
+`LastInputTime` vaut 0 même pour une session utilisée : inutilisable. Katsuyu 0.13.1
+lit l'état de verrouillage (`WTSSessionInfoEx`, `SessionFlags` : 0 verrouillé,
+1 déverrouillé, vérifié sur Bubule) toutes les 2 s. Une session vue verrouillée
+dès son ouverture (moins de 120 s) et jamais vue déverrouillée au-delà de 10 s
+ne compte plus. Une session déjà utilisée, déconnectée, d'état illisible ou
+d'historique inconnu (worker redémarré) bloque toujours l'arrêt. Tests
+unitaires et `katsuyu-wake-cycle` PASS ; preuve réelle à refaire avec un cycle
+complet sans toucher à Bubule.
