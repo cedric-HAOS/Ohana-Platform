@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "incident-history": (
+        "scenarios.incident_history",
+        "Phase 3 : historique Vision (filtres, fiche, frise) et incidents semblables.",
+    ),
     "preventive-drifts": (
         "scenarios.preventive_drifts",
         "Phase 4 : mémoire, temps de réponse saisonnier, journaux, entités HA, corrélations et sourdine.",

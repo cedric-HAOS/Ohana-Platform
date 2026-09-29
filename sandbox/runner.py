@@ -337,6 +337,7 @@ def main() -> int:
         "agent-silent",
         "katsuyu-shizune-vitals",
         "ohana-self-supervision",
+        "incident-history",
     }:
         _add_python_repo(args.vision, "ohana_vision")
     if args.full_stack:
