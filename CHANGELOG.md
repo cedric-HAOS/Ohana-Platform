@@ -6,6 +6,30 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.138] - 2026-09-29
+
+### Composition
+
+- Ohana-Agent 1.43.1 → 1.44.0 : le résumé compagnon publie `services` (six
+  services essentiels avec leur durée mesurée) et `logs` (journaux par
+  équipement et date du dernier contrôle) ; migration additive
+  `tsunade_capability_state.latency_ms`.
+- Ohana-Vision 1.34.1 → 1.35.0 : passerelle Shizune `GET
+  /api/shizune/requests/recent` (suivi des décisions).
+- Ohana-Shizune 0.4.0 → 0.5.0 : nouvel accueil (état de Konoha avec les icônes
+  de Vision, services essentiels, journaux par équipement, prévention),
+  confirmation et suivi des décisions, heure de la dernière synchronisation.
+- Katsuyu 0.13.0 inchangé.
+- **Déployer Agent, Vision et Shizune ensemble (`ohana update`).**
+
+### Ajouté
+
+- Sandbox full-stack : Shizune sur le vrai résumé de l'Agent (état, services,
+  journaux par équipement), suivi d'une décision, perte puis reprise de
+  synchronisation.
+- Documentation : `docs/Phase-7-Shizune.md` (audit des dix critères, lots,
+  choix de l'utilisateur).
+
 ## [1.0.137] - 2026-09-29
 
 ### Composition
