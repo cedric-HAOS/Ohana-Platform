@@ -365,6 +365,52 @@ def run() -> dict:
                 ),
             ]
 
+            # --- A shutdown answer lost on the wire (Agent busy, timeout) ---
+            clock.advance(hours=3)
+            _queue(jobs, clock, 6)
+            service._wake_compatible_worker("system.health")  # noqa: SLF001
+            clock.advance(seconds=30)
+            worker.register()
+            worker.run_once()  # runs the job
+            clock.advance(seconds=5)
+            idle = {
+                "protocol_version": 1,
+                "worker_id": WORKER,
+                "supported_types": ["system.health"],
+            }
+            grants_before = len(
+                [
+                    e
+                    for e in _worker(administration)["power_events"]
+                    if e["kind"] == "shutdown_granted"
+                ]
+            )
+            first_grant = service.next_worker_job(idle).shutdown_requested
+            again = service.next_worker_job(idle).shutdown_requested  # never seen
+            grants = [
+                e
+                for e in _worker(administration)["power_events"]
+                if e["kind"] == "shutdown_granted"
+            ]
+            jobs.report_worker_power(
+                {
+                    "protocol_version": 1,
+                    "worker_id": WORKER,
+                    "outcome": "shutdown_started",
+                }
+            )
+            after_report = service.next_worker_job(idle).shutdown_requested
+            checks += [
+                (
+                    "réponse d'arrêt perdue : accordée de nouveau, une seule entrée au journal",
+                    first_grant and again and len(grants) == grants_before + 1,
+                ),
+                (
+                    "rapport reçu : permission épuisée, plus d'arrêt accordé",
+                    not after_report,
+                ),
+            ]
+
             # --- The real sender put real magic packets on a real socket ---
             time.sleep(0.5)
             magic = b"\xff" * 6 + bytes.fromhex(MAC.replace(":", "")) * 16

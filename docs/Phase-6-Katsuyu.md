@@ -258,19 +258,18 @@ Premier cycle réel, Bubule éteint :
   47 s plus tard (journal : `wake_sent` → `worker_online`, `after_seconds: 47`).
   Le réveil réel par Wake-on-LAN est validé, avec un délai de 47 s.
 - 16:34:58 le job `logs.health_check` est pris, terminé à 16:37:39 (réussi).
-- Pas d'arrêt. Deux causes, la seconde étant le point d'attention prévu :
-  1. l'Agent, occupé à traiter le résultat, a répondu après le délai du client :
-     `shutdown_granted` à 16:38:36 mais Katsuyu n'a jamais vu la réponse, et la
-     permission était déjà consommée. Corrigé : la permission n'est épuisée qu'au
-     rapport de Katsuyu ; une réponse perdue est accordée de nouveau au
-     sondage suivant.
-  2. Windows ouvre une session automatiquement au démarrage (connexion
-     automatique, 16:34:43, avant Katsuyu) : le veto de session aurait de toute
-     façon refusé l'arrêt.
+- Pas d'arrêt : l'Agent, occupé à traiter le résultat, a répondu après le
+  délai du client. `shutdown_granted` est daté de 16:38:36 mais Katsuyu n'a
+  jamais vu la réponse, et la permission était déjà consommée côté Agent. Aucune
+  session n'était ouverte à ce moment (l'utilisateur en a ouvert une ensuite,
+  voyant que Bubule ne s'éteignait pas), le veto n'a donc pas joué.
+  Corrigé : la permission n'est épuisée qu'au rapport de Katsuyu ; une réponse
+  perdue est accordée de nouveau au sondage suivant.
 
-Décision de l'utilisateur : **garder « session seulement »**. Avec la connexion
-automatique de Bubule, l'arrêt automatique n'a donc jamais lieu après un réveil ;
-l'utilisateur éteint Bubule lui-même (ou désactive la connexion automatique). Les
-essais 1 (cycle sans session) et 2 (veto) restent à faire dans ces conditions ;
-l'essai 3 (arrêt effectif par `shutdown.exe`) n'est pas démontrable tant qu'une
-session s'ouvre au démarrage.
+Une première lecture attribuait aussi l'absence d'arrêt à une session ouverte
+automatiquement au démarrage : c'était faux (aucune connexion automatique n'est
+configurée ; les sessions vues à 16:34:43 étaient des sessions d'affichage du
+système, mal attribuées par la requête). Le veto de session reste « session
+seulement », sans changement. Reste à prouver en réel, après déploiement du
+correctif : l'arrêt effectif par `shutdown.exe` et le veto avec une vraie
+session.
