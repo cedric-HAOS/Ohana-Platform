@@ -1498,11 +1498,14 @@ Suivi : [Phase 7 — Shizune](docs/Phase-7-Shizune.md) (démarrée le 29 septemb
 
 ## Durcissement continu
 
-- ergonomie ;
-- informations manquantes constatées à l’usage ;
-- meilleure synthèse ;
-- notifications uniquement si l’usage le justifie ;
-- fonctionnement hors ligne partiel si un besoin concret apparaît.
+- [x] ergonomie ; *(29/09 : nouvel accueil conçu sur maquettes validées par l'utilisateur, retour immédiat après une réponse, écran de perte de synchronisation)*
+- [x] informations manquantes constatées à l’usage ; *(29/09 : « ce qui va » (DNS avec sa durée, MQTT, journaux…) demandé par l'utilisateur et ajouté)*
+- [x] meilleure synthèse ; *(29/09 : état de Konoha avec les icônes de Vision, services essentiels, journaux par équipement, prévention)*
+- [ ] notifications uniquement si l’usage le justifie ;
+- [ ] fonctionnement hors ligne partiel si un besoin concret apparaît.
+
+Ces axes restent un durcissement continu : les cases cochées marquent le premier
+lot traité, pas la fin du travail.
 
 ---
 
