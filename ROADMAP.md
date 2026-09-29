@@ -1460,16 +1460,25 @@ Shizune ne doit pas devenir un second Vision.
 
 ## Critères de sortie de la Phase 7
 
-- [ ] Shizune reste utilisable comme PWA sans application native obligatoire.
-- [ ] L’état général de Konoha est compréhensible sans détails techniques excessifs.
-- [ ] Les incidents importants sont clairement identifiés.
-- [ ] Une demande de décision Tsunade est compréhensible.
-- [ ] L’utilisateur peut autoriser, refuser ou reporter sans ambiguïté.
-- [ ] Le résultat de la décision peut être suivi.
-- [ ] Les informations viennent des contrats Agent et ne recréent pas une logique métier parallèle.
-- [ ] Une perte de synchronisation est explicitement visible.
-- [ ] Shizune n’introduit pas d’administration technique directe.
-- [ ] Toute nouvelle fonctionnalité répond à un besoin réellement observé dans l’usage quotidien.
+Même légende que la Phase 6 : **réel** = démontré sur Konoha ; **Sandbox** =
+démontré avec de vrais composants en Sandbox (`--full-stack`, PWA rendue dans
+Chromium sur le vrai résumé de l'Agent), la preuve réelle restant à faire.
+
+- [x] Shizune reste utilisable comme PWA sans application native obligatoire. *(réel : PWA installée et utilisée sur iPhone, sans APNs)*
+- [x] L’état général de Konoha est compréhensible sans détails techniques excessifs. *(Sandbox ; maquette validée par l'utilisateur ; libellés et durées réels à confirmer après le déploiement 1.0.138)*
+- [x] Les incidents importants sont clairement identifiés. *(Sandbox : icône d'état, tuiles de services, journaux par équipement avec « Attente décision » ; réel à confirmer)*
+- [ ] Une demande de décision Tsunade est compréhensible. *(texte de l'Agent inchangé ; à relire sur des demandes réelles avant d'y toucher)*
+- [ ] L’utilisateur peut autoriser, refuser ou reporter sans ambiguïté. *(confirmation après clic et report daté vérifiés en démonstration locale ; pas encore dans la Sandbox ni sur l'iPhone)*
+- [x] Le résultat de la décision peut être suivi. *(Sandbox : « Décisions récentes » avec l'issue publiée par l'Agent ; réel à prouver avec une décision réelle)*
+- [x] Les informations viennent des contrats Agent et ne recréent pas une logique métier parallèle. *(la PWA ne fait que présenter `summary`, `requests`, `activity` ; seul le rapprochement décision/issue par incident est côté PWA)*
+- [x] Une perte de synchronisation est explicitement visible. *(Sandbox : « Connexion indisponible » avec la dernière synchronisation réussie, puis reprise ; réel à prouver)*
+- [x] Shizune n’introduit pas d’administration technique directe. *(tests Agent et Vision : listener et passerelle limités au contrat synthétique)*
+- [ ] Toute nouvelle fonctionnalité répond à un besoin réellement observé dans l’usage quotidien. *(critère de méthode, jugé à la clôture : l'accueil « ce qui va / ce qui ne va pas » répond à une demande de l'utilisateur ; le reste attend des constats d'usage)*
+
+La phase n'est pas close : validation réelle sur l'iPhone après le déploiement
+1.0.138 (libellés et durées des tuiles, appui sur un équipement, une décision
+autorisée puis suivie, perte de synchronisation) et relecture des demandes
+réelles de Tsunade (`docs/Phase-7-Shizune.md`).
 
 ---
 
