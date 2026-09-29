@@ -567,6 +567,23 @@ Restent à suivre :
   remesurer après une journée calme (objectif : plus d'expertise quotidienne
   pour des anomalies inchangées) ;
 
+Traité le 29 septembre après-midi (Katsuyu, Agent, Vision, non publiés ;
+scénario `log-components`) :
+
+- bruit de HA-01 illisible : 36 anomalies par signature, dont 8 présentées, sans
+  le nom de Tapo ni de Kasa. Chaque anomalie est rattachée à un composant lu
+  dans sa signature ; Vision les liste par composant (onglet « Journaux » et
+  dossier) et un composant s'accepte d'un clic, avec toutes ses variantes de
+  texte, sauf les lignes critiques ;
+- cinq anomalies orphelines sous Tapo (« During handling of the above
+  exception », « raise exception »...) : une ligne vide terminait
+  l'enregistrement, Python sépare ainsi les exceptions chaînées (Katsuyu) ;
+- huit signatures Shelly pour un même défaut : les identifiants hexadécimaux
+  d'appareil sont normalisés (Katsuyu) ;
+- performance : 200 000 lignes analysées en 2,3 s. Codes HTTP, formats de
+  journaux et grosses collectes : aucun défaut constaté dans les données
+  réelles du 29 septembre, hors les deux ci-dessus.
+
 Traité le 29 septembre (Katsuyu, non publié ; scénario
 `supervisor-log-window` étendu, Katsuyu 0.11.0 échoue) :
 
@@ -997,10 +1014,21 @@ Konoha. Détail : [Phase 3 — Mémoire opérationnelle](docs/Phase-3-Memoire-op
 
 ## Durcissement continu
 
-- statistiques supplémentaires ;
-- taux de réussite détaillés ;
-- classement des réparations ;
 - obsolescence automatique assistée.
+
+Traités le 29 septembre après-midi (Agent, Vision, non publiés ; scénario
+`known-repair-history` étendu) :
+
+- taux de réussite détaillés : `GET /v1/repairs/statistics` et onglet « Bilan »
+  de Vision, par période (7 j, 30 j, depuis le début), par réparation, par
+  équipement et par capacité. Le taux ne compte que les issues vérifiées par
+  Shikamaru (une exécution non vérifiée n'est ni une réussite ni un échec) ;
+  la borne basse à 95 % dit ce que les essais permettent d'affirmer ; délais de
+  décision et de retour à la normale médians, causes d'échec conservées ;
+- classement des réparations connues : rang, score (borne basse de Wilson) et
+  fiabilité (jamais éprouvée, à confirmer, fiable, mitigée, instable, peu
+  fiable). La proposition essaie d'abord la réparation connue la plus fiable et
+  avertit d'une réparation instable (dernière exécution en échec).
 
 Traités le 29 septembre (Agent, Vision, non publiés ; scénario
 `incident-history`) :
@@ -1111,7 +1139,14 @@ faute de dérive réelle. Détail :
 - tendances Home Assistant supplémentaires (batteries, base recorder,
   redémarrages de Home Assistant Core) ;
 - température d'INFRA-01 (saisonnalité annuelle) ;
-- corrélations au-delà d'un même équipement (dépendances déclarées).
+
+Traité le 29 septembre après-midi (Agent, Vision, non publiés ; scénario
+`preventive-drifts` étendu) :
+
+- corrélations entre équipements : uniquement par `depends_on` déclaré entre
+  deux services de nœuds différents. Des dérives simultanées sur l'un et sur
+  l'autre sont reliées sans cause affirmée ; une dérive en aval nomme l'incident
+  ouvert en amont. Sans déclaration, la simultanéité ne relie rien.
 
 Traités le 29 septembre (Agent, Vision, non publiés ; scénario
 `preventive-drifts`), choix de l'utilisateur :
