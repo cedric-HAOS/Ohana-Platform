@@ -181,6 +181,19 @@ d'incident. Captures dans `sandbox/runs/`.
 .\sandbox\run.ps1 run ohana-self-supervision
 ```
 
+`agent-restart-quiet` (Phase 5, défauts des validations réelles du 29
+septembre) rejoue un Vision indisponible avec le vrai client durable (port
+fermé puis Vision local) et le rafraîchissement de `ProductionAgent` : un
+seul avertissement par panne, une ligne au rétablissement, aucun envoi
+déclenché par chaque nouvelle observation. Il vérifie aussi qu'un Agent tout
+juste démarré sans trame Linky produit une observation inconnue sans
+incident, puis critique après la fenêtre de fraîcheur, et que `host.health`
+est daté à l'heure de Paris. L'Agent 1.40.0 échoue.
+
+```powershell
+.\sandbox\run.ps1 run agent-restart-quiet
+```
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

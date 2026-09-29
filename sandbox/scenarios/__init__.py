@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "agent-restart-quiet": (
+        "scenarios.agent_restart_quiet",
+        "Phase 5 : redémarrages Agent/Vision sans bruit ni faux incident Linky, heure de Paris.",
+    ),
     "ohana-self-supervision": (
         "scenarios.ohana_self_supervision",
         "Phase 5 : vue Ohana de Vision alimentée par l'Agent, Katsuyu et Shizune réels.",

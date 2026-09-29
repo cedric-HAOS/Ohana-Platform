@@ -558,10 +558,10 @@ Relèvent d’une phase ultérieure :
 Restent à suivre :
 
 - scénarios de panne supplémentaires, à conduire sur Konoha avec
-  l'utilisateur : Vision indisponible (`host.health` → Tsunade, jamais exercé
-  en réel), communication Linky coupée (add-on démarré, aucune trame : aucune
+  l'utilisateur : communication Linky coupée (add-on démarré, aucune trame : aucune
   réparation attendue), Home Assistant Core arrêté sur HA-01, surcharge
-  d'INFRA-01 ;
+  d'INFRA-01 (Vision indisponible : exercé en réel le 29 septembre, voir
+  Phase 5) ;
 - fréquence des expertises Katsuyu : 4 inférences par jour les 23 et 24
   septembre, 17 le 26 (journée de pannes contrôlées, nouvelles anomalies) ; à
   remesurer après une journée calme (objectif : plus d'expertise quotidienne
@@ -1107,7 +1107,7 @@ faute de dérive réelle. Détail :
 # Phase 5 — Ohana supervise Ohana
 
 Suivi : [Phase 5 — Ohana supervise Ohana](docs/Phase-5-Ohana-supervise-Ohana.md)
-(démarrée le 28 septembre 2026). Choix de l'utilisateur : un Agent figé est
+(démarrée le 28 septembre 2026, clôturée le 29 septembre 2026). Choix de l'utilisateur : un Agent figé est
 détecté, jamais redémarré automatiquement ; une panne de Vision ouvre un
 incident Tsunade sans réparation au catalogue.
 
@@ -1139,8 +1139,8 @@ Déjà disponible :
 
 Minimum restant :
 
-- [ ] dernière activité utile ;
-- [ ] état synthétique des composants internes critiques.
+- [x] dernière activité utile ;
+- [x] état synthétique des composants internes critiques.
 
 ---
 
@@ -1153,8 +1153,8 @@ Déjà disponible :
 
 Minimum restant :
 
-- [ ] disponibilité HTTP ;
-- [ ] dernière ingestion ou activité utile.
+- [x] disponibilité HTTP ;
+- [x] dernière ingestion ou activité utile.
 
 ---
 
@@ -1170,8 +1170,8 @@ Déjà disponible :
 
 Minimum restant :
 
-- [ ] dernier job réussi ;
-- [ ] disponibilité synthétique du runtime nécessaire au job demandé.
+- [x] dernier job réussi ;
+- [x] disponibilité synthétique du runtime nécessaire au job demandé.
 
 ---
 
@@ -1179,22 +1179,35 @@ Minimum restant :
 
 Minimum attendu :
 
-- [ ] passerelle disponible ;
-- [ ] dernière synchronisation connue.
+- [x] passerelle disponible ;
+- [x] dernière synchronisation connue.
 
 ---
 
 ## Critères de sortie de la Phase 5
 
-- [ ] Agent expose un état vital exploitable.
-- [ ] Vision expose un état vital exploitable.
-- [ ] Katsuyu expose un état vital exploitable.
-- [ ] Shizune expose un état vital exploitable.
-- [ ] La dernière activité significative d’un composant permet de repérer un composant silencieusement figé.
-- [ ] Une défaillance Ohana peut elle-même produire une observation exploitable.
-- [ ] L’indisponibilité d’un composant n’empêche pas d’observer les autres composants accessibles.
-- [ ] La supervision d’Ohana ne crée pas de dépendance circulaire critique.
-- [ ] La charge de cette auto-supervision reste compatible avec INFRA-01.
+**Phase 5 clôturée le 29 septembre 2026** : lots 1 à 5 publiés dans
+Platform 1.0.133 (Agent 1.40.0, Vision 1.31.0) et Katsuyu 0.10.0, critères
+démontrés en Sandbox puis en réel sur Konoha le 29 septembre : Vision arrêté
+(incident `host.health` critique `vision_http_unavailable` sans Vision, résolu
+au retour), Agent arrêté (bandeau « Agent silencieux » après 300 s), Bubule
+éteint puis rallumé, synchronisation Shizune, charge mesurée. Réserve
+acceptée : la notification pendant une panne de Vision passe par le capteur
+`sensor.ohana_platform_alertes_actives` publié par l'Agent et
+l'automatisation Home Assistant de l'utilisateur ; elle n'a pas été reçue
+pendant l'essai, HA-01 ayant redémarré dans la fenêtre. Shizune (PWA servie
+par Vision) n'a pas de canal APNs. Détail :
+[Phase 5 — Ohana supervise Ohana](docs/Phase-5-Ohana-supervise-Ohana.md).
+
+- [x] Agent expose un état vital exploitable.
+- [x] Vision expose un état vital exploitable.
+- [x] Katsuyu expose un état vital exploitable.
+- [x] Shizune expose un état vital exploitable.
+- [x] La dernière activité significative d’un composant permet de repérer un composant silencieusement figé.
+- [x] Une défaillance Ohana peut elle-même produire une observation exploitable.
+- [x] L’indisponibilité d’un composant n’empêche pas d’observer les autres composants accessibles.
+- [x] La supervision d’Ohana ne crée pas de dépendance circulaire critique.
+- [x] La charge de cette auto-supervision reste compatible avec INFRA-01.
 
 ---
 
@@ -1210,7 +1223,28 @@ Minimum attendu :
 - workspace Katsuyu ;
 - diagnostic détaillé du runtime IA ;
 - version disponible ;
-- association Shizune.
+- association Shizune ;
+- notification pendant une panne de Vision à démontrer en réel (arrêt de
+  Vision plus de 5 minutes sans redémarrer HA-01) ; déclencheur
+  « indisponible depuis 10 minutes » ajouté par l'utilisateur à
+  l'automatisation « Santé Ohana-House » pour un Agent arrêté, à vérifier ;
+- Agent figé (processus vivant, boucle bloquée) : aucun message `offline`
+  MQTT, seul le bandeau de Vision le signale ;
+- appareils Shizune en double : un rappairage laisse l'ancien appareil actif
+  jusqu'à sa révocation.
+
+Traités le 29 septembre après les validations réelles (Agent, non publié ;
+scénario `agent-restart-quiet`, Agent 1.40.0 échoue) :
+
+- Vision arrêté six minutes : un avertissement « Unable to refresh
+  infrastructure » toutes les 10 s ; démarrage de Vision en 50 s : 37
+  avertissements « Unable to deliver », chaque nouvelle observation relançant
+  un envoi. Un seul avertissement par panne, une ligne au rétablissement, et
+  pendant la panne un nouvel essai seulement toutes les 10 s ;
+- redémarrage de l'Agent : incident Linky critique d'une minute (08:48:57),
+  le magasin de trames en mémoire étant vide. Sans trame depuis moins d'une
+  fenêtre de fraîcheur après le démarrage, l'observation est « inconnue » ;
+- `host.health` datait sa mise à jour en UTC : heure de Paris.
 
 ---
 

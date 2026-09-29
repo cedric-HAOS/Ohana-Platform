@@ -43,11 +43,11 @@ l'observation des autres.
 
 | Lot | Contenu | État |
 | --- | --- | --- |
-| 1 — Vitaux de l'Agent | dernière activité utile des composants internes critiques | commits Agent 96773aa, Platform 56538e9 présents dans les références locales origin/main ; non publié |
-| 2 — L'Agent observe Vision | démarrage sans Vision, sonde HTTP et ingestion, notification d'escalade | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
-| 3 — Vision observe l'Agent | « Agent silencieux » calculé par Vision avec sa propre horloge | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
-| 4 — Katsuyu et Shizune | dernier travail réussi et runtime par capacité ; passerelle et dernière synchronisation | développé et validé localement le 28 septembre ; non commis, non publié, validation réelle à faire |
-| 5 — Vision, Sandbox, documentation | section « Ohana » dans Vision, scénarios, validations réelles | vue « Ohana » développée et validée en Sandbox le 28 septembre ; publication et validations réelles à faire |
+| 1 — Vitaux de l'Agent | dernière activité utile des composants internes critiques | publié (Agent 1.40.0), validé en réel le 29 septembre |
+| 2 — L'Agent observe Vision | démarrage sans Vision, sonde HTTP et ingestion, notification d'escalade | publié (Agent 1.40.0, Vision 1.31.0), validé en réel le 29 septembre (notification : réserve) |
+| 3 — Vision observe l'Agent | « Agent silencieux » calculé par Vision avec sa propre horloge | publié (Vision 1.31.0), validé en réel le 29 septembre |
+| 4 — Katsuyu et Shizune | dernier travail réussi et runtime par capacité ; passerelle et dernière synchronisation | publié (Agent 1.40.0, Vision 1.31.0, Katsuyu 0.10.0), validé en réel le 29 septembre |
+| 5 — Vision, Sandbox, documentation | section « Ohana » dans Vision, scénarios, validations réelles | publié (Platform 1.0.133), validé en réel le 29 septembre |
 
 ### Lot 1 — vitaux de l'Agent
 
@@ -355,16 +355,59 @@ contrôlés et réversibles :
    « Opérationnel ».
 6. **Charge** : mesure sur une heure (CPU, écritures) comparée à la veille.
 
+### Résultats du 29 septembre (Platform 1.0.133 déployée le 28 à 19:21)
+
+1. **Vue Ohana** : quatre sources lisibles, heures de Paris ; quatre
+   composants de l'Agent actifs, Vision vu disponible par l'Agent et l'Agent
+   actif par Vision. Les 37 échecs de livraison depuis le déploiement datent
+   tous du démarrage de Vision (19:21:55–19:22:46).
+2. **Vision arrêté** (08:33:20–08:39:52) : incident `host.health` ouvert
+   dégradé à 08:33:40 (`systemd_units_inactive`), critique à 08:36:41 avec
+   `vision_http_unavailable` après trois mesures de la sonde, diagnostic
+   confirmé par sonde, aucune réparation. Au retour, 145 observations en
+   attente livrées en une minute et incident résolu à 08:40:43. Shizune,
+   servi par Vision, était inaccessible ; aucun appareil n'a de jeton APNs
+   (PWA). Le canal hors Vision est le capteur
+   `sensor.ohana_platform_alertes_actives` publié par l'Agent, relayé par
+   l'automatisation « Santé Ohana-House » de l'utilisateur (délai 5 min) :
+   aucune notification reçue, HA-01 ayant redémarré dans la fenêtre.
+3. **Agent arrêté** : dernière observation reçue par Vision à 08:43:00,
+   « silent » à 08:48:20 (319 s), bandeau et carte Agent « Hors service »
+   constatés ; redémarré à 08:48:48, actif pour Vision à 08:49:12.
+4. **Katsuyu** : runtimes déclarés (`age` prêt, modèle IA vérifié au premier
+   job), dernier job réussi par capacité ; Bubule éteint : indisponible à
+   08:51:02, aucun incident, le job en cours s'était terminé à 08:50:05 ;
+   rallumé : réinscrit à 08:53:40 (Katsuyu 0.11.0 installé localement, publié
+   ensuite).
+5. **Shizune** : passerelle disponible, dernière synchronisation de l'iPhone
+   à l'heure.
+6. **Charge** : depuis le démarrage (13 h), Agent environ 2,1 % d'un cœur,
+   Vision environ 0,9 % ; charge moyenne 0,6 pour 4 cœurs ; journal de l'Agent
+   124 lignes en 13 h. Pas de mesure de la veille à comparer.
+
+Défauts mineurs relevés pendant les essais et corrigés le jour même
+(scénario `agent-restart-quiet`, Agent 1.40.0 échoue) : avertissements
+répétés pendant une panne de Vision, incident Linky critique d'une minute à
+chaque redémarrage de l'Agent, `host.health` daté en UTC.
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |
 | --- | --- | --- |
-| Agent expose un état vital exploitable | `agent-component-stale` (lot 1) | à valider après déploiement |
-| Vision expose un état vital exploitable | `vision-startup-recovery` (lot 2) | à valider |
-| Katsuyu expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | à valider |
-| Shizune expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | à valider |
-| La dernière activité repère un composant silencieusement figé | `agent-component-stale`, `agent-silent`, `ohana-self-supervision` | à valider |
-| Une défaillance Ohana produit une observation exploitable | `agent-component-stale`, `vision-startup-recovery` | à valider |
-| L'indisponibilité d'un composant n'empêche pas d'observer les autres | `vision-startup-recovery` : planificateur et santé actifs sans Vision ; `ohana-self-supervision` : API Agent arrêtée, autres cartes lisibles | à valider |
-| Pas de dépendance circulaire critique | `vision-startup-recovery` : incident et notification sans Vision, transport APNs simulé | à valider |
-| Charge compatible avec INFRA-01 | estimation ci-dessus ; vitaux ~1 ms, workers ~6 ms | à mesurer |
+| Agent expose un état vital exploitable | `agent-component-stale` (lot 1) | 29/09 : quatre composants actifs, « waiting » puis actifs après redémarrage |
+| Vision expose un état vital exploitable | `vision-startup-recovery` (lot 2) | 29/09 : `/api/runtime/vitals`, ingestion et silence mesurés |
+| Katsuyu expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | 29/09 : runtimes, activité par capacité, hors ligne sans incident |
+| Shizune expose un état vital exploitable | `katsuyu-shizune-vitals` (lot 4) | 29/09 : passerelle disponible, synchronisation de l'iPhone |
+| La dernière activité repère un composant silencieusement figé | `agent-component-stale`, `agent-silent`, `ohana-self-supervision` | 29/09 : Agent arrêté, « silent » à 319 s |
+| Une défaillance Ohana produit une observation exploitable | `agent-component-stale`, `vision-startup-recovery` | 29/09 : Vision arrêté → incident critique confirmé, résolu au retour |
+| L'indisponibilité d'un composant n'empêche pas d'observer les autres | `vision-startup-recovery` : planificateur et santé actifs sans Vision ; `ohana-self-supervision` : API Agent arrêtée, autres cartes lisibles | 29/09 : Agent observant sans Vision, Vision lisible sans Agent ni Katsuyu |
+| Pas de dépendance circulaire critique | `vision-startup-recovery` : incident et notification sans Vision, transport APNs simulé | 29/09 : incident sans Vision ; canal de notification MQTT → Home Assistant indépendant de Vision, réception non démontrée (réserve) |
+| Charge compatible avec INFRA-01 | estimation ci-dessus ; vitaux ~1 ms, workers ~6 ms | 29/09 : Agent ~2,1 %, Vision ~0,9 % d'un cœur |
+
+## Clôture — 29 septembre 2026
+
+Phase 5 clôturée à la demande de l'utilisateur après les validations réelles.
+Réserve acceptée : la notification pendant une panne de Vision n'a pas été
+reçue en réel (HA-01 redémarré pendant l'essai) ; elle reste à démontrer au
+titre du durcissement continu, avec le déclencheur « indisponible depuis
+10 minutes » ajouté à l'automatisation Home Assistant pour un Agent arrêté.

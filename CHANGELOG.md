@@ -6,6 +6,15 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Phase 5 clôturée le 29 septembre après les validations réelles sur Konoha
+  (ROADMAP, `docs/Phase-5-Ohana-supervise-Ohana.md`) ; réserve : notification
+  pendant une panne de Vision non reçue en réel.
+- Scénario `agent-restart-quiet` : panne de Vision sans avertissements
+  répétés, redémarrage de l'Agent sans incident Linky, `host.health` à
+  l'heure de Paris (Agent 1.40.0 échoue).
+- Hors composition : Katsuyu 0.11.0 publié (mise à jour automatique quand le
+  PC est inactif), déjà installé sur Bubule.
+
 ## [1.0.133] - 2026-09-28
 
 ### Composition
