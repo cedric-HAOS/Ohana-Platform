@@ -1469,7 +1469,7 @@ Chromium sur le vrai résumé de l'Agent), la preuve réelle restant à faire.
 - [x] Les incidents importants sont clairement identifiés. *(Sandbox : icône d'état, tuiles de services, journaux par équipement avec « Attente décision » ; réel à confirmer)*
 - [ ] Une demande de décision Tsunade est compréhensible. *(texte de l'Agent inchangé ; à relire sur des demandes réelles avant d'y toucher)*
 - [ ] L’utilisateur peut autoriser, refuser ou reporter sans ambiguïté. *(confirmation après clic et report daté vérifiés en démonstration locale ; pas encore dans la Sandbox ni sur l'iPhone)*
-- [x] Le résultat de la décision peut être suivi. *(Sandbox : « Décisions récentes » avec l'issue publiée par l'Agent ; réel à prouver avec une décision réelle)*
+- [x] Le résultat de la décision peut être suivi. *(réel : le suivi de l'issue d'une décision (autorisation, exécution, vérification) est prouvé en Phase 2 ; Sandbox : « Décisions récentes » dans Shizune avec l'issue publiée par l'Agent)*
 - [x] Les informations viennent des contrats Agent et ne recréent pas une logique métier parallèle. *(la PWA ne fait que présenter `summary`, `requests`, `activity` ; seul le rapprochement décision/issue par incident est côté PWA)*
 - [x] Une perte de synchronisation est explicitement visible. *(Sandbox : « Connexion indisponible » avec la dernière synchronisation réussie, puis reprise ; réel à prouver)*
 - [x] Shizune n’introduit pas d’administration technique directe. *(tests Agent et Vision : listener et passerelle limités au contrat synthétique)*
