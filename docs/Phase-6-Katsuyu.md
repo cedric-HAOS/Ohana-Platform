@@ -61,7 +61,7 @@ Vision explique pourquoi Katsuyu a été réveillé et ce qu'il a exécuté.
 | 1 — Veto d'arrêt et cycles expliqués | veto de session côté Katsuyu, journal des réveils et arrêts dans l'Agent, lignes « Cycle de réveil » dans la vue Ohana | codé, non publié (Agent, Katsuyu 0.13.0, Vision) |
 | 2 — Fiabilité du Wake-on-LAN | mesure du succès, réveil resté sans réponse, relances, échec explicite | codé, non publié (Agent, Vision) |
 | 3 — Reprise et IA indisponible | jobs interrompus, échec explicite, absence de conclusion artificielle | codé, non publié (Agent) |
-| 4 — Sandbox, documentation, validations réelles | scénarios, parcours réel avec Bubule | à faire |
+| 4 — Sandbox, documentation, validations réelles | scénarios, parcours réel avec Bubule | Sandbox et documentation faits ; validations réelles après déploiement |
 
 ### Lot 1 — veto d'arrêt et cycles expliqués
 
@@ -169,13 +169,51 @@ Partie B : vrai worker Katsuyu en HTTP, job repris à la tentative 2 après la
 disparition de son prédécesseur, travail déterministe exécuté sans runtime IA,
 job IA impossible en échec avec sa cause et sans conclusion.
 
+### Lot 4 — Sandbox, documentation, validations
+
+Couverture Sandbox des dix critères (tous les scénarios sont rejoués avant
+chaque publication) :
+
+| Critère | Preuve Sandbox |
+| --- | --- |
+| Bubule optionnel | `katsuyu-unavailable`, `local-diagnosis-worker-unavailable`, `katsuyu-resilience` (traitement déterministe sans runtime IA) |
+| Wake-on-LAN fiable | `katsuyu-wake-cycle` (relances, abandon, connexion tardive ou manuelle, statistiques) |
+| Worker disponible réutilisé | `katsuyu-wake-cycle` (aucun nouveau réveil) |
+| Plusieurs jobs, un cycle | `katsuyu-wake-cycle` (deux jobs, un seul réveil et un seul arrêt) |
+| Arrêt selon les conditions | `katsuyu-wake-cycle` (arrêt après file vide, permission consommée) |
+| Pas d'arrêt si usage | `katsuyu-wake-cycle` (veto de session) et vraie requête de sessions Windows |
+| Job interrompu repris ou échec | `katsuyu-resilience` (reprise à la tentative 2, échec explicite à la 3ᵉ) |
+| Déterministe sans IA | `katsuyu-resilience` |
+| Pas de conclusion artificielle | `katsuyu-resilience`, `katsuyu-unavailable` |
+| Vision explique réveil et exécution | `katsuyu-wake-cycle` (journal) et `ohana-self-supervision` (rendu dans Chromium) |
+
 ## Validation réelle (après publication et déploiement)
 
-À faire avec Bubule après déploiement de l'Agent puis de Katsuyu 0.13.0 :
+Déployer l'Agent avant Katsuyu ; Katsuyu 0.13.0 s'installe sur Bubule
+(`KatsuyuSetup.exe` ou mise à jour automatique). À faire avec Bubule :
 
-1. Bubule éteint, créer du travail (test manuel ou contrôle des journaux),
-   laisser l'Agent le réveiller : la ligne « Cycle de réveil » doit montrer
-   le motif, le délai et l'arrêt.
-2. Même cycle avec une session ouverte sur Bubule : le PC reste allumé, la
-   ligne dit « session Windows ouverte ».
-3. Vérifier qu'aucun incident ne s'ouvre pendant ces cycles.
+1. **Cycle complet sans session.** Bubule éteint, aucune session ouverte
+   après le démarrage : créer du travail (test de réveil depuis Vision, ou
+   contrôle des journaux à 05:00) et vérifier dans la vue Ohana le motif, le
+   délai de connexion, le travail exécuté et l'arrêt. *(Point d'attention : si Windows
+   ouvre automatiquement une session au démarrage (connexion automatique),
+   l'arrêt sera toujours refusé et Bubule restera allumé après chaque réveil.
+   C'est le comportement demandé — session seulement —, mais à vérifier tôt
+   sur Bubule ; désactiver la connexion automatique ou passer à un critère
+   d'inactivité serait alors le remède.)*
+2. **Veto de session.** Même cycle avec une session ouverte sur Bubule : le PC
+   reste allumé, la ligne dit « session Windows ouverte », Katsuyu reste
+   disponible et le prochain travail est traité sans nouveau réveil.
+3. **Réveil sans réponse.** Débrancher le réseau de Bubule (ou désactiver le
+   réveil dans son BIOS) puis demander un contrôle : trois tentatives à dix
+   minutes d'écart, puis « Réveil abandonné », aucun incident.
+4. **Job interrompu.** Arrêter Katsuyu (ou éteindre Bubule) au milieu d'un
+   contrôle : reprise à la tentative suivante ; interrompu trois fois,
+   échec `worker.interrupted` visible dans l'activité de Katsuyu.
+5. **IA impossible.** Renommer temporairement le modèle IA : le runtime
+   passe « absent », un job IA échoue avec sa cause, l'incident reste sous
+   surveillance sans conclusion, les contrôles déterministes continuent.
+6. **Fiabilité.** Relever « Fiabilité du réveil » après quelques cycles réels
+   (réveils suivis d'une connexion, délai médian).
+
+La Phase 6 se clôt quand ces essais sont faits et cochés dans la roadmap.

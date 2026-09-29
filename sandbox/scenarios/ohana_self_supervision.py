@@ -214,6 +214,19 @@ def run() -> dict:
                 }
             )
             worker.run_once()
+            # Phase 6: what Ohana knows of Bubule's power cycles.
+            jobs.record_wake_failure(
+                WORKER, "network unreachable", trigger="queued_jobs"
+            )
+            jobs.report_worker_power(
+                {
+                    "protocol_version": 1,
+                    "worker_id": WORKER,
+                    "outcome": "shutdown_vetoed",
+                    "reason": "interactive_session",
+                    "sessions": 1,
+                }
+            )
 
             # Real Agent vitals and a real probe of this Vision server.
             ticks = [0.0]
@@ -343,6 +356,12 @@ def run() -> dict:
                         "Espace de travail" in katsuyu_text
                         and "Runtime IA (détail)" in katsuyu_text
                         and "recommandée 0.12.0" in katsuyu_text,
+                    ),
+                    (
+                        "Katsuyu : cycles de réveil (envoi impossible, PC laissé allumé par une session)",
+                        "Cycle de réveil" in katsuyu_text
+                        and "Wake-on-LAN impossible" in katsuyu_text
+                        and "session Windows ouverte" in katsuyu_text,
                     ),
                     (
                         "Shizune : échéance de l'association affichée",
