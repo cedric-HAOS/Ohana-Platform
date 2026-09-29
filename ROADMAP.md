@@ -1399,6 +1399,10 @@ Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes
   journalise chaque cycle (raison du réveil, délai de connexion, travail
   exécuté, arrêt ou veto) affiché dans la vue Ohana ; scénario
   `katsuyu-wake-cycle`.
+- 29 septembre, lot 2 (Agent, Vision ; non publié) : réveil sans réponse
+  journalisé, relances (trois tentatives à 10 minutes d'intervalle) puis abandon
+  explicite, connexion tardive ou manuelle distinguée, fiabilité du réveil
+  mesurée et affichée.
 
 ## Durcissement continu
 

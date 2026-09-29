@@ -10,7 +10,9 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 - Phase 6 démarrée : `docs/Phase-6-Katsuyu.md` (cadre, audit des dix critères,
   lots) et scénario Sandbox `katsuyu-wake-cycle` (cycle de réveil complet, veto
-  de session Windows, réutilisation d'un worker disponible sans réveil).
+  de session Windows, réutilisation d'un worker disponible sans réveil) ;
+  étendu au lot 2 (PC muet : relances puis abandon, démarrage manuel tardif,
+  fiabilité du réveil mesurée).
 
 ## [1.0.135] - 2026-09-29
 

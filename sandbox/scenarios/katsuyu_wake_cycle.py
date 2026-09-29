@@ -1,4 +1,8 @@
-"""Phase 6, lot 1: why Katsuyu was woken, what it ran, how the cycle ended.
+"""Phase 6, lots 1 and 2: Katsuyu's wake cycles, explained and measured.
+
+Lot 1: why Katsuyu was woken, what it ran, how the cycle ended (shutdown or
+session veto). Lot 2: a PC that never answers is woken again, then abandoned
+explicitly, and the reliability of Wake-on-LAN is measured.
 
 Real Agent HTTP listener, real Katsuyu worker loop and handlers. Only the
 Wake-on-LAN sender, the Windows shutdown and the session query are replaced
@@ -56,7 +60,12 @@ def _kinds(server: AdministrationHTTPServer) -> list[str]:
     return [event["kind"] for event in reversed(_worker(server)["power_events"])]
 
 
-def _queue(jobs: DistributedJobRepository, clock: SandboxClock, number: int) -> None:
+def _queue(
+    jobs: DistributedJobRepository,
+    clock: SandboxClock,
+    number: int,
+    timeout: int = 3600,
+) -> None:
     jobs.create(
         {
             "protocol_version": 1,
@@ -64,7 +73,7 @@ def _queue(jobs: DistributedJobRepository, clock: SandboxClock, number: int) -> 
             "type": "system.health",
             "created_at": clock.current.isoformat(),
             "parameters": {},
-            "timeout": 3600,
+            "timeout": timeout,
         }
     )
 
@@ -150,6 +159,7 @@ def run() -> dict:
                     by_kind["wake_sent"]["detail"]
                     == {
                         "trigger": "queued_jobs",
+                        "attempt": 1,
                         "pending_jobs": {"system.health": 2},
                         "timeout_seconds": 180,
                     },
@@ -232,6 +242,85 @@ def run() -> dict:
                 ),
             ]
 
+            # --- Lot 2: a PC that never answers ---------------------------
+            silent_before = len(wakes)
+            clock.advance(hours=2)
+            _queue(jobs, clock, 5, timeout=6 * 3600)
+            service._wake_compatible_worker("system.health")  # noqa: SLF001
+            for _ in range(3):
+                clock.advance(seconds=181)
+                service.dispatch_due_wake_requests()  # settles the wait
+                clock.advance(seconds=600)
+                service.dispatch_due_wake_requests()  # retry when due
+            silent = _worker(administration)
+            silent_kinds = [e["kind"] for e in reversed(silent["power_events"])][-7:]
+            tries = [
+                e["detail"]["trigger"]
+                for e in reversed(silent["power_events"])
+                if e["kind"] == "wake_sent"
+            ][-3:]
+            clock.advance(hours=1)
+            service.dispatch_due_wake_requests()
+            checks += [
+                (
+                    "PC muet : deux relances après la première tentative, puis abandon explicite",
+                    silent_kinds
+                    == [
+                        "wake_sent",
+                        "wake_timeout",
+                        "wake_sent",
+                        "wake_timeout",
+                        "wake_sent",
+                        "wake_timeout",
+                        "wake_abandoned",
+                    ]
+                    and tries == ["queued_jobs", "retry", "retry"],
+                ),
+                (
+                    "pas de quatrième tentative : le travail suit son propre délai",
+                    len(wakes) - silent_before == 3
+                    and jobs.get("66666666-6666-4666-8666-000000000005").status.value
+                    in {"QUEUED", "WAITING_WORKER"},
+                ),
+                (
+                    "aucun arrêt ni incident : un PC qui ne répond pas reste informatif",
+                    shutdowns == [],
+                ),
+            ]
+
+            # --- Someone starts the PC by hand much later -----------------
+            worker.register()
+            worker.run_once()  # runs the waiting job
+            clock.advance(seconds=5)
+            worker.run_once()
+            after_manual = _worker(administration)
+            manual = after_manual["power_events"][0]
+            stats = after_manual["wake_stats"]
+            checks += [
+                (
+                    "démarrage manuel long après : journalisé « manual », pas compté comme réponse",
+                    manual["kind"] == "worker_online"
+                    and manual["detail"] == {"manual": True},
+                ),
+                (
+                    "le travail en attente est exécuté, sans arrêt automatique du PC",
+                    jobs.get("66666666-6666-4666-8666-000000000005").status.value
+                    == "SUCCEEDED"
+                    and shutdowns == [],
+                ),
+                (
+                    "fiabilité mesurée : 5 réveils, 2 à l'heure, 3 sans réponse, 1 abandon",
+                    (
+                        stats["attempts"],
+                        stats["on_time"],
+                        stats["unanswered"],
+                        stats["abandoned"],
+                    )
+                    == (5, 2, 3, 1)
+                    and stats["median_seconds"] == 64,
+                ),
+            ]
+
             # --- The real session query works on this machine -------------
             real = session_shutdown_veto()
             checks.append(
@@ -241,6 +330,7 @@ def run() -> dict:
                 )
             )
             details["cycle"] = " → ".join(_kinds(administration)[:4])
+            details["fiabilité du réveil"] = str(stats)
             details["veto"] = f"{newest['detail']}"
             details["sessions réelles sur ce PC"] = (
                 "aucune" if real is None else f"{real.reason} ({real.sessions})"

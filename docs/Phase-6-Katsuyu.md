@@ -59,7 +59,7 @@ Vision explique pourquoi Katsuyu a été réveillé et ce qu'il a exécuté.
 | Lot | Contenu | État |
 | --- | --- | --- |
 | 1 — Veto d'arrêt et cycles expliqués | veto de session côté Katsuyu, journal des réveils et arrêts dans l'Agent, lignes « Cycle de réveil » dans la vue Ohana | codé, non publié (Agent, Katsuyu 0.13.0, Vision) |
-| 2 — Fiabilité du Wake-on-LAN | mesure du succès, réveil resté sans réponse, relances, échec explicite | à faire |
+| 2 — Fiabilité du Wake-on-LAN | mesure du succès, réveil resté sans réponse, relances, échec explicite | codé, non publié (Agent, Vision) |
 | 3 — Reprise et IA indisponible | jobs interrompus, échec explicite, absence de conclusion artificielle | à faire |
 | 4 — Sandbox, documentation, validations réelles | scénarios, parcours réel avec Bubule | à faire |
 
@@ -105,6 +105,43 @@ Cycle complet (réveil pour deux jobs, connexion à 64 s, exécution, arrêt
 accordé puis lancé), cycle avec session ouverte (pas d'arrêt, raison
 journalisée, PC toujours disponible), réutilisation d'un worker disponible
 sans nouveau réveil, requête de sessions Windows réelle.
+
+### Lot 2 — fiabilité du Wake-on-LAN
+
+Constat : l'Agent envoyait la rafale de paquets et notait seulement
+l'échéance de l'attente. Aucune trace d'un réveil resté sans réponse, aucune
+relance, aucune mesure de fiabilité.
+
+**Agent** (`jobs/workers.py`, `api/service.py`) :
+
+- Un réveil dont l'attente (180 s) s'écoule sans connexion écrit
+  `wake_timeout` (daté à l'échéance, avec le numéro de tentative). Détecté par
+  le passage périodique du planificateur (toutes les 5 s) et à la lecture.
+- Tant que du travail attend pour ce worker, un PC resté muet est réveillé de
+  nouveau 10 minutes après (`wake_sent`, `trigger: retry`), jusqu'à **trois
+  tentatives**. La troisième sans réponse écrit `wake_abandoned` (échec
+  explicite) : plus de tentative, les travaux suivent leur propre délai. Le lot
+  suivant du lendemain repart à la tentative 1. Sans travail en attente (test
+  manuel), aucune relance.
+- Une connexion peu après l'échéance (moins de 30 min) est notée `late` : elle
+  compte comme réponse tardive, mais Ohana ne possède plus le cycle et
+  n'arrête pas le PC. Une connexion bien plus tard est notée `manual` : un PC
+  démarré à la main n'est ni une réponse ni arrêté par Ohana.
+- `wake_stats` par worker, calculé sur le journal conservé (200 événements) :
+  tentatives, à l'heure, en retard, sans réponse, abandons, envois impossibles,
+  délai médian et maximal.
+- Réglages du service, sans option YAML : `wake_unanswered_retry_seconds`
+  (600), `wake_max_unanswered_attempts` (3). Un PC muet reste **informatif** :
+  aucun incident ni réparation.
+
+**Vision** : « Fiabilité du réveil » (réveils suivis d'une connexion, médiane,
+maximum, retards, sans-réponse, abandons) et, par cycle, les tentatives,
+« Réveil abandonné », « Connecté en retard », « PC démarré à la main ».
+
+**Sandbox** : `katsuyu-wake-cycle` étendu : PC muet (tentative initiale puis
+deux relances, abandon, pas de quatrième tentative), démarrage manuel tardif
+qui exécute le travail en attente sans arrêt, statistiques (5 réveils : 2 à
+l'heure, 3 sans réponse, 1 abandon).
 
 ## Validation réelle (après publication et déploiement)
 
