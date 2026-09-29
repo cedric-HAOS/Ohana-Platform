@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "preventive-drifts": (
+        "scenarios.preventive_drifts",
+        "Phase 4 : mémoire, temps de réponse saisonnier, journaux, entités HA, corrélations et sourdine.",
+    ),
     "agent-frozen-heartbeat": (
         "scenarios.agent_frozen_heartbeat",
         "Phase 5 : un Agent figé devient indisponible dans Home Assistant sans message offline.",
