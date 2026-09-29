@@ -267,12 +267,13 @@ Premier cycle réel, Bubule éteint :
   perdue est accordée de nouveau au sondage suivant.
 
 Une première lecture attribuait aussi l'absence d'arrêt à une session ouverte
-automatiquement au démarrage : c'était faux (aucune connexion automatique n'est
-configurée ; les sessions vues à 16:34:43 étaient des sessions d'affichage du
-système, mal attribuées par la requête). Le veto de session reste « session
-seulement », sans changement. Reste à prouver en réel, après déploiement du
-correctif : l'arrêt effectif par `shutdown.exe` et le veto avec une vraie
-session.
+automatiquement au démarrage. Pour le cycle de 16:34 c'était faux (la perte de
+réponse suffisait ; les sessions vues à 16:34:43 étaient des sessions
+d'affichage du système). **Le constat du 18:33 ci-dessous montre en revanche que
+Windows rouvre bien la session de l'utilisateur au démarrage** : elle a été
+correctement comptée, et c'est ce comptage qu'il a fallu corriger. Reste à
+prouver en réel, après déploiement du correctif : l'arrêt effectif par
+`shutdown.exe` et le veto avec une vraie session.
 
 ## Constat réel du 29 septembre, 18:33 — session rouverte par Windows
 
