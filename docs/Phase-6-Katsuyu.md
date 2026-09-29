@@ -58,10 +58,10 @@ Vision explique pourquoi Katsuyu a été réveillé et ce qu'il a exécuté.
 
 | Lot | Contenu | État |
 | --- | --- | --- |
-| 1 — Veto d'arrêt et cycles expliqués | veto de session côté Katsuyu, journal des réveils et arrêts dans l'Agent, lignes « Cycle de réveil » dans la vue Ohana | codé, non publié (Agent, Katsuyu 0.13.0, Vision) |
-| 2 — Fiabilité du Wake-on-LAN | mesure du succès, réveil resté sans réponse, relances, échec explicite | codé, non publié (Agent, Vision) |
-| 3 — Reprise et IA indisponible | jobs interrompus, échec explicite, absence de conclusion artificielle | codé, non publié (Agent) |
-| 4 — Sandbox, documentation, validations réelles | scénarios, parcours réel avec Bubule | Sandbox et documentation faits ; validations réelles après déploiement |
+| 1 — Veto d'arrêt et cycles expliqués | veto de session côté Katsuyu, journal des réveils et arrêts dans l'Agent, lignes « Cycle de réveil » dans la vue Ohana | publié (Agent 1.43.0, Katsuyu 0.13.0, Vision 1.34.0) |
+| 2 — Fiabilité du Wake-on-LAN | mesure du succès, réveil resté sans réponse, relances, échec explicite | publié (Agent 1.43.0, Vision 1.34.0) |
+| 3 — Reprise et IA indisponible | jobs interrompus, échec explicite, absence de conclusion artificielle | publié (Agent 1.43.0) |
+| 4 — Sandbox, documentation, validations réelles | scénarios, parcours réel avec Bubule | Sandbox et documentation faits (Platform 1.0.136) ; validations réelles après déploiement |
 
 ### Lot 1 — veto d'arrêt et cycles expliqués
 

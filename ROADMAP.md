@@ -1318,7 +1318,7 @@ Traités le 29 septembre (Agent, Vision, Katsuyu, publiés dans Platform 1.0.134
   recommandée (catalogue de la dernière release, lu toutes les 6 h), échéance
   des associations Shizune.
 
-Traité le 29 septembre après-midi (Katsuyu, non publié ; test
+Traité le 29 septembre après-midi (Katsuyu, publié dans 0.13.0 ; test
 `test_restart_on_a_new_version_does_not_share_the_temporary_directory`) :
 
 - première mise à jour automatique réelle de Katsuyu, de 0.11.0 à 0.12.1 (14:53,
@@ -1327,7 +1327,7 @@ Traité le 29 septembre après-midi (Katsuyu, non publié ; test
   relançait sur le nouvel exécutable sans `PYINSTALLER_RESET_ENVIRONMENT` :
   l'exécutable PyInstaller « un fichier » réutilisait le dossier temporaire de
   l'ancien processus, supprimé à sa fermeture, et échouait à charger sa DLL
-  Python. Correctif dans Katsuyu 0.12.2 (à publier) ; il ne sert qu'à partir de la
+  Python. Correctif dans Katsuyu 0.13.0 ; il ne sert qu'à partir de la
   mise à jour suivante, puisque c'est l'ancienne icône qui relance. En attendant,
   relancer `KatsuyuTray.exe`.
 
@@ -1394,16 +1394,16 @@ Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes
 
 ## Traité en Phase 6
 
-- 29 septembre, lot 1 (Agent, Katsuyu 0.13.0, Vision ; non publié) : Katsuyu
+- 29 septembre, lot 1 (Agent 1.43.0, Katsuyu 0.13.0, Vision 1.34.0, Platform 1.0.136) : Katsuyu
   n'éteint plus un PC sur lequel une session Windows est ouverte, et l'Agent
   journalise chaque cycle (raison du réveil, délai de connexion, travail
   exécuté, arrêt ou veto) affiché dans la vue Ohana ; scénario
   `katsuyu-wake-cycle`.
-- 29 septembre, lot 2 (Agent, Vision ; non publié) : réveil sans réponse
+- 29 septembre, lot 2 (Agent 1.43.0, Vision 1.34.0) : réveil sans réponse
   journalisé, relances (trois tentatives à 10 minutes d'intervalle) puis abandon
   explicite, connexion tardive ou manuelle distinguée, fiabilité du réveil
   mesurée et affichée.
-- 29 septembre, lot 3 (Agent ; non publié) : un travail interrompu est repris
+- 29 septembre, lot 3 (Agent 1.43.0) : un travail interrompu est repris
   trois fois au plus puis échoue explicitement (`worker.interrupted`) ; scénario
   `katsuyu-resilience` (runtime IA absent : traitement déterministe maintenu, IA
   en échec sans conclusion artificielle).
