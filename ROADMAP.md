@@ -1419,8 +1419,8 @@ complet sans intervention sur Bubule et un test avec une vraie session
   permission d'arrêt perdue avec la réponse est désormais accordée de nouveau
   (Agent 1.43.1) ; Windows rouvrant tout seul la session de l'utilisateur au
   démarrage (verrouillée aussitôt), le veto de session bloquait chaque arrêt.
-  Correctif codé (Katsuyu 0.13.1, non publié à la date de cette note) : une
-  session verrouillée jamais touchée est ignorée. L'arrêt effectif par
+  Correctif publié (Katsuyu 0.13.1) : une session verrouillée jamais touchée
+  est ignorée. L'arrêt effectif par
   `shutdown.exe` reste à prouver en réel.
 
 ## Durcissement continu
