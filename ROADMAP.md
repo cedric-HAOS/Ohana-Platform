@@ -1379,16 +1379,24 @@ Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes
 
 ## Critères de sortie de la Phase 6
 
-- [ ] Bubule reste optionnel pour les fonctions essentielles de Konoha.
-- [ ] Wake-on-LAN fonctionne de manière suffisamment fiable lorsque Katsuyu est réellement nécessaire.
-- [ ] Un worker déjà disponible est réutilisé sans réveil inutile.
-- [ ] Plusieurs jobs compatibles peuvent partager un même cycle.
-- [ ] L’arrêt après traitement respecte les conditions prévues.
-- [ ] Bubule n’est pas arrêté lorsqu’un usage utilisateur ou un état bloquant est détecté.
-- [ ] Un job interrompu peut être repris ou explicitement échouer.
-- [ ] Les traitements déterministes lourds peuvent fonctionner sans runtime IA lorsqu’ils n’en ont pas besoin.
-- [ ] Une expertise IA impossible ne produit pas de conclusion artificielle.
-- [ ] Vision permet de comprendre au minimum pourquoi Katsuyu a été réveillé et ce qu’il a exécuté.
+Légende : **réel** = démontré sur Konoha ; **Sandbox** = démontré avec de vrais
+composants en Sandbox, la preuve réelle restant à faire (précisée entre
+parenthèses).
+
+- [x] Bubule reste optionnel pour les fonctions essentielles de Konoha. *(réel : Katsuyu arrêté en Phase 5, Konoha continue)*
+- [x] Wake-on-LAN fonctionne de manière suffisamment fiable lorsque Katsuyu est réellement nécessaire. *(Sandbox `katsuyu-wake-cycle` : relances, abandon, connexion tardive ; réel : 2 réveils sur 2 à l'heure, 47 s, échantillon faible)*
+- [x] Un worker déjà disponible est réutilisé sans réveil inutile. *(Sandbox `katsuyu-wake-cycle` ; réel à prouver)*
+- [x] Plusieurs jobs compatibles peuvent partager un même cycle. *(Sandbox `katsuyu-wake-cycle` : deux jobs, un réveil, un arrêt ; réel à prouver)*
+- [x] L’arrêt après traitement respecte les conditions prévues. *(Sandbox `katsuyu-wake-cycle` : arrêt après file vide, permission consommée ; réel : l'appel à `shutdown.exe` n'a jamais éteint Bubule, à prouver avec Katsuyu 0.13.1)*
+- [x] Bubule n’est pas arrêté lorsqu’un usage utilisateur ou un état bloquant est détecté. *(Sandbox `katsuyu-wake-cycle` et règle de session testée ; réel : veto observé le 29/09 sur une session rouverte par Windows, à refaire avec une vraie session)*
+- [x] Un job interrompu peut être repris ou explicitement échouer. *(Sandbox `katsuyu-resilience` : vrai processus tué, reprise à la tentative 2, échec à la 3ᵉ ; réel à prouver)*
+- [x] Les traitements déterministes lourds peuvent fonctionner sans runtime IA lorsqu’ils n’en ont pas besoin. *(Sandbox `katsuyu-resilience` ; réel : les cycles du 29/09 n'exécutaient que `logs.health_check`)*
+- [x] Une expertise IA impossible ne produit pas de conclusion artificielle. *(Sandbox `katsuyu-resilience` et `katsuyu-unavailable` ; réel à prouver)*
+- [x] Vision permet de comprendre au minimum pourquoi Katsuyu a été réveillé et ce qu’il a exécuté. *(réel : journal des cycles lu le 29/09 ; Sandbox `ohana-self-supervision`)*
+
+La phase n'est pas close : les mentions « réel à prouver » attendent un cycle
+complet sans intervention sur Bubule et un test avec une vraie session
+(`docs/Phase-6-Katsuyu.md`, « Validation réelle »).
 
 ---
 
@@ -1407,6 +1415,13 @@ Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes
   trois fois au plus puis échoue explicitement (`worker.interrupted`) ; scénario
   `katsuyu-resilience` (runtime IA absent : traitement déterministe maintenu, IA
   en échec sans conclusion artificielle).
+- 29 septembre, premiers cycles réels : le réveil fonctionne (47 s) ; une
+  permission d'arrêt perdue avec la réponse est désormais accordée de nouveau
+  (Agent 1.43.1) ; Windows rouvrant tout seul la session de l'utilisateur au
+  démarrage (verrouillée aussitôt), le veto de session bloquait chaque arrêt.
+  Correctif codé (Katsuyu 0.13.1, non publié à la date de cette note) : une
+  session verrouillée jamais touchée est ignorée. L'arrêt effectif par
+  `shutdown.exe` reste à prouver en réel.
 
 ## Durcissement continu
 
