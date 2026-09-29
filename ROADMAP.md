@@ -1465,7 +1465,7 @@ démontré avec de vrais composants en Sandbox (`--full-stack`, PWA rendue dans
 Chromium sur le vrai résumé de l'Agent), la preuve réelle restant à faire.
 
 - [x] Shizune reste utilisable comme PWA sans application native obligatoire. *(réel : PWA installée et utilisée sur iPhone, sans APNs)*
-- [x] L’état général de Konoha est compréhensible sans détails techniques excessifs. *(Sandbox ; maquette validée par l'utilisateur ; libellés et durées réels à confirmer après le déploiement 1.0.138)*
+- [x] L’état général de Konoha est compréhensible sans détails techniques excessifs. *(réel : accueil consulté par l'utilisateur sur Konoha après le déploiement 1.0.138, le 29/09 ; Sandbox ; maquette validée)*
 - [x] Les incidents importants sont clairement identifiés. *(Sandbox : icône d'état, tuiles de services, journaux par équipement avec « Attente décision » ; réel à confirmer)*
 - [ ] Une demande de décision Tsunade est compréhensible. *(texte de l'Agent inchangé ; à relire sur des demandes réelles avant d'y toucher)*
 - [ ] L’utilisateur peut autoriser, refuser ou reporter sans ambiguïté. *(confirmation après clic et report daté vérifiés en démonstration locale ; pas encore dans la Sandbox ni sur l'iPhone)*
