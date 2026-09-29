@@ -6,6 +6,39 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.135] - 2026-09-29
+
+### Composition
+
+- Ohana-Agent 1.41.0 → 1.42.0 : anomalies de journaux nommées par composant
+  (Tapo, Kasa, Shelly...) et composants acceptables comme connus, statistiques
+  détaillées et classement des réparations, corrélations entre équipements par
+  dépendance déclarée.
+- Ohana-Vision 1.32.0 → 1.33.0 : page Tsunade en deux colonnes (le dépliant
+  « Règles appliquées » ne bloque plus la navigation), journaux par composant,
+  onglet « Bilan » détaillé, réparations connues classées.
+- Ohana-Shizune 0.4.0 inchangé.
+- Hors composition : Katsuyu 0.12.1 (tracebacks chaînés, identifiants
+  d'appareils Shelly, vérification de mise à jour à chaque démarrage).
+- **Ordre de déploiement : Agent et Vision ensemble (`ohana update`), puis
+  Katsuyu.** Un Katsuyu ancien fonctionne avec le nouvel Agent, et le nouvel
+  Agent avec un ancien Vision : les composants n'apparaissent alors pas.
+
+### Ajouté
+
+- Sandbox : scénario `log-components` (HA-01 par composant : tracebacks
+  chaînés, appareils Shelly, acceptation d'un composant sauf ses lignes
+  critiques, nouveau texte d'erreur le lendemain) ; `known-repair-history`
+  vérifie les statistiques détaillées et le classement ; `preventive-drifts`
+  vérifie la corrélation par dépendance déclarée et son absence sans
+  déclaration ; le parcours `--full-stack` accepte un composant depuis Vision.
+
+### Modifié
+
+- Sandbox `--full-stack` : la page Tsunade en deux colonnes (onglets de
+  surveillance) ; le parcours déplie toutes les règles préventives et vérifie
+  que les incidents restent visibles et que la colonne de droite défile.
+
 ## [1.0.134] - 2026-09-29
 
 ### Composition
