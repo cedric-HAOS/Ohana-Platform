@@ -47,9 +47,9 @@ Constats faits par lecture de `Shizune/PWA/app.js`, `read_companion_summary`
 
 | Lot | Contenu | État |
 | --- | --- | --- |
-| 1 — État général et synchronisation | carte d'état de Konoha en tête de l'essentiel (une phrase, sans jargon) ; l'écran « Connexion indisponible » donne l'heure de la dernière synchronisation réussie | codé, non publié (Shizune) |
-| 2 — Décision et suivi | message de confirmation après clic, report daté, section « Décisions récentes » (24 h) : réponse + issue tirée de l'activité de l'Agent ; relais Vision `GET /api/shizune/requests/recent` vers le contrat Agent existant `/v1/incidents/requests/all` (aucune logique métier ajoutée à la PWA) | codé, non publié (Shizune, Vision) |
-| 3 — Sandbox, documentation, validation réelle | étapes ajoutées au full-stack (carte d'état sur le vrai résumé Agent, suivi de décision, perte puis reprise de synchronisation), plan de test PWA ; parcours réel sur iPhone après déploiement | Sandbox à confirmer ; validation réelle après déploiement |
+| 1 — État général et synchronisation | carte d'état de Konoha en tête de l'essentiel (une phrase, sans jargon) ; l'écran « Connexion indisponible » donne l'heure de la dernière synchronisation réussie | publié (Shizune 0.5.0, Agent 1.44.0, Vision 1.35.0) |
+| 2 — Décision et suivi | message de confirmation après clic, report daté, section « Décisions récentes » (24 h) : réponse + issue tirée de l'activité de l'Agent ; relais Vision `GET /api/shizune/requests/recent` vers le contrat Agent existant `/v1/incidents/requests/all` (aucune logique métier ajoutée à la PWA) | publié (Shizune 0.5.0, Vision 1.35.0) |
+| 3 — Sandbox, documentation, validation réelle | étapes ajoutées au full-stack (carte d'état sur le vrai résumé Agent, suivi de décision, perte puis reprise de synchronisation), plan de test PWA ; parcours réel sur iPhone après déploiement | Sandbox 41/41, exercise-logs et full-stack PASS ; validation réelle sur l’iPhone après déploiement |
 
 **Lot 1 bis — accueil « ce qui va » et « ce qui ne va pas »** (demande de
 l'utilisateur, maquette validée le 29 septembre) : l'accueil ne montrait que les
