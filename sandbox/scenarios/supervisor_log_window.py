@@ -6,8 +6,13 @@ ZWAVE-01 logs more than that in 24 hours: the window was never covered, the
 incident could not resolve and disappeared anomalies were never recognised.
 The byte budget (2 MB) was far from reached.
 
+29 September: ZWAVE-01 was still truncated, now by bytes: 45 000 lines
+filled the 4 MiB budget before the 24 h window. The second run logs 60 000
+lines over 25 hours (beyond the former 50 000-line cap) with a budget smaller
+than the window: Katsuyu 0.11.0 reports it truncated.
+
 The fake Supervisor below honours the ``lines`` parameter the way the real
-one does: it returns the newest lines of 30 000 spread over 25 hours.
+one does: it returns the newest lines spread over 25 hours.
 """
 
 from __future__ import annotations
@@ -27,14 +32,14 @@ WORKER = "sandbox-worker"
 LINES = 30_000
 
 
-def _core_log(now) -> list[bytes]:
+def _core_log(now, count: int = LINES) -> list[bytes]:
     """25 hours of chatty INFO lines, one error before and one inside the window."""
     utc_now = now.astimezone(UTC)
     start = utc_now - timedelta(hours=25)
-    step = timedelta(hours=25) / LINES
+    step = timedelta(hours=25) / count
     lines = [
         (start + step * index).isoformat().encode() + b" INFO Z-Wave value updated\n"
-        for index in range(LINES)
+        for index in range(count)
     ]
     lines.insert(
         10,
@@ -72,9 +77,9 @@ def _serve(lines: list[bytes], requested: list[int]):
     return server
 
 
-def run() -> dict:
-    checks = []
-    details = {}
+
+def _daily_check(count: int, max_bytes: int, requested: list[int]) -> dict:
+    """One scheduled logs.health_check of ZWAVE-01 through the real analyser."""
     with environment() as s:
         s.service = AdministrationService(
             infrastructure_repository=InfrastructureConfigurationRepository(
@@ -93,12 +98,11 @@ def run() -> dict:
                 "capabilities": ["logs.health_check"],
             }
         )
-        requested: list[int] = []
-        server = _serve(_core_log(s.clock()), requested)
+        server = _serve(_core_log(s.clock(), count), requested)
         base_url = f"http://127.0.0.1:{server.server_address[1]}"
         try:
             s.service.request_log_health_check(
-                now=s.clock(), max_bytes=2 * 1024 * 1024, window_hours=24
+                now=s.clock(), max_bytes=max_bytes, window_hours=24
             )
             claimed = s.service.next_worker_job(
                 {"worker_id": WORKER, "supported_types": ["logs.health_check"]}
@@ -123,28 +127,53 @@ def run() -> dict:
         finally:
             server.shutdown()
             server.server_close()
-        [zwave] = result["sources"]
-        signatures = [finding["signature"] for finding in zwave["findings"]]
-        details["lignes demandées au Supervisor"] = ", ".join(map(str, requested))
-        details["octets retenus"] = zwave["fetched_bytes"]
-        details["lignes analysées"] = zwave["analyzed_lines"]
-        checks += [
-            (
-                "plus de 10 000 lignes en 24 h : la fenêtre est couverte, collecte "
-                "non tronquée",
-                zwave["truncated"] is False,
+    [zwave] = result["sources"]
+    return zwave
+
+
+def run() -> dict:
+    checks = []
+    details = {}
+    requested: list[int] = []
+    zwave = _daily_check(LINES, 2 * 1024 * 1024, requested)
+    signatures = [finding["signature"] for finding in zwave["findings"]]
+    details["octets retenus"] = zwave["fetched_bytes"]
+    details["lignes analysées"] = zwave["analyzed_lines"]
+    checks += [
+        (
+            "plus de 10 000 lignes en 24 h : la fenêtre est couverte, collecte "
+            "non tronquée",
+            zwave["truncated"] is False,
+        ),
+        (
+            "seules les lignes de la fenêtre comptent dans le budget d'octets",
+            zwave["fetched_bytes"] < 2 * 1024 * 1024
+            and zwave["analyzed_lines"] >= LINES * 24 // 25,
+        ),
+        (
+            "l'erreur de la fenêtre est retenue, celle de la veille non",
+            any(item.endswith("transmission failed") for item in signatures)
+            and not any("yesterday" in item for item in signatures),
+        ),
+    ]
+    chatty = _daily_check(60_000, 1024 * 1024, requested)
+    details["29/09 : lignes analysées"] = chatty["analyzed_lines"]
+    checks += [
+        (
+            "29/09 : 60 000 lignes en 25 h, fenêtre plus grande que le budget "
+            "d'octets : collecte complète",
+            chatty["truncated"] is False
+            and chatty["analyzed_lines"] >= 60_000 * 24 // 25,
+        ),
+        (
+            "29/09 : l'erreur de la fenêtre est retenue malgré le volume",
+            any(
+                item["signature"].endswith("transmission failed")
+                for item in chatty["findings"]
             ),
-            (
-                "seules les lignes de la fenêtre comptent dans le budget d'octets",
-                zwave["fetched_bytes"] < 2 * 1024 * 1024
-                and zwave["analyzed_lines"] >= LINES * 24 // 25,
-            ),
-            (
-                "l'erreur de la fenêtre est retenue, celle de la veille non",
-                any(item.endswith("transmission failed") for item in signatures)
-                and not any("yesterday" in item for item in signatures),
-            ),
-        ]
+        ),
+    ]
+    details["lignes demandées au Supervisor"] = ", ".join(map(str, requested))
     details["portée"] = (
         "Agent et analyseur Katsuyu locaux, faux Supervisor HTTP ; aucun accès "
         "production"

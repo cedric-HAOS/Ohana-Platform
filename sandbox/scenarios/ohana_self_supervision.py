@@ -27,7 +27,10 @@ from ohana_agent.api.service import AdministrationService
 from ohana_agent.companions.repository import CompanionRepository
 from ohana_agent.infrastructure.repository import InfrastructureConfigurationRepository
 from ohana_agent.jobs.repository import DistributedJobRepository
+from ohana_agent.runtime.release_check import ReleaseCheck
+from ohana_agent.runtime.self_report import AgentSelfReport
 from ohana_agent.runtime.vision_probe import VisionVitalsProbe
+from ohana_agent.scheduler import Scheduler
 from ohana_agent.runtime.vitals import AgentVitals, stale_components
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
 from ohana_katsuyu.ai import AiInferenceHandler
@@ -197,6 +200,7 @@ def run() -> dict:
                 },
                 heartbeat_seconds=0.2,
                 runtime_refresh_seconds=0,
+                workspace_root=root / "workspace",
             )
             worker.register()
             jobs.create(
@@ -223,6 +227,30 @@ def run() -> dict:
                 vitals.beat(name)
             probe = VisionVitalsProbe(base + "/api/runtime/vitals", timeout_seconds=3)
             _http(base, "/api/observations", _host_health(vitals, probe))
+
+            # Phase 5 hardening: the Agent's real detailed report; the release
+            # catalogue answer is fixed (no GitHub access from the Sandbox).
+            scheduler = Scheduler()
+            scheduler.start()
+            releases = ReleaseCheck(
+                fetch=lambda: {
+                    "platform_version": "1.0.134",
+                    "agent_version": "1.41.0",
+                    "vision_version": "0.0.1",
+                    "shizune_version": "0.4.0",
+                    "katsuyu_version": "0.12.0",
+                }
+            )
+            releases.check_now()
+            service.self_report = AgentSelfReport(
+                scheduler=scheduler,
+                data_directory=root,
+                agent_version="1.40.0",
+                job_vitals=jobs.vitals,
+                outbox_pending=lambda: 3,
+                vision_status=probe.latest,
+                release_check=releases,
+            ).snapshot
 
             # Shizune synchronises through Vision's bridge.
             token = _pair(companions)
@@ -276,6 +304,49 @@ def run() -> dict:
                     (
                         "Shizune : dernière synchronisation de l'appareil affichée",
                         "Dernière synchronisation" in _card(page, "shizune").inner_text(),
+                    ),
+                ]
+                agent_text = _card(page, "agent").inner_text()
+                vision_text = _card(page, "vision").inner_text()
+                katsuyu_text = _card(page, "katsuyu").inner_text()
+                shizune_text = _card(page, "shizune").inner_text()
+                checks += [
+                    (
+                        "Agent : planificateur à l'heure, file vers Vision, travaux, bases",
+                        "Retard du planificateur" in agent_text
+                        and "À l’heure" in agent_text
+                        and "3 en attente" in agent_text
+                        and "Travaux Katsuyu" in agent_text
+                        and "Bases de l’Agent" in agent_text,
+                    ),
+                    (
+                        "Agent : version recommandée plus récente signalée sans dégrader la carte",
+                        "Mise à jour disponible" in agent_text
+                        and "recommandée 1.41.0" in agent_text
+                        and states["agent"] == "healthy",
+                    ),
+                    (
+                        "Vision : retard d'ingestion, base, rétention, pages ouvertes, version",
+                        all(
+                            label in vision_text
+                            for label in (
+                                "Retard d’ingestion",
+                                "Base de Vision",
+                                "Rétention",
+                                "connexion(s) WebSocket",
+                                "Version de Vision",
+                            )
+                        ),
+                    ),
+                    (
+                        "Katsuyu : espace de travail, détail IA et version à mettre à jour",
+                        "Espace de travail" in katsuyu_text
+                        and "Runtime IA (détail)" in katsuyu_text
+                        and "recommandée 0.12.0" in katsuyu_text,
+                    ),
+                    (
+                        "Shizune : échéance de l'association affichée",
+                        "association valable jusqu" in shizune_text,
                     ),
                 ]
                 page.screenshot(path=str(output / "ohana-desktop.png"), full_page=True)
