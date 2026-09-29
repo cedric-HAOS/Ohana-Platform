@@ -194,6 +194,37 @@ est daté à l'heure de Paris. L'Agent 1.40.0 échoue.
 .\sandbox\run.ps1 run agent-restart-quiet
 ```
 
+`agent-frozen-heartbeat` (durcissement de la Phase 5) fait tourner les vrais
+vitaux, la règle de vivacité et le publieur MQTT de l'Agent devant un Home
+Assistant simulé qui applique `expire_after` : un Agent sain reste disponible,
+Vision en panne ne le rend pas indisponible, une boucle d'administration
+figée (processus vivant, aucun message `offline`) le rend indisponible en
+moins de 10 minutes, puis disponible au retour.
+
+`preventive-drifts` (durcissement de la Phase 4) rejoue quatre semaines dans
+le vrai moniteur préventif : mémoire en hausse signalée, DNS lent chaque
+week-end reconnu comme saisonnier, anomalie de journaux croissante dans les
+contrôles Katsuyu de la vraie base des travaux, entités Home Assistant
+nouvellement indisponibles lues en HTTP par le vrai échantillonneur (un
+redémarrage ignoré), corrélation sur un équipement, dérive ignorée 30 jours
+et dérive déjà suivie par un incident.
+
+`incident-history` (durcissement de la Phase 3) ouvre la vue « Historique »
+de Vision dans Chromium, alimentée par un vrai Agent HTTP et son dépôt
+d'incidents : filtres, fiche d'équipement, frise des 30 derniers jours, puis
+« Incidents semblables » sur l'incident ouvert (l'arrêt de Vision de J-25
+ressemble, le disque plein plus récent non).
+
+`supervisor-log-window` rejoue aussi, depuis le 29 septembre, 60 000 lignes
+en 25 heures avec un budget d'octets plus petit que la fenêtre (Katsuyu
+0.11.0 échoue).
+
+```powershell
+.\sandbox\run.ps1 run agent-frozen-heartbeat
+.\sandbox\run.ps1 run preventive-drifts
+.\sandbox\run.ps1 run incident-history
+```
+
 `known-repair-history` (Phase 3) exécute quatre fois la réparation dnsmasq
 connue par les vrais services Agent et SQLite. Il vérifie que chaque exécution
 est comptée avec son résultat, y compris un échec d'exécution et après

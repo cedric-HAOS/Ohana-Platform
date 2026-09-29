@@ -14,6 +14,12 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
   l'heure de Paris (Agent 1.40.0 échoue).
 - Hors composition : Katsuyu 0.11.0 publié (mise à jour automatique quand le
   PC est inactif), déjà installé sur Bubule.
+- Durcissement continu des phases 1, 3, 4 et 5 (ROADMAP) : ZWAVE-01 complet
+  malgré le volume de ses journaux, comparaison plus fine et historique des
+  incidents, nouvelles tendances préventives adaptatives et saisonnières,
+  Agent figé visible dans Home Assistant, vue Ohana détaillée. Scénarios
+  `agent-frozen-heartbeat`, `preventive-drifts`, `incident-history` ;
+  `supervisor-log-window` et `ohana-self-supervision` étendus.
 
 ## [1.0.133] - 2026-09-28
 

@@ -566,9 +566,15 @@ Restent à suivre :
   septembre, 17 le 26 (journée de pannes contrôlées, nouvelles anomalies) ; à
   remesurer après une journée calme (objectif : plus d'expertise quotidienne
   pour des anomalies inchangées) ;
-- ZWAVE-01 : collecte déclarée tronquée quand plus de 64 signatures
-  d'anomalies distinctes apparaissent (44 le 26 septembre à 21:15), à suivre
-  après correction de LINKY-01.
+
+Traité le 29 septembre (Katsuyu, non publié ; scénario
+`supervisor-log-window` étendu, Katsuyu 0.11.0 échoue) :
+
+- ZWAVE-01 encore déclaré tronqué, non plus par les signatures (4 le
+  29 septembre) mais par les octets : 45 000 lignes remplissaient le budget de
+  4 Mio avant la fenêtre de 24 h. Katsuyu lit les journaux du Supervisor
+  jusqu'à 16 fois le budget et garde toute la fenêtre (il regroupe les lignes,
+  il ne les transmet pas), jusqu'à 200 000 lignes par journal.
 
 Traités le 28 septembre (contrôle manuel des journaux de 12:08), publiés
 dans Platform 1.0.131 (Agent 1.38.1, Vision 1.29.1) et Katsuyu 0.8.20,
@@ -994,9 +1000,17 @@ Konoha. Détail : [Phase 3 — Mémoire opérationnelle](docs/Phase-3-Memoire-op
 - statistiques supplémentaires ;
 - taux de réussite détaillés ;
 - classement des réparations ;
-- obsolescence automatique assistée ;
-- comparaison plus fine entre incidents ;
-- historique avancé dans Vision.
+- obsolescence automatique assistée.
+
+Traités le 29 septembre (Agent, Vision, non publiés ; scénario
+`incident-history`) :
+
+- comparaison plus fine entre incidents : empreinte (raisons, message
+  d'ouverture, service, anomalies de journaux) et ressemblance expliquée ;
+  une réparation connue d'une autre nature de panne n'est plus citée ;
+- historique avancé dans Vision : vue « Historique » (recherche par
+  période, équipement, capacité et issue, fiche par équipement, frise des
+  30 derniers jours) et « Incidents semblables » sur chaque incident.
 
 Traités le 28 septembre après les validations réelles (Platform 1.0.131 :
 Agent 1.38.1, Vision 1.29.1) :
@@ -1094,13 +1108,27 @@ faute de dérive réelle. Détail :
 
 ## Durcissement continu
 
-- nouvelles tendances ;
-- fenêtres adaptatives ;
-- détection saisonnière ;
-- analyse de journaux longue durée ;
-- tendances Home Assistant ;
-- corrélations plus complexes ;
-- réduction des alertes inutiles.
+- tendances Home Assistant supplémentaires (batteries, base recorder,
+  redémarrages de Home Assistant Core) ;
+- température d'INFRA-01 (saisonnalité annuelle) ;
+- corrélations au-delà d'un même équipement (dépendances déclarées).
+
+Traités le 29 septembre (Agent, Vision, non publiés ; scénario
+`preventive-drifts`), choix de l'utilisateur :
+
+- nouvelles tendances : mémoire et swap, temps de réponse (DNS, MQTT,
+  réseau), anomalies de journaux croissantes ;
+- fenêtres adaptatives (référence de 7 à 28 jours, seuil suivant la
+  dispersion habituelle) et saisonnalité hebdomadaire dès 3 semaines,
+  persistance 4 jours sur 7 ;
+- analyse de journaux longue durée : les contrôles Katsuyu conservés 30
+  jours, hors anomalies acceptées et collectes incomplètes ;
+- tendance Home Assistant : entités indisponibles de HA-01 (relevé horaire,
+  minimum quotidien, entités nouvellement indisponibles nommées) ;
+- corrélations : dérives simultanées sur un même équipement, sans cause
+  affirmée ;
+- moins d'alertes inutiles : « Ignorer 30 jours » depuis Vision, dérive déjà
+  suivie par un incident ouvert listée à part.
 
 ---
 
@@ -1213,25 +1241,28 @@ par Vision) n'a pas de canal APNs. Détail :
 
 ## Durcissement continu
 
-- scheduler ;
-- longueurs de files ;
-- état du stockage Tsunade ;
-- WebSocket Vision ;
-- retard d’ingestion ;
-- croissance SQLite ;
-- rétention ;
-- workspace Katsuyu ;
-- diagnostic détaillé du runtime IA ;
-- version disponible ;
-- association Shizune ;
 - notification pendant une panne de Vision à démontrer en réel (arrêt de
   Vision plus de 5 minutes sans redémarrer HA-01) ; déclencheur
   « indisponible depuis 10 minutes » ajouté par l'utilisateur à
   l'automatisation « Santé Ohana-House » pour un Agent arrêté, à vérifier ;
-- Agent figé (processus vivant, boucle bloquée) : aucun message `offline`
-  MQTT, seul le bandeau de Vision le signale ;
-- appareils Shizune en double : un rappairage laisse l'ancien appareil actif
-  jusqu'à sa révocation.
+
+Précision de l'utilisateur (29 septembre) : les deux appareils « iPhone
+Shizune » ne sont pas des doublons (affichage sur iPhone et sur Windows).
+
+Traités le 29 septembre (Agent, Vision, Katsuyu, non publiés ; scénarios
+`agent-frozen-heartbeat`, `ohana-self-supervision` étendu) :
+
+- Agent figé : le résumé MQTT est republié à chaque battement et expire dans
+  Home Assistant (`expire_after`, 5 battements) ; tant qu'un composant de
+  l'Agent est muet, il n'est plus publié. Les capteurs passent indisponibles
+  en 6 minutes et l'automatisation « indisponible depuis 10 minutes » de
+  l'utilisateur prévient ;
+- vue Ohana détaillée : retard du planificateur, files (livraison à Vision,
+  travaux Katsuyu), taille et croissance des bases SQLite (Agent et Vision),
+  rétention, retard d'ingestion, pages WebSocket ouvertes, espace de travail
+  et détail du runtime IA de Katsuyu, version installée comparée à la
+  recommandée (catalogue de la dernière release, lu toutes les 6 h), échéance
+  des associations Shizune.
 
 Traités le 29 septembre après les validations réelles (Agent, non publié ;
 scénario `agent-restart-quiet`, Agent 1.40.0 échoue) :
