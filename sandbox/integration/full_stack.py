@@ -28,6 +28,7 @@ from ohana_agent.jobs.log_sources import LogSourceBroker
 from ohana_agent.jobs.repository import DistributedJobRepository
 from ohana_agent.observation import Observation, ObservationStatus
 from ohana_agent.plugins.backup.config import BackupConfig, BackupTarget
+from ohana_agent.tsunade.companion_overview import services_overview
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
 from ohana_agent.tsunade.local_time import paris_now
@@ -187,7 +188,24 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
     )
 
     # Shizune renders the real companion payload of the Agent service.
+    service.incident_repository.process(
+        Observation(
+            node="zwave-01",
+            service="dns-primary",
+            capability="dns.resolve",
+            status=ObservationStatus.HEALTHY,
+            success=True,
+            message="DNS resolution succeeded.",
+            source="dns.resolve",
+            timestamp=datetime.now(ZoneInfo("Europe/Paris")),
+            latency_ms=4.6,
+        )
+    )
     summary = service.read_companion_summary()
+    # The tile mapping needs the configured service types (unit-tested in Agent).
+    summary["services"] = services_overview(
+        service.incident_repository.capability_states(), {"dns-primary": "dns"}
+    )
     shizune = browser.new_context(
         viewport={"width": 390, "height": 844}, service_workers="block"
     )
@@ -199,8 +217,13 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
             "/activity": {"activity": []},
         }
 
+        gateway_down = {"value": False}
+
         def fulfil(route):
             path = route.request.url.split("/api/shizune", 1)[1].split("?")[0]
+            if gateway_down["value"]:
+                route.fulfill(status=502, json={"detail": "Agent injoignable"})
+                return
             route.fulfill(json=payloads.get(path, {}))
 
         phone.route("**/api/shizune/**", fulfil)
@@ -233,8 +256,94 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
                 "document.documentElement.scrollWidth <= window.innerWidth + 1"
             ),
         )
+        _shizune_phase7(phone, payloads, gateway_down, summary, output, report, check)
     finally:
         shizune.close()
+
+
+def _shizune_phase7(phone, payloads, gateway_down, summary, output, report, check):
+    """Phase 7: plain Konoha state, decision follow-up, explicit sync loss."""
+    state = {"healthy": "stable", "degraded": "dégradé", "critical": "critique"}[
+        summary["konoha_state"]
+    ]
+    card = phone.locator(".state-card")
+    expect(card).to_contain_text(f"Konoha : {state}", timeout=15000)
+    check(
+        "Shizune affiche l'état de Konoha avec son icône, sans détail technique",
+        card.locator("img").count() == 1
+        and "host.health" not in phone.locator("#app").inner_text(),
+    )
+
+    services = phone.locator(".tiles")
+    expect(services).to_contain_text("DNS")
+    expect(services).to_contain_text("4,6 ms")
+    check(
+        "Shizune montre les services essentiels avec la durée du test",
+        services.locator(".tile").count() == 1,
+    )
+    logs = phone.locator("section:has-text('Journaux par équipement')")
+    expect(logs).to_contain_text("INFRA-01")
+    expect(logs).to_contain_text("LINKY-01")
+    expect(logs.locator(".block-sub")).to_have_text(
+        __import__("re").compile(r"Dernier contrôle|Aucun contrôle terminé")
+    )
+    check(
+        "Shizune détaille les journaux par équipement",
+        logs.locator(".log-row").count() == 4,
+    )
+
+    incident_id = "11111111-1111-1111-1111-111111111111"
+    answered = {
+        "request_id": "22222222-2222-2222-2222-222222222222",
+        "incident_id": incident_id,
+        "kind": "repair_authorization",
+        "context": "x",
+        "question": "Autoriser le redémarrage supervisé de chrony ?",
+        "choices": ["AUTHORIZE", "REFUSE"],
+        "state": "answered",
+        "answer": "AUTHORIZE",
+        "created_at": "2026-09-29T17:00:00+02:00",
+        "expires_at": "2099-01-01T00:00:00+02:00",
+        "answered_at": datetime.now(ZoneInfo("Europe/Paris")).isoformat(),
+    }
+    payloads["/requests/recent"] = {"requests": [answered]}
+    payloads["/activity"] = {
+        "activity": [
+            {
+                "activity_id": "a1",
+                "occurred_at": datetime.now(ZoneInfo("Europe/Paris")).isoformat(),
+                "kind": "result",
+                "title": "chrony a redémarré : le service répond de nouveau.",
+                "incident_id": incident_id,
+            }
+        ]
+    }
+    phone.locator('.nav-item[data-view="home"]').click()
+    phone.locator('[data-action="refresh"]').click()
+    phone.locator('.nav-item[data-view="decisions"]').click()
+    recent = phone.locator("#app .decision-row")
+    expect(recent).to_contain_text("Vous avez autorisé", timeout=15000)
+    expect(recent).to_contain_text("le service répond de nouveau")
+    phone.screenshot(path=str(output / "shizune-decision.png"), full_page=True)
+    report["screenshots"].append("shizune-decision.png")
+    check("Shizune relie une décision à son issue (Décisions récentes)", True)
+
+    gateway_down["value"] = True
+    phone.locator('.nav-item[data-view="home"]').click()
+    phone.locator('[data-action="refresh"]').click()
+    expect(phone.locator("#app")).to_contain_text(
+        "Dernière synchronisation réussie", timeout=15000
+    )
+    phone.screenshot(path=str(output / "shizune-sync-lost.png"), full_page=True)
+    report["screenshots"].append("shizune-sync-lost.png")
+    check(
+        "Shizune signale explicitement une perte de synchronisation",
+        "Connexion indisponible" in phone.locator("#app").inner_text(),
+    )
+    gateway_down["value"] = False
+    phone.locator('[data-action="refresh"]').click()
+    expect(phone.locator(".state-card")).to_be_visible(timeout=15000)
+    check("Shizune reprend la synchronisation sans rechargement", True)
 
 
 def _preventive_backfill(page, jobs, home_assistant, worker, output, report, check):
