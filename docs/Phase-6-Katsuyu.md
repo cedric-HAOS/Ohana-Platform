@@ -60,7 +60,7 @@ Vision explique pourquoi Katsuyu a été réveillé et ce qu'il a exécuté.
 | --- | --- | --- |
 | 1 — Veto d'arrêt et cycles expliqués | veto de session côté Katsuyu, journal des réveils et arrêts dans l'Agent, lignes « Cycle de réveil » dans la vue Ohana | codé, non publié (Agent, Katsuyu 0.13.0, Vision) |
 | 2 — Fiabilité du Wake-on-LAN | mesure du succès, réveil resté sans réponse, relances, échec explicite | codé, non publié (Agent, Vision) |
-| 3 — Reprise et IA indisponible | jobs interrompus, échec explicite, absence de conclusion artificielle | à faire |
+| 3 — Reprise et IA indisponible | jobs interrompus, échec explicite, absence de conclusion artificielle | codé, non publié (Agent) |
 | 4 — Sandbox, documentation, validations réelles | scénarios, parcours réel avec Bubule | à faire |
 
 ### Lot 1 — veto d'arrêt et cycles expliqués
@@ -142,6 +142,32 @@ maximum, retards, sans-réponse, abandons) et, par cycle, les tentatives,
 deux relances, abandon, pas de quatrième tentative), démarrage manuel tardif
 qui exécute le travail en attente sans arrêt, statistiques (5 réveils : 2 à
 l'heure, 3 sans réponse, 1 abandon).
+
+### Lot 3 — reprise des jobs interrompus et IA indisponible
+
+Audit : un job dont le worker disparaissait était remis en file indéfiniment,
+jusqu'à son délai maximal (jusqu'à plusieurs heures). Un job qui fait tomber le
+PC à chaque fois (mémoire, plantage) aurait été rejoué en boucle. Côté IA, le
+repli de Tsunade existait déjà (`record_ai_failure` : décision « surveiller »,
+statut épistémique `none`, aucune action corrective) mais n'était démontré que
+pour un Katsuyu absent, pas pour un runtime IA absent avec un Katsuyu vivant ni
+pour un job abandonné.
+
+**Agent** (`jobs/repository.py`) : `max_attempts` (3 par défaut, 1 à 10). Une
+interruption remet le job en file (« attempt 1/3 ») ; à la troisième, il passe
+en `FAILED` avec `worker.interrupted` et un message lisible. Les travaux IA et
+d'investigation abandonnés sont repris par le traitement des résultats
+(`completion_processed`) : repli sans conclusion.
+
+**Rien à changer dans Katsuyu.** Un worker redémarré se réinscrit et prend le
+travail dès l'expiration du bail ; les handlers déterministes ne dépendent pas
+du runtime IA (le runtime absent est déclaré `missing` avec sa cause).
+
+**Sandbox** : `katsuyu-resilience`. Partie A : job IA interrompu trois fois,
+échec explicite, repli sans conclusion, aucune réparation ni nouveau job.
+Partie B : vrai worker Katsuyu en HTTP, job repris à la tentative 2 après la
+disparition de son prédécesseur, travail déterministe exécuté sans runtime IA,
+job IA impossible en échec avec sa cause et sans conclusion.
 
 ## Validation réelle (après publication et déploiement)
 

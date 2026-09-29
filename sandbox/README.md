@@ -170,6 +170,17 @@ de sessions Windows. Agent 1.42.0 (sans journal) échoue.
 .\sandbox\run.ps1 run katsuyu-wake-cycle
 ```
 
+`katsuyu-resilience` (Phase 6, lot 3) vérifie qu'un job IA dont le worker
+disparaît trois fois échoue explicitement (`worker.interrupted`) et laisse à
+Tsunade son repli sans conclusion, puis, avec un vrai worker Katsuyu en HTTP,
+qu'un job est repris à la tentative 2, que le traitement déterministe continue
+sans runtime IA et qu'un job IA impossible échoue avec sa cause. Agent 1.42.0
+(reprises illimitées) échoue.
+
+```powershell
+.\sandbox\run.ps1 run katsuyu-resilience
+```
+
 `katsuyu-shizune-vitals` (Phase 5, lot 4) démarre les listeners HTTP de
 l'Agent (administration/worker et compagnon), la vraie boucle Katsuyu et
 l'application Vision avec son pont Shizune. Il vérifie le runtime déclaré

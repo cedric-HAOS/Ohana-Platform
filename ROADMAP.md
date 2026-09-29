@@ -1403,6 +1403,10 @@ Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes
   journalisé, relances (trois tentatives à 10 minutes d'intervalle) puis abandon
   explicite, connexion tardive ou manuelle distinguée, fiabilité du réveil
   mesurée et affichée.
+- 29 septembre, lot 3 (Agent ; non publié) : un travail interrompu est repris
+  trois fois au plus puis échoue explicitement (`worker.interrupted`) ; scénario
+  `katsuyu-resilience` (runtime IA absent : traitement déterministe maintenu, IA
+  en échec sans conclusion artificielle).
 
 ## Durcissement continu
 

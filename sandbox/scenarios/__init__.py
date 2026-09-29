@@ -23,6 +23,10 @@ SCENARIOS = {
         "scenarios.katsuyu_wake_cycle",
         "Phase 6 : raison du réveil, travail exécuté, arrêt ou veto de session, sans réveil inutile.",
     ),
+    "katsuyu-resilience": (
+        "scenarios.katsuyu_resilience",
+        "Phase 6 : job interrompu repris puis échec explicite, IA impossible sans conclusion artificielle.",
+    ),
     "katsuyu-shizune-vitals": (
         "scenarios.katsuyu_shizune_vitals",
         "Phase 5 : runtime et dernier job de Katsuyu, passerelle et synchronisation Shizune.",
