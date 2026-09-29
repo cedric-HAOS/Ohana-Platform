@@ -127,6 +127,34 @@ def run() -> dict:
                     lab.incidents.statistics()["learned_repair_count"] == 0,
                 ),
             ]
+            statistics = lab.service.read_repair_statistics()
+            [ranked] = lab.service.list_experiences()["experiences"]
+            everything = statistics["periods"]["all"]
+            [by_repair] = statistics["by_repair"]
+            checks += [
+                (
+                    "statistiques détaillées : issues séparées, taux sur les issues vérifiées",
+                    everything["proposed"] == 4
+                    and everything["failed"] == 1
+                    and everything["succeeded"] == everything["executed"] - 1
+                    and everything["success_rate"] is not None
+                    and everything["reliable_rate"] < everything["success_rate"],
+                ),
+                (
+                    "statistiques par réparation : cause de l'échec conservée",
+                    by_repair["target"] == "dnsmasq.service"
+                    and by_repair["failed"] == 1
+                    and len(by_repair["failure_causes"]) == 1
+                    and by_repair["last_failure_at"] is not None,
+                ),
+                (
+                    "classement : la dernière exécution en échec rend la réparation instable",
+                    ranked["rank"] == 1
+                    and ranked["reliability"] == "unstable"
+                    and statistics["ranking"][0]["experience_id"]
+                    == ranked["experience_id"],
+                ),
+            ]
             details["historique"] = (
                 f"{disabled['attempt_count']} tentatives, "
                 f"{disabled['success_count']} réussites, "

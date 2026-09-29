@@ -241,6 +241,13 @@ vérifie trois points :
 - l'erreur Kasa, acceptée comme connue, résout l'incident HA-01 et ne rouvre
   rien le lendemain.
 
+`log-components` rejoue HA-01 tel que le contrôle du 29 septembre le montrait :
+Tapo avec ses tracebacks chaînés (lignes vides), Kasa, trois appareils Shelly du
+même modèle et une ligne critique. Il vérifie qu'aucune ligne orpheline n'est
+comptée, que les appareils Shelly font une signature, que le contrôle nomme les
+composants, qu'un composant accepté couvre ses variantes (sauf la ligne
+critique) et qu'un nouveau texte d'erreur le lendemain ne rouvre rien.
+
 `recurring-log-review` passe trois contrôles quotidiens de HA-01 par le véritable
 `LogsHealthCheckHandler` de Katsuyu, avec des horodatages sans fuseau en heure de
 Paris comme dans Home Assistant. Il vérifie que ces lignes tombent dans la

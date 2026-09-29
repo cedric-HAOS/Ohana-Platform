@@ -319,6 +319,7 @@ def main() -> int:
             "all",
             "recurring-log-review",
             "log-noise-triage",
+            "log-components",
             "supervisor-log-window",
             "slow-completion-reads",
             "katsuyu-shizune-vitals",

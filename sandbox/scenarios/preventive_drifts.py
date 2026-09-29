@@ -25,6 +25,8 @@ from ohana_agent.infrastructure.repository import InfrastructureConfigurationRep
 from ohana_agent.jobs.repository import DistributedJobRepository
 from ohana_agent.observation.observation import Observation
 from ohana_agent.observation.observation_status import ObservationStatus
+from ohana_agent.configuration.infrastructure import InfrastructureConfig
+from ohana_agent.tsunade.incident_correlation import equipment_dependencies
 from ohana_agent.tsunade.home_assistant_availability import (
     HomeAssistantAvailabilitySampler,
 )
@@ -86,6 +88,35 @@ def _dns(at: datetime, latency: float, *, healthy: bool = True) -> Observation:
     )
 
 
+def _infrastructure(declared: bool) -> InfrastructureConfig:
+    """The Agent on INFRA-01 publishes to MQTT on HA-01 (declared or not)."""
+    agent: dict[str, object] = {
+        "id": "ohana-agent",
+        "name": "Ohana Agent",
+        "type": "agent",
+        "node": "infra-01",
+    }
+    if declared:
+        agent["metadata"] = {"depends_on": ["mqtt"]}
+    return InfrastructureConfig.model_validate(
+        {
+            "infrastructure": {"id": "konoha", "name": "Konoha"},
+            "nodes": [
+                {
+                    "id": node,
+                    "name": node,
+                    "endpoint": {"type": "host", "address": f"{node}.ohana.lan"},
+                }
+                for node in ("ha-01", "infra-01")
+            ],
+            "services": [
+                {"id": "mqtt", "name": "Mosquitto", "type": "mqtt", "node": "ha-01"},
+                agent,
+            ],
+        }
+    )
+
+
 def _entities(unavailable: list[str], total: int = 400) -> list[dict]:
     rows = [{"entity_id": name, "state": "unavailable"} for name in unavailable]
     rows += [
@@ -104,7 +135,13 @@ def run() -> dict:
         database = Path(tmp) / "distributed-jobs.db"
         jobs = DistributedJobRepository(database, clock=lambda: NOW)
         incidents = TsunadeIncidentRepository(database)
-        monitor = TsunadePreventiveMonitor(database)
+        declared = {"value": False}
+        monitor = TsunadePreventiveMonitor(
+            database,
+            dependency_reader=lambda: equipment_dependencies(
+                _infrastructure(declared["value"])
+            ),
+        )
         recorded: list[datetime] = []
         sampler = HomeAssistantAvailabilitySampler(
             url=f"http://127.0.0.1:{server.server_port}",
@@ -210,6 +247,30 @@ def run() -> dict:
                         and "ne prouve aucune cause" in item["note"]
                         for item in summary["correlations"]
                     ),
+                ),
+            ]
+
+            # Phase 4 hardening: correlation beyond one equipment needs the
+            # owner's declaration; simultaneity alone links nothing.
+            crossed = [i for i in summary["correlations"] if "upstream_equipment_id" in i]
+            declared["value"] = True
+            linked = monitor.summary(now=NOW)
+            cross = [c for c in linked["correlations"] if "upstream_equipment_id" in c]
+            memory = next(i for i in linked["watch"] if i["rule"] == "memory_growth")
+            checks += [
+                (
+                    "mémoire d'INFRA-01 et dérives de HA-01 sans dépendance déclarée : "
+                    "aucun lien",
+                    crossed == [] and "correlated_upstream" not in rules["memory_growth"],
+                ),
+                (
+                    "dépendance déclarée (Agent → MQTT sur HA-01) : dérives simultanées "
+                    "reliées, sans cause affirmée",
+                    len(cross) == 1
+                    and cross[0]["equipment_id"] == "infra-01"
+                    and cross[0]["upstream_equipment_id"] == "ha-01"
+                    and "ne prouve aucune cause" in cross[0]["note"]
+                    and "Ohana Agent dépend de Mosquitto" in memory["correlated_upstream"][0],
                 ),
             ]
 

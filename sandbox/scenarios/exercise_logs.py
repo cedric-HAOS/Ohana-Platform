@@ -115,7 +115,16 @@ def run(*, logs_file: Path | None = None, window_end: str | None = None) -> dict
                     (
                         f"{label} : preuves transmises à Tsunade",
                         any(
-                            i.context.get("findings")
+                            # The Agent names each finding's component: same
+                            # evidence, with two more keys.
+                            [
+                                {
+                                    key: value
+                                    for key, value in finding.items()
+                                    if key not in {"component", "component_label"}
+                                }
+                                for finding in i.context.get("findings") or []
+                            ]
                             == result["sources"][0]["findings"]
                             and any(
                                 e.payload.get("job_id") == str(claimed.job_id)

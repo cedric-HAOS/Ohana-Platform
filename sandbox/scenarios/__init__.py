@@ -203,6 +203,14 @@ SCENARIOS = {
             "avertissements rares sans incident ; erreur acceptée comme connue."
         ),
     ),
+    "log-components": (
+        "scenarios.log_components",
+        (
+            "HA-01 lu par composant (Tapo, Kasa, Shelly) : tracebacks chaînés "
+            "sans ligne orpheline, appareils Shelly regroupés, composant "
+            "accepté sauf ses lignes critiques."
+        ),
+    ),
     "supervisor-log-window": (
         "scenarios.supervisor_log_window",
         (

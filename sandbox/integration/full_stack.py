@@ -152,16 +152,39 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
     title = "INFRA-01 : espace disque en hausse depuis 5 jours"
     page.reload(wait_until="networkidle")
     page.locator('[data-navigation-target="incidents"]').click()
+    page.locator('[data-tsunade-tab="preventive"]').click()
     section = page.locator("#tsunade-preventive")
     expect(section).to_contain_text(title, timeout=15000)
     expect(section).to_contain_text("Aucune intervention nécessaire.")
-    section.locator("summary").click()
+    # Every rule opened at once: the page must stay navigable (the incidents
+    # and the side column each scroll, none is squeezed to zero height).
+    section.locator("details[data-check]").evaluate_all(
+        "elements => elements.forEach((element) => { element.open = true; })"
+    )
     expect(section).to_contain_text("hausse médiane d'au moins 0,5 point par jour")
     expect(section).to_contain_text("INFRA-01 : 74,5 %, +1,2 point/jour")
+    layout = page.evaluate(
+        """() => {
+            const main = document.querySelector(".incidents-main__scroll");
+            const side = document.querySelector(".incidents-side__scroll");
+            side.scrollTop = 120;
+            return {
+                mainHeight: main.clientHeight,
+                sideScrolls: side.scrollHeight > side.clientHeight && side.scrollTop > 0,
+                panel: document.querySelector(".incidents-panel").offsetHeight,
+                view: window.innerHeight,
+            };
+        }"""
+    )
     section.scroll_into_view_if_needed()
     page.screenshot(path=str(output / "vision-preventive.png"))
     report["screenshots"].append("vision-preventive.png")
-    check("Vision détaille la maintenance préventive et ses règles", True)
+    check(
+        "Vision détaille la maintenance préventive et ses règles sans bloquer la page",
+        layout["mainHeight"] >= 200
+        and layout["sideScrolls"]
+        and layout["panel"] <= layout["view"],
+    )
 
     # Shizune renders the real companion payload of the Agent service.
     summary = service.read_companion_summary()
@@ -218,6 +241,7 @@ def _preventive_backfill(page, jobs, home_assistant, worker, output, report, che
     """Phase 4 lot 3: Vision → Agent → Katsuyu (HTTPS) → Home Assistant."""
     page.reload(wait_until="networkidle")
     page.locator('[data-navigation-target="incidents"]').click()
+    page.locator('[data-tsunade-tab="preventive"]').click()
     section = page.locator("#tsunade-preventive")
     button = section.locator("[data-tsunade-preventive-backfill]")
     expect(button).to_be_enabled(timeout=15000)
@@ -243,7 +267,9 @@ def _preventive_backfill(page, jobs, home_assistant, worker, output, report, che
     page.reload(wait_until="networkidle")
     page.locator('[data-navigation-target="incidents"]').click()
     expect(section).to_contain_text("Dernier rattrapage : terminé", timeout=15000)
-    section.locator("details").evaluate("element => { element.open = true; }")
+    section.locator("details[data-check]").evaluate_all(
+        "elements => elements.forEach((element) => { element.open = true; })"
+    )
     expect(section).to_contain_text(
         "sur 7 jours (dont 2 reconstruit(s) depuis Home Assistant)"
     )
@@ -316,10 +342,12 @@ def run(*, args):
             # authorization, HTTP transport and analysis use production code.
             log_time = datetime.now(ZoneInfo("Europe/Paris")).isoformat()
             journal = (
-                f"{log_time} ERROR TemplateError: ValueError: "
+                f"{log_time} ERROR [homeassistant.components.template."
+                "template_entity] TemplateError: ValueError: "
                 "Template error: float got invalid input 'unavailable' "
                 "when rendering template for sensor.pool_temperature\n"
-                f"{log_time} ERROR Error rendering template: "
+                f"{log_time} ERROR [homeassistant.components.template."
+                "template_entity] Error rendering template: "
                 "sensor.pool_temperature cannot be converted with float "
                 "because its state is unavailable\n"
             )
@@ -823,8 +851,8 @@ def run(*, args):
             report["screenshots"].append("vision-repairs.png")
             # Phase 3: the saved repair is listed with its history and can be
             # disabled from Vision.
+            page.locator('[data-tsunade-tab="experiences"]').click()
             experiences = page.locator("#tsunade-experiences")
-            experiences.evaluate("element => element.closest('details').open = true")
             expect(experiences).to_contain_text(
                 "Redémarrage de dnsmasq.service", timeout=15000
             )
@@ -890,19 +918,31 @@ def run(*, args):
             accept = page.locator(f'[data-tsunade-accept-log="{incident_id}"]')
             expect(accept.first).to_be_visible(timeout=15000)
             accept.first.scroll_into_view_if_needed()
+            # The dossier names the component, not only the signatures.
+            expect(page.locator(f"#incidents-list")).to_contain_text(
+                "Modèles Home Assistant"
+            )
+            component_button = page.locator(
+                f'#incidents-list [data-tsunade-accept-component="template"]'
+            )
+            expect(component_button).to_be_visible()
             page.screenshot(path=str(output / "vision-log-anomalies.png"))
             report["screenshots"].append("vision-log-anomalies.png")
-            accepted_ok = True
+            # Accepting the component covers every signature it groups.
+            accepted_ok = post("/logs/accepted-components", component_button)
+            expect(page.locator("#tsunade-log-health")).to_contain_text(
+                "Composant Modèles Home Assistant", timeout=15000
+            )
             while remaining := accept.count():
                 accepted_ok = post("/logs/accepted", accept.first) and accepted_ok
                 expect(accept).to_have_count(remaining - 1, timeout=15000)
             expect(page.locator("#tsunade-log-health")).to_contain_text(
                 "Anomalies acceptées comme connues", timeout=15000
             )
+            page.locator('[data-tsunade-tab="logs"]').click()
             page.locator("#tsunade-log-health").evaluate(
-                "element => { element.closest('details').open = true;"
-                " element.querySelector('details').open = true;"
-                " element.scrollIntoView(); }"
+                "element => { element.querySelector('.incidents-log-accepted')"
+                ".open = true; element.scrollIntoView(); }"
             )
             page.screenshot(path=str(output / "vision-log-report.png"))
             report["screenshots"].append("vision-log-report.png")
@@ -910,7 +950,7 @@ def run(*, args):
                 "Anomalies acceptées depuis Vision : l'incident de journaux est résolu",
                 accepted_ok
                 and incidents.get(incident.incident_id).state == "resolved"
-                and len(service.list_accepted_log_signatures()["signatures"]) >= 1,
+                and len(service.list_accepted_log_signatures()["components"]) >= 1,
             )
             _preventive_views(page, context, browser, preventive, service, output, report, check)
             _preventive_backfill(page, jobs, home_assistant, worker, output, report, check)
