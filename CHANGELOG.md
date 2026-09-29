@@ -6,6 +6,28 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.136] - 2026-09-29
+
+### Composition
+
+- Ohana-Agent 1.42.0 → 1.43.0 : journal des réveils et arrêts de Katsuyu
+  (raison, délai de connexion, travail exécuté, arrêt ou veto), réveil sans
+  réponse relancé trois fois puis abandonné explicitement, fiabilité du réveil
+  mesurée, travail interrompu repris trois fois au plus puis en échec explicite.
+- Ohana-Vision 1.33.0 → 1.34.0 : cycles de réveil et fiabilité du réveil dans la
+  carte Katsuyu de la vue Ohana.
+- Ohana-Shizune 0.4.0 inchangé.
+- Hors composition : Katsuyu 0.12.1 → 0.13.0 (pas d'arrêt d'un PC sur lequel
+  une session Windows est ouverte ; icône de la zone de notification relancée
+  correctement après une mise à jour automatique).
+- **Ordre de déploiement : Agent et Vision ensemble (`ohana update`), puis
+  Katsuyu.** Un Katsuyu ancien fonctionne avec le nouvel Agent (sans rapport
+  d'arrêt) ; un nouveau Katsuyu ignore l'absence de la route de rapport d'un
+  Agent ancien.
+- **Point d'attention Bubule** : si Windows y ouvre automatiquement une session
+  au démarrage, Katsuyu refusera toujours d'éteindre le PC (comportement choisi :
+  session seulement).
+
 ### Ajouté
 
 - Phase 6 démarrée : `docs/Phase-6-Katsuyu.md` (cadre, audit des dix critères,
