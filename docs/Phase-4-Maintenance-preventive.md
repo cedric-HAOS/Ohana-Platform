@@ -184,6 +184,24 @@ contrôlée (prise débranchée par l'utilisateur) devait faire passer la règle
   lus par la règle du disque, comme après le premier.
 - Shizune : carte « Prévention » affichée sur l'iPhone de l'utilisateur.
 
+## Durcissement du 29 septembre — corrélations entre équipements
+
+Jusqu'ici, des dérives simultanées n'étaient reliées que sur un même équipement.
+Elles peuvent l'être entre deux équipements, uniquement quand le propriétaire l'a
+déclaré : `depends_on` sur un service dont le nœud diffère de celui du service
+dont il dépend (« Z-Wave JS sur ZWAVE-01 dépend de Mosquitto sur HA-01 »).
+
+- deux dérives, une sur chaque équipement : elles sont reliées
+  (`correlated_upstream`, `correlated_downstream`) avec la déclaration citée ;
+- une dérive en aval pendant un incident ouvert sur l'équipement amont : elle
+  nomme cet incident (`upstream_incident`) ;
+- sans déclaration, la simultanéité ne relie rien ; aucune cause n'est jamais
+  affirmée.
+
+Les dépendances sont relues à chaque synthèse : le propriétaire édite
+l'infrastructure pendant que l'Agent tourne. Scénario Sandbox :
+`preventive-drifts` (INFRA-01 et HA-01, avec et sans déclaration).
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |

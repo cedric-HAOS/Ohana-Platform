@@ -390,6 +390,20 @@ Défauts mineurs relevés pendant les essais et corrigés le jour même
 répétés pendant une panne de Vision, incident Linky critique d'une minute à
 chaque redémarrage de l'Agent, `host.health` daté en UTC.
 
+### Constats du 29 septembre après-midi — Platform 1.0.135
+
+Platform 1.0.135 déployée à 14:41 (Agent 1.42.0, Vision 1.33.0) : services
+actifs, aucune unité en échec, aucun avertissement, planificateur à l'heure.
+
+Katsuyu 0.11.0 s'est mis à jour seul en 0.12.1 à 14:53 (onze secondes, journal
+`katsuyu-update.log`) : première mise à jour automatique réelle. Le worker s'est
+réinscrit à 14:54 avec sa nouvelle version. L'icône de la zone de notification a
+été perdue avec une erreur : l'exécutable « un fichier » relancé par l'ancienne
+icône réutilisait son dossier temporaire, supprimé à sa fermeture.
+`PYINSTALLER_RESET_ENVIRONMENT=1` corrige (Katsuyu 0.12.2, à publier) ; le
+correctif ne sert qu'à la mise à jour suivante. L'ancien exécutable renommé
+(`KatsuyuTray.exe.old-<pid>`) est retiré plus tard par le worker.
+
 ## Critères de sortie
 
 | Critère | Sandbox | Réel (Konoha) |

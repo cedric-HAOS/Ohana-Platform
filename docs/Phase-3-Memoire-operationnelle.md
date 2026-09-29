@@ -87,6 +87,30 @@ le temps ne prouve pas la cause et que la piste resterait une note. La piste
 enregistrée n'a ni opération ni cible. teleinfo2mqtt a ensuite été
 réactivée ; six entrées actives en fin d'essai.
 
+## Durcissement du 29 septembre — statistiques et classement
+
+Statistiques détaillées (`GET /v1/repairs/statistics`, onglet « Bilan » de
+Vision) : par période (7 jours, 30 jours, depuis le début), par réparation, par
+équipement et par capacité. Le taux de réussite ne compte que les issues
+vérifiées par Shikamaru : une exécution non vérifiée n'est ni une réussite ni un
+échec. À côté du taux, la borne basse à 95 % (intervalle de Wilson) dit ce que
+les essais permettent d'affirmer : une réparation réussie une fois sur une n'est
+pas meilleure qu'une réparation réussie 19 fois sur 20. Sont aussi donnés les
+délais médians de décision et de retour à la normale, et les causes d'échec.
+
+Classement des réparations connues (`rank`, `score`, `reliability` dans
+`GET /v1/experiences`) : réparations actives d'abord, puis borne basse de Wilson,
+puis dernière réussite. Fiabilité : jamais éprouvée, à confirmer (moins de trois
+issues vérifiées), fiable (au moins 80 %, dernière issue favorable), mitigée,
+instable (dernière exécution en échec) et peu fiable (moins de 50 %). Quand
+plusieurs réparations connues conviennent à une proposition, Tsunade essaie la
+plus fiable d'abord et avertit d'une réparation instable.
+
+Première lecture réelle (29 septembre, Platform 1.0.135) : 14 réparations
+proposées, 3 refusées, 11 exécutées : 6 réussies, 4 échecs, 1 non vérifiée, soit
+60 % (borne basse 31,3 %) ; toutes les réparations connues sont « à confirmer »
+faute de trois issues vérifiées. Scénario Sandbox : `known-repair-history`.
+
 ## Constats pour le durcissement continu
 
 - Vision : la section « Réparations connues » est repliée dans « Contrôles et

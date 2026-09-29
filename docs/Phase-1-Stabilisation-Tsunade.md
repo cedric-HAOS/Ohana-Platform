@@ -2497,6 +2497,32 @@ Home Assistant / INFRA-01 reste à examiner séparément.
    INFRA-01. Vérifier la provenance et le libellé : ce constat ne prouve pas que
    Home Assistant y est hébergé ni qu'il est indisponible.
 
+## Durcissement du 29 septembre — journaux lus par composant
+
+Constat sur HA-01 (contrôle de 04:45) : 38 anomalies groupées par signature,
+dont huit présentées dans Vision, sans le nom de Tapo ni de Kasa, et cinq
+anomalies orphelines (« During handling of the above exception », « raise
+exception »...).
+
+Causes et corrections (scénario Sandbox `log-components`) :
+
+| Constat | Cause | Correction |
+| --- | --- | --- |
+| lignes orphelines sous Tapo | Python sépare les exceptions chaînées par des lignes vides ; une ligne vide terminait l'enregistrement | Katsuyu : une ligne vide ne termine plus l'enregistrement ; dans une trace, toute ligne sans date lui appartient |
+| une signature par appareil Shelly | l'identifiant hexadécimal de l'appareil (`441d64760b64`) restait dans la signature | Katsuyu : identifiants de douze chiffres hexadécimaux ou plus normalisés |
+| noms de composants absents | Vision montrait des signatures | Agent : composant lu dans la signature (`component`, `component_label`), `log_components` dans `GET /v1/incidents` |
+| variantes d'un même défaut | le texte d'erreur Tapo change à chaque contrôle | Agent : composant accepté comme connu, toutes variantes, sauf lignes critiques |
+
+Un composant accepté ne cache jamais une ligne critique. Une bibliothèque et son
+intégration Home Assistant sont un seul composant (`aioshelly` et `shelly`) ;
+les composants acceptés sous l'ancien nom sont ramenés à leur nom actuel à la
+lecture. Performance mesurée : 200 000 lignes analysées en 2,3 s. Aucun défaut
+constaté sur les codes HTTP, les formats de journaux ni les grosses collectes
+dans les données réelles du 29 septembre.
+
+Validation réelle du 29 septembre à 15:02 : voir le ROADMAP (Durcissement
+continu, Phase 1).
+
 ## Référence observée en production
 
 - Version installée d'Agent confirmée par les métadonnées Python : **1.29.0**.

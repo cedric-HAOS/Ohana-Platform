@@ -566,8 +566,27 @@ Restent à suivre :
   septembre, 17 le 26 (journée de pannes contrôlées, nouvelles anomalies) ; à
   remesurer après une journée calme (objectif : plus d'expertise quotidienne
   pour des anomalies inchangées) ;
+- bruit de HA-01 : les composants restants sont à accepter ou à corriger par
+  l'utilisateur depuis Vision (29 septembre : Home Assistant Cloud, Home
+  Assistant, Automatisation Gestion Caméra, Modèles, UPnP, ESPHome,
+  SmartThings, Zeroconf, Z-Wave JS) ;
+- automatisation Home Assistant « Ohana Publication Système RPi » en erreur
+  (34 fois côté LINKY-01, 36 fois côté ZWAVE-01 le 29 septembre) : texte des
+  erreurs à lire, elle publie l'état système des Raspberry Pi vers Ohana ;
 
-Traité le 29 septembre après-midi (Katsuyu, Agent, Vision, non publiés ;
+Validé en réel le 29 septembre à 15:02 (contrôle manuel des journaux, Platform 1.0.135
+déployée à 14:41, Katsuyu 0.12.1 à 14:53) : ZWAVE-01 n'est plus tronqué (45 299
+lignes, 4,18 Mo) ni INFRA-01 (3 849 lignes, plus de 10 000 avant) ; HA-01 est
+couvert (7 091 lignes, 1 436 avant) ; le composant « Autre » de 82
+occurrences (lignes orphelines de tracebacks) a disparu ; les composants
+apparaissent par source dans l'onglet « Journaux ». La ligne critique iCloud
+d'INFRA-01 est la seule occurrence du 28 septembre (15:05), sans récidive
+depuis la reconnexion de la session. Deux défauts vus en réel et corrigés
+localement, non publiés (Agent 1.42.1) : Shelly listé deux fois (`aioshelly` et
+`shelly`) et noms peu lisibles (« Hass Nabucasa », « Iaqualinkrobots ») ; les
+composants déjà acceptés sous l'ancien nom restent acceptés.
+
+Traité le 29 septembre après-midi (Katsuyu, Agent, Vision, publiés dans Platform 1.0.135 (Agent 1.42.0, Vision 1.33.0, Katsuyu 0.12.1), déployés le 29 septembre ;
 scénario `log-components`) :
 
 - bruit de HA-01 illisible : 36 anomalies par signature, dont 8 présentées, sans
@@ -584,7 +603,7 @@ scénario `log-components`) :
   journaux et grosses collectes : aucun défaut constaté dans les données
   réelles du 29 septembre, hors les deux ci-dessus.
 
-Traité le 29 septembre (Katsuyu, non publié ; scénario
+Traité le 29 septembre (Katsuyu, publiés dans Platform 1.0.134 (Agent 1.41.0, Vision 1.32.0, Katsuyu 0.12.0), déployés le 29 septembre ; scénario
 `supervisor-log-window` étendu, Katsuyu 0.11.0 échoue) :
 
 - ZWAVE-01 encore déclaré tronqué, non plus par les signatures (4 le
@@ -1016,7 +1035,7 @@ Konoha. Détail : [Phase 3 — Mémoire opérationnelle](docs/Phase-3-Memoire-op
 
 - obsolescence automatique assistée.
 
-Traités le 29 septembre après-midi (Agent, Vision, non publiés ; scénario
+Traités le 29 septembre après-midi (Agent, Vision, publiés dans Platform 1.0.135 (Agent 1.42.0, Vision 1.33.0, Katsuyu 0.12.1), déployés le 29 septembre ; scénario
 `known-repair-history` étendu) :
 
 - taux de réussite détaillés : `GET /v1/repairs/statistics` et onglet « Bilan »
@@ -1030,7 +1049,7 @@ Traités le 29 septembre après-midi (Agent, Vision, non publiés ; scénario
   fiable). La proposition essaie d'abord la réparation connue la plus fiable et
   avertit d'une réparation instable (dernière exécution en échec).
 
-Traités le 29 septembre (Agent, Vision, non publiés ; scénario
+Traités le 29 septembre (Agent, Vision, publiés dans Platform 1.0.134 (Agent 1.41.0, Vision 1.32.0, Katsuyu 0.12.0), déployés le 29 septembre ; scénario
 `incident-history`) :
 
 - comparaison plus fine entre incidents : empreinte (raisons, message
@@ -1140,7 +1159,7 @@ faute de dérive réelle. Détail :
   redémarrages de Home Assistant Core) ;
 - température d'INFRA-01 (saisonnalité annuelle) ;
 
-Traité le 29 septembre après-midi (Agent, Vision, non publiés ; scénario
+Traité le 29 septembre après-midi (Agent, Vision, publiés dans Platform 1.0.135 (Agent 1.42.0, Vision 1.33.0, Katsuyu 0.12.1), déployés le 29 septembre ; scénario
 `preventive-drifts` étendu) :
 
 - corrélations entre équipements : uniquement par `depends_on` déclaré entre
@@ -1148,7 +1167,7 @@ Traité le 29 septembre après-midi (Agent, Vision, non publiés ; scénario
   l'autre sont reliées sans cause affirmée ; une dérive en aval nomme l'incident
   ouvert en amont. Sans déclaration, la simultanéité ne relie rien.
 
-Traités le 29 septembre (Agent, Vision, non publiés ; scénario
+Traités le 29 septembre (Agent, Vision, publiés dans Platform 1.0.134 (Agent 1.41.0, Vision 1.32.0, Katsuyu 0.12.0), déployés le 29 septembre ; scénario
 `preventive-drifts`), choix de l'utilisateur :
 
 - nouvelles tendances : mémoire et swap, temps de réponse (DNS, MQTT,
@@ -1284,7 +1303,7 @@ par Vision) n'a pas de canal APNs. Détail :
 Précision de l'utilisateur (29 septembre) : les deux appareils « iPhone
 Shizune » ne sont pas des doublons (affichage sur iPhone et sur Windows).
 
-Traités le 29 septembre (Agent, Vision, Katsuyu, non publiés ; scénarios
+Traités le 29 septembre (Agent, Vision, Katsuyu, publiés dans Platform 1.0.134 (Agent 1.41.0, Vision 1.32.0, Katsuyu 0.12.0), déployés le 29 septembre ; scénarios
 `agent-frozen-heartbeat`, `ohana-self-supervision` étendu) :
 
 - Agent figé : le résumé MQTT est republié à chaque battement et expire dans
@@ -1299,7 +1318,20 @@ Traités le 29 septembre (Agent, Vision, Katsuyu, non publiés ; scénarios
   recommandée (catalogue de la dernière release, lu toutes les 6 h), échéance
   des associations Shizune.
 
-Traités le 29 septembre après les validations réelles (Agent, non publié ;
+Traité le 29 septembre après-midi (Katsuyu, non publié ; test
+`test_restart_on_a_new_version_does_not_share_the_temporary_directory`) :
+
+- première mise à jour automatique réelle de Katsuyu, de 0.11.0 à 0.12.1 (14:53,
+  onze secondes) : le worker est revenu en 0.12.1 (14:54) mais l'icône de la
+  zone de notification a été perdue avec une erreur. L'ancienne icône se
+  relançait sur le nouvel exécutable sans `PYINSTALLER_RESET_ENVIRONMENT` :
+  l'exécutable PyInstaller « un fichier » réutilisait le dossier temporaire de
+  l'ancien processus, supprimé à sa fermeture, et échouait à charger sa DLL
+  Python. Correctif dans Katsuyu 0.12.2 (à publier) ; il ne sert qu'à partir de la
+  mise à jour suivante, puisque c'est l'ancienne icône qui relance. En attendant,
+  relancer `KatsuyuTray.exe`.
+
+Traités le 29 septembre après les validations réelles (Agent, publiés dans Platform 1.0.134 (Agent 1.41.0, Vision 1.32.0, Katsuyu 0.12.0), déployés le 29 septembre ;
 scénario `agent-restart-quiet`, Agent 1.40.0 échoue) :
 
 - Vision arrêté six minutes : un avertissement « Unable to refresh
@@ -1602,8 +1634,7 @@ dans iCloud.
 - Installer 1.15.2 (publié) : si l'identité `age` existait déjà, un échec de
   cette copie devient un avertissement et la mise à jour continue ; il reste
   bloquant pour une identité créée pendant la mise à jour ;
-- surveillance de la session iCloud (Agent, non publié, prévu dans
-  Agent 1.39.0) : contrôle au démarrage puis toutes les heures, publié par
+- surveillance de la session iCloud (Agent 1.39.0) : contrôle au démarrage puis toutes les heures, publié par
   MQTT à Home Assistant (« Connexion iCloud », « État iCloud » sur Ohana
   Platform) pour une automatisation d'alerte ; scénario
   `icloud-connectivity-mqtt`, Agent 1.38.1 échoue.
