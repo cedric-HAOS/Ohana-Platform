@@ -6,6 +6,23 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.134] - 2026-09-29
+
+### Composition
+
+- Ohana-Agent 1.40.0 → 1.41.0 : journaux calmes pendant une panne de Vision,
+  Linky sans faux incident au redémarrage, `host.health` en heure de Paris,
+  Agent figé visible dans Home Assistant, détail des vitaux (`/v1/vitals`),
+  nouvelles tendances préventives adaptatives et saisonnières, mise en
+  sourdine des dérives, comparaison plus fine et historique des incidents.
+- Ohana-Vision 1.31.0 → 1.32.0 : vue Ohana détaillée, vue « Historique »,
+  incidents semblables, dérives corrélées, suivies ou ignorées.
+- Ohana-Shizune 0.4.0 inchangé.
+- Hors composition : Katsuyu 0.12.0 (journaux ZWAVE-01 complets, détail de
+  l'hôte), installé automatiquement par Katsuyu 0.11.0 quand le PC est inactif.
+- **Ordre de déploiement : l'Agent avant Katsuyu** (un Agent 1.40 refuse la
+  section `host` ; Katsuyu repart alors sans elle).
+
 - Phase 5 clôturée le 29 septembre après les validations réelles sur Konoha
   (ROADMAP, `docs/Phase-5-Ohana-supervise-Ohana.md`) ; réserve : notification
   pendant une panne de Vision non reçue en réel.
