@@ -1348,6 +1348,9 @@ scénario `agent-restart-quiet`, Agent 1.40.0 échoue) :
 
 # Phase 6 — Katsuyu
 
+Suivi : [Phase 6 — Katsuyu](docs/Phase-6-Katsuyu.md) (démarrée le 29 septembre
+2026 ; audit des dix critères et lots dans le document).
+
 ## Objectif
 
 Conserver Bubule comme **capacité de calcul optionnelle, robuste et non critique**.
@@ -1388,6 +1391,14 @@ Une indisponibilité du LLM ne doit pas empêcher les traitements déterministes
 - [ ] Vision permet de comprendre au minimum pourquoi Katsuyu a été réveillé et ce qu’il a exécuté.
 
 ---
+
+## Traité en Phase 6
+
+- 29 septembre, lot 1 (Agent, Katsuyu 0.13.0, Vision ; non publié) : Katsuyu
+  n'éteint plus un PC sur lequel une session Windows est ouverte, et l'Agent
+  journalise chaque cycle (raison du réveil, délai de connexion, travail
+  exécuté, arrêt ou veto) affiché dans la vue Ohana ; scénario
+  `katsuyu-wake-cycle`.
 
 ## Durcissement continu
 

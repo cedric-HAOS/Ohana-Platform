@@ -19,6 +19,10 @@ SCENARIOS = {
         "scenarios.ohana_self_supervision",
         "Phase 5 : vue Ohana de Vision alimentée par l'Agent, Katsuyu et Shizune réels.",
     ),
+    "katsuyu-wake-cycle": (
+        "scenarios.katsuyu_wake_cycle",
+        "Phase 6 : raison du réveil, travail exécuté, arrêt ou veto de session, sans réveil inutile.",
+    ),
     "katsuyu-shizune-vitals": (
         "scenarios.katsuyu_shizune_vitals",
         "Phase 5 : runtime et dernier job de Katsuyu, passerelle et synchronisation Shizune.",

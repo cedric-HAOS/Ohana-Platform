@@ -158,6 +158,18 @@ si la lecture de Vision échoue. Captures et rapport dans `sandbox/runs/`.
 .\sandbox\run.ps1 run agent-silent
 ```
 
+`katsuyu-wake-cycle` (Phase 6, lot 1) fait tourner l'Agent HTTP et un vrai
+worker Katsuyu, avec l'envoi Wake-on-LAN, l'arrêt Windows et les sessions
+injectés et l'horloge de l'Agent pilotée. Il vérifie un cycle complet (réveil
+pour deux travaux, connexion, exécution, arrêt) journalisé avec sa raison, un
+cycle où une session ouverte empêche l'arrêt (le PC reste disponible), la
+réutilisation d'un worker disponible sans nouveau réveil et la vraie requête
+de sessions Windows. Agent 1.42.0 (sans journal) échoue.
+
+```powershell
+.\sandbox\run.ps1 run katsuyu-wake-cycle
+```
+
 `katsuyu-shizune-vitals` (Phase 5, lot 4) démarre les listeners HTTP de
 l'Agent (administration/worker et compagnon), la vraie boucle Katsuyu et
 l'application Vision avec son pont Shizune. Il vérifie le runtime déclaré

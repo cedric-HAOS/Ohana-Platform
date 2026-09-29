@@ -323,6 +323,7 @@ def main() -> int:
             "supervisor-log-window",
             "slow-completion-reads",
             "katsuyu-shizune-vitals",
+            "katsuyu-wake-cycle",
             "ohana-self-supervision",
         }
     ):
