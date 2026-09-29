@@ -245,3 +245,32 @@ Les étapes 3 à 6 sont démontrées par la Sandbox ; seules les étapes 1 et 2
 manquent en réel. La Phase 6 se clôt quand elles sont faites, ou quand
 l'utilisateur accepte de la clore sur la Sandbox avec ces trois limites
 déclarées, comme pour la Phase 4.
+
+## Résultats réels — 29 septembre 2026 (Platform 1.0.136)
+
+Premier cycle réel, Bubule éteint :
+
+- 16:33:07 « Contrôle manuel des journaux » : job en attente (`WAITING_WORKER`),
+  **aucun réveil** — le réveil n'avait lieu que dans la fenêtre de 05:00.
+  Corrigé : un contrôle demandé depuis Vision réveille Katsuyu tout de suite
+  (`trigger: manual_check`, sans l'intervalle minimal de réveil).
+- 16:34:09 « Tester le réveil » : Bubule s'est réveillé, Katsuyu connecté
+  47 s plus tard (journal : `wake_sent` → `worker_online`, `after_seconds: 47`).
+  Le réveil réel par Wake-on-LAN est validé, avec un délai de 47 s.
+- 16:34:58 le job `logs.health_check` est pris, terminé à 16:37:39 (réussi).
+- Pas d'arrêt. Deux causes, la seconde étant le point d'attention prévu :
+  1. l'Agent, occupé à traiter le résultat, a répondu après le délai du client :
+     `shutdown_granted` à 16:38:36 mais Katsuyu n'a jamais vu la réponse, et la
+     permission était déjà consommée. Corrigé : la permission n'est épuisée qu'au
+     rapport de Katsuyu ; une réponse perdue est accordée de nouveau au
+     sondage suivant.
+  2. Windows ouvre une session automatiquement au démarrage (connexion
+     automatique, 16:34:43, avant Katsuyu) : le veto de session aurait de toute
+     façon refusé l'arrêt.
+
+Décision de l'utilisateur : **garder « session seulement »**. Avec la connexion
+automatique de Bubule, l'arrêt automatique n'a donc jamais lieu après un réveil ;
+l'utilisateur éteint Bubule lui-même (ou désactive la connexion automatique). Les
+essais 1 (cycle sans session) et 2 (veto) restent à faire dans ces conditions ;
+l'essai 3 (arrêt effectif par `shutdown.exe`) n'est pas démontrable tant qu'une
+session s'ouvre au démarrage.
