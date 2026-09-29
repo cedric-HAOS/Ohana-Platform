@@ -13,7 +13,10 @@ by recorders, and the Agent clock is driven by the scenario so that the PC
 from __future__ import annotations
 
 import json
+import socket
 import tempfile
+import threading
+import time
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
@@ -22,6 +25,7 @@ from ohana_agent.api.http import AdministrationHTTPServer
 from ohana_agent.api.service import AdministrationService
 from ohana_agent.infrastructure.repository import InfrastructureConfigurationRepository
 from ohana_agent.jobs.repository import DistributedJobRepository
+from ohana_agent.jobs.wake_on_lan import WakeOnLanSender
 from ohana_katsuyu.handlers import KatsuyuWorkspace, SystemHealthHandler
 from ohana_katsuyu.power import ShutdownVeto, session_shutdown_veto
 from ohana_katsuyu.worker import AgentClient, KatsuyuWorker
@@ -78,6 +82,34 @@ def _queue(
     )
 
 
+class _MagicPacketListener:
+    """Receive what the real Wake-on-LAN sender puts on a real UDP socket."""
+
+    def __init__(self) -> None:
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._socket.bind(("127.0.0.1", 0))
+        self._socket.settimeout(0.2)
+        self.port = self._socket.getsockname()[1]
+        self.packets: list[bytes] = []
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._listen, daemon=True)
+        self._thread.start()
+
+    def _listen(self) -> None:
+        while not self._stop.is_set():
+            try:
+                self.packets.append(self._socket.recvfrom(512)[0])
+            except TimeoutError:
+                continue
+            except OSError:
+                return
+
+    def close(self) -> None:
+        self._stop.set()
+        self._thread.join(timeout=2)
+        self._socket.close()
+
+
 def run() -> dict:
     checks: list[tuple[str, bool]] = []
     details: dict[str, str] = {}
@@ -87,13 +119,25 @@ def run() -> dict:
         clock = SandboxClock()
         jobs = DistributedJobRepository(root / "jobs.db", clock=clock)
         wakes: list[str] = []
+        listener = _MagicPacketListener()
+
+        def send(mac: str) -> None:
+            wakes.append(mac)
+            WakeOnLanSender(
+                mac_address=mac,
+                broadcast_address="127.0.0.1",
+                port=listener.port,
+                burst_count=3,
+                burst_interval_seconds=0.01,
+            ).send()
+
         service = AdministrationService(
             infrastructure_repository=InfrastructureConfigurationRepository(
                 root / "infrastructure.yaml"
             ),
             job_repository=jobs,
             wake_enabled=True,
-            wake_sender=wakes.append,
+            wake_sender=send,
             wake_minimum_interval_seconds=0,
         )
         administration = AdministrationHTTPServer(
@@ -321,6 +365,18 @@ def run() -> dict:
                 ),
             ]
 
+            # --- The real sender put real magic packets on a real socket ---
+            time.sleep(0.5)
+            magic = b"\xff" * 6 + bytes.fromhex(MAC.replace(":", "")) * 16
+            checks.append(
+                (
+                    "paquets magiques réels reçus sur une socket UDP : 3 par réveil, "
+                    "6 × FF puis 16 × l'adresse MAC",
+                    len(listener.packets) == 3 * len(wakes)
+                    and all(packet == magic for packet in listener.packets),
+                )
+            )
+
             # --- The real session query works on this machine -------------
             real = session_shutdown_veto()
             checks.append(
@@ -336,6 +392,7 @@ def run() -> dict:
                 "aucune" if real is None else f"{real.reason} ({real.sessions})"
             )
         finally:
+            listener.close()
             administration.stop()
             jobs.close()
     details["portée"] = (

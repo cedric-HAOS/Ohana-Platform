@@ -164,7 +164,8 @@ injectés et l'horloge de l'Agent pilotée. Il vérifie un cycle complet (révei
 pour deux travaux, connexion, exécution, arrêt) journalisé avec sa raison, un
 cycle où une session ouverte empêche l'arrêt (le PC reste disponible), la
 réutilisation d'un worker disponible sans nouveau réveil et la vraie requête
-de sessions Windows. Agent 1.42.0 (sans journal) échoue.
+de sessions Windows. Le vrai `WakeOnLanSender` émet de vrais paquets magiques
+vérifiés sur une socket UDP locale. Agent 1.42.0 (sans journal) échoue.
 
 ```powershell
 .\sandbox\run.ps1 run katsuyu-wake-cycle
@@ -173,7 +174,8 @@ de sessions Windows. Agent 1.42.0 (sans journal) échoue.
 `katsuyu-resilience` (Phase 6, lot 3) vérifie qu'un job IA dont le worker
 disparaît trois fois échoue explicitement (`worker.interrupted`) et laisse à
 Tsunade son repli sans conclusion, puis, avec un vrai worker Katsuyu en HTTP,
-qu'un job est repris à la tentative 2, que le traitement déterministe continue
+qu'un job est repris à la tentative 2 après la mort d'un vrai processus
+Katsuyu (tué en plein job), que le traitement déterministe continue
 sans runtime IA et qu'un job IA impossible échoue avec sa cause. Agent 1.42.0
 (reprises illimitées) échoue.
 

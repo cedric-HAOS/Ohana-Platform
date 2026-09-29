@@ -9,10 +9,14 @@ without the AI runtime, and an AI job it cannot run fails with its cause.
 
 from __future__ import annotations
 
+import subprocess
+import sys
 import tempfile
+import time
 from pathlib import Path
 from uuid import uuid4
 
+import ohana_katsuyu
 from ohana_agent.api.http import AdministrationHTTPServer
 from ohana_katsuyu.ai import AiInferenceHandler
 from ohana_katsuyu.handlers import KatsuyuWorkspace, SystemHealthHandler
@@ -139,8 +143,6 @@ def run() -> dict:
                         runtime_refresh_seconds=0,
                     )
 
-                predecessor = new_worker()
-                predecessor.register()
                 health_id = str(uuid4())
                 s.jobs.create(
                     {
@@ -152,14 +154,30 @@ def run() -> dict:
                         "timeout": 3600,
                     }
                 )
-                # The first process claims the job and dies with the PC.
-                lost = predecessor.client.claim(
-                    {
-                        "protocol_version": 1,
-                        "worker_id": REAL_WORKER,
-                        "supported_types": ["system.health"],
-                    }
+                # A real Katsuyu process claims the job, then is killed like a
+                # PC losing power: no completion, no more heartbeat.
+                child = subprocess.Popen(  # noqa: S603
+                    [
+                        sys.executable,
+                        str(Path(__file__).with_name("_slow_worker.py")),
+                        f"http://{host}:{port}",
+                        WORKER_TOKEN,
+                        REAL_WORKER,
+                        str(root / "child-workspace"),
+                        str(Path(ohana_katsuyu.__file__).resolve().parents[1]),
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
                 )
+                deadline = time.monotonic() + 60
+                while (
+                    s.jobs.get(health_id).status.value != "RUNNING"
+                    and time.monotonic() < deadline
+                ):
+                    time.sleep(0.2)
+                was_running = s.jobs.get(health_id).status.value == "RUNNING"
+                child.kill()
+                child.wait(timeout=10)
                 s.clock.advance(seconds=61)
 
                 survivor = new_worker()
@@ -168,8 +186,9 @@ def run() -> dict:
                 health = s.jobs.get(health_id)
                 checks += [
                     (
-                        "job interrompu par la disparition du worker : repris à la tentative 2",
-                        lost.job is not None
+                        "processus Katsuyu réel tué en plein job : repris à la tentative 2",
+                        was_running
+                        and child.returncode not in (None, 0)
                         and resumed
                         and health.status.value == "SUCCEEDED"
                         and health.attempt == 2,

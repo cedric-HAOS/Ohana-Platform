@@ -187,10 +187,35 @@ chaque publication) :
 | Pas de conclusion artificielle | `katsuyu-resilience`, `katsuyu-unavailable` |
 | Vision explique réveil et exécution | `katsuyu-wake-cycle` (journal) et `ohana-self-supervision` (rendu dans Chromium) |
 
+## Ce que la Sandbox prouve déjà des six essais
+
+Les essais réels ci-dessous sont d'abord rejoués dans la Sandbox avec de
+vrais composants (Agent HTTP, worker Katsuyu, handlers, Vision dans Chromium) :
+
+| Essai | Preuve Sandbox | Ce qui reste simulé |
+| --- | --- | --- |
+| 1. Cycle complet | `katsuyu-wake-cycle` : réveil, connexion, exécution, arrêt, journal ; le vrai `WakeOnLanSender` émet de vrais paquets magiques reçus sur une socket UDP (3 par réveil, format vérifié) | l'arrivée du paquet sur la carte réseau de Bubule et l'appel réel à `shutdown.exe` |
+| 2. Veto de session | même scénario ; la vraie requête `WTSEnumerateSessions` est exécutée sur le PC du Sandbox | la session ouverte est injectée pour le cycle de test |
+| 3. Réveil sans réponse | même scénario : trois tentatives à dix minutes, abandon, démarrage manuel tardif | l'horloge de l'Agent est pilotée |
+| 4. Job interrompu | `katsuyu-resilience` : un **vrai processus Katsuyu est tué** en plein job, puis un autre reprend à la tentative 2 ; interruption trois fois, échec explicite | l'expiration du bail (61 s) est obtenue en avançant l'horloge |
+| 5. IA impossible | `katsuyu-resilience` : vrai handler IA sans runtime, vrai worker en HTTP | — |
+| 6. Fiabilité | `katsuyu-wake-cycle` et `ohana-self-supervision` (rendu dans Chromium) | données de test |
+
+Il reste donc à vérifier **en réel** seulement ce qu'aucune simulation ne
+peut établir :
+
+- le paquet Wake-on-LAN réveille réellement Bubule (BIOS, carte réseau,
+  commutateur) et en combien de secondes ;
+- Windows n'ouvre pas de session au démarrage d'une machine réveillée
+  (connexion automatique), sans quoi le veto de session empêcherait
+  toujours l'arrêt ;
+- `shutdown.exe` éteint bien Bubule quand aucune session n'est ouverte.
+
 ## Validation réelle (après publication et déploiement)
 
 Déployer l'Agent avant Katsuyu ; Katsuyu 0.13.0 s'installe sur Bubule
-(`KatsuyuSetup.exe` ou mise à jour automatique). À faire avec Bubule :
+(`KatsuyuSetup.exe` ou mise à jour automatique). Essais complets, dont les
+trois points réels ci-dessus (les étapes 1 et 2 suffisent à les couvrir) :
 
 1. **Cycle complet sans session.** Bubule éteint, aucune session ouverte
    après le démarrage : créer du travail (test de réveil depuis Vision, ou
@@ -216,4 +241,7 @@ Déployer l'Agent avant Katsuyu ; Katsuyu 0.13.0 s'installe sur Bubule
 6. **Fiabilité.** Relever « Fiabilité du réveil » après quelques cycles réels
    (réveils suivis d'une connexion, délai médian).
 
-La Phase 6 se clôt quand ces essais sont faits et cochés dans la roadmap.
+Les étapes 3 à 6 sont démontrées par la Sandbox ; seules les étapes 1 et 2
+manquent en réel. La Phase 6 se clôt quand elles sont faites, ou quand
+l'utilisateur accepte de la clore sur la Sandbox avec ces trois limites
+déclarées, comme pour la Phase 4.
