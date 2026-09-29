@@ -6,6 +6,17 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.137] - 2026-09-29
+
+### Composition
+
+- Ohana-Agent 1.43.0 → 1.43.1 : la permission d'arrêt de Katsuyu survit à une
+  réponse perdue (elle n'est épuisée qu'au rapport de Katsuyu) et le contrôle
+  manuel des journaux réveille Katsuyu tout de suite.
+- Ohana-Vision 1.34.0 → 1.34.1 : réveil « contrôle demandé depuis Vision ».
+- Ohana-Shizune 0.4.0 et Katsuyu 0.13.0 inchangés.
+- **Déployer Agent et Vision ensemble (`ohana update`).**
+
 ## [1.0.136] - 2026-09-29
 
 ### Composition
