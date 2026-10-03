@@ -6,6 +6,20 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.139] - 2026-10-03
+
+### Composition
+
+- Ohana-Vision 1.35.0 → 1.36.0 : parcours des incidents, preuves et limites,
+  hypothèses qualifiées et étapes de réparation datées ; correction mobile.
+- Agent 1.44.0, Shizune 0.5.0 et Katsuyu 0.13.0 inchangés.
+
+### Documentation et validation
+
+- Suivi de phase 8, documentation Vision et recette Sandbox `incident-dossier`.
+- Neuf contrôles de recette réussis ; 932 tests Vision passent.
+- La recette IA locale utilise une fixture et ne prouve pas une inférence réelle.
+
 ## [1.0.138] - 2026-09-29
 
 ### Composition
