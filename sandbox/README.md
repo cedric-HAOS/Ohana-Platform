@@ -321,3 +321,15 @@ un résumé IA contradictoire et l'arrêt après une seule collecte autorisée.
 Les résultats reçus en double et la reconstruction des services depuis SQLite
 ne créent ni événements supplémentaires ni nouveau travail. Les réponses IA
 sont simulées : ce scénario ne mesure pas la qualité d'un modèle réel.
+
+## Dossier d'incident Vision (phase 8)
+
+```powershell
+python -X utf8 .\sandbox\runner.py run incident-dossier
+```
+
+Ce scénario lance Agent et Vision réels sur des ports locaux, avec Supervisor
+simulé et diagnostic IA fourni comme fixture. Aucun accès production ni
+inférence IA. Il vérifie les preuves, limites, réparations et le plafond de
+1 000 événements ; il mesure le proxy HTTP et la génération HTML, sans mesurer
+le DOM. Les rapports sont conservés dans `sandbox/runs/` (ignoré par Git).

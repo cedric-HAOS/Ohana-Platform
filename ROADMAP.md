@@ -1511,6 +1511,9 @@ lot traité, pas la fin du travail.
 
 # Phase 8 — Vision
 
+Suivi : [Phase 8 — Vision](docs/Phase-8-Vision.md) (démarrée le 2 octobre
+2026 ; audit initial, cas pilotes réels et lots dans le document).
+
 ## Objectif
 
 Faire de Vision le cockpit permettant de **comprendre ce qu’Ohana a observé, décidé et exécuté sans ouvrir SQLite ni se connecter en SSH**.
