@@ -50,9 +50,9 @@ comme une cause confirmée.
 | Lot | Résultat attendu | État |
 | --- | --- | --- |
 | 1 — Parcours lisible | Dans le dossier, une synthèse ordonnée des étapes disponibles, datées, avec état courant, provenance et prochaine action en tête ; les détails existants restent accessibles. | Aperçu local validé par l’utilisateur le 2 octobre |
-| 2 — Preuves, hypothèses et limites | Présenter les faits et preuves principaux avec leur source ; afficher explicitement les hypothèses, contradictions, lacunes et analyses impossibles à conclure. Compléter le contrat Agent seulement si la preuve manque réellement. | Implémenté localement ; recette réelle à faire |
-| 3 — Décision et réparation | Rendre lisibles proposition, autorisation ou refus, exécution et vérification avec leurs dates et résultat, sans confondre proposition et action. | Implémenté localement ; recette réelle à faire |
-| 4 — Recette et performances | Rejouer les cas pilotes dans la Sandbox et dans Vision, vérifier bureau/mobile, mesurer chargement et rendu, puis contrôler un dossier représentatif sur Konoha après déploiement. | Qualification locale réussie ; confirmation après déploiement à consigner |
+| 2 — Preuves, hypothèses et limites | Présenter les faits et preuves principaux avec leur source ; afficher explicitement les hypothèses, contradictions, lacunes et analyses impossibles à conclure. Compléter le contrat Agent seulement si la preuve manque réellement. | Qualifié localement et contrôlé dans Vision sur INFRA-01 le 3 octobre |
+| 3 — Décision et réparation | Rendre lisibles proposition, autorisation ou refus, exécution et vérification avec leurs dates et résultat, sans confondre proposition et action. | Qualifié localement et contrôlé dans Vision sur INFRA-01 le 3 octobre |
+| 4 — Recette et performances | Rejouer les cas pilotes dans la Sandbox et dans Vision, vérifier bureau/mobile, mesurer chargement et rendu, puis contrôler un dossier représentatif sur Konoha après déploiement. | Terminé : qualification locale et contrôle des trois dossiers réels le 3 octobre |
 
 La phase se clôt quand les dix critères de la roadmap sont prouvés sur un
 incident représentatif depuis Vision. La validation locale, la publication,
@@ -129,3 +129,46 @@ Les scénarios `teleinformation-supervisor-cycle`, `catalogue-repair-cycle`,
 La publication prévue compose Vision 1.36.0 avec Platform 1.0.139, sans changer
 Agent. La confirmation réelle d'un dossier représentatif et d'un cycle IA
 reste distincte de cette qualification locale.
+
+## Publication et déploiement — 3 octobre 2026
+
+Vision 1.36.0 et Platform 1.0.139 sont publiés sur GitHub. Les quatre assets
+Vision et les trois assets Platform ont les SHA-256 attendus. Wheel et archive
+Vision sont construits en environnement isolé ; l'installation isolée confirme
+la version. Les manifestes Platform et leurs copies Installer sont acceptés par
+le parseur ; 42 tests de manifeste, catalogue et sélection réussissent.
+Les documentations, le scénario et les copies Installer sont commités et poussés.
+Installer reste en 1.15.2 : aucun comportement exécutable modifié.
+
+`sudo ohana update --yes --platform-version 1.0.139` réussit sur INFRA-01.
+Vision passe de 1.35.0 à 1.36.0 ; Agent 1.44.0 et Shizune 0.5.0 sont conservés.
+Les configurations locales sont préservées. Après démarrage à 12:24:04, Vision
+ouvre son serveur HTTP à 12:26:05, après initialisation de la base persistée.
+Le contrôle final confirme les deux services actifs, `NRestarts=0`, les ports
+8000, 8765 et 8767, l'API Vision 1.36.0 et aucune erreur récente des deux services.
+La recette Agent en lecture seule réussit : aucun job actif ni résultat terminal
+en attente. Aucun exercice de journaux ni nouvelle réparation n'est déclenché.
+
+Contrôle dans le navigateur sur la véritable Vision déployée :
+
+- Téléinformation du 28 septembre à 11:15 : faits Supervisor, diagnostic
+  déterministe, proposition, autorisation à 11:17:47, exécution à 11:17:54,
+  vérification Shikamaru et résolution à 11:18:14 sont visibles séparément.
+- Santé de l'hôte du 29 septembre à 08:33 : investigation `service.status`
+  non aboutie, proposition non autorisée, aggravation puis résolution restent
+  distinctes ; aucune exécution de réparation n'est affirmée.
+- Journaux INFRA-01 du 3 octobre à 05:06 : analyse Katsuyu réelle déjà persistée,
+  hypothèse non confirmée, contradictions, contexte manquant et prochaine action
+  sont visibles. Zéro anomalie dans la collecte complémentaire ne clôt pas
+  l'incident. Il s'agit de la lecture d'un cycle réel antérieur au déploiement,
+  pas d'une nouvelle inférence déclenchée pour la recette.
+
+Cinq chargements de dossiers réels via le proxy répondent entre 39,78 et 89,92 ms
+(échantillon ponctuel, pas un p95 de production). Les dossiers Téléinformation
+et Santé de l'hôte ont également été contrôlés à 390 × 844 : largeur interne
+et largeur défilable identiques (271 px). L'override de viewport est retiré.
+
+Les critères fonctionnels de la phase 8 sont vérifiés sur ces dossiers, avec
+qualification de performance locale et contrôle de réactivité en production.
+La phase 8 est clôturée le 3 octobre ; cette conclusion ne clôt pas les essais
+encore reportés des phases 6 et 7 et ne promet pas une performance sous charge.

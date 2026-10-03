@@ -1512,7 +1512,8 @@ lot traité, pas la fin du travail.
 # Phase 8 — Vision
 
 Suivi : [Phase 8 — Vision](docs/Phase-8-Vision.md) (démarrée le 2 octobre
-2026 ; audit initial, cas pilotes réels et lots dans le document).
+2026 ; clôturée le 3 octobre après recette locale, publication et contrôle des
+trois dossiers réels sur INFRA-01 ; preuves et limites dans le document).
 
 ## Objectif
 
@@ -1561,16 +1562,16 @@ Vision doit distinguer clairement :
 
 ## Critères de sortie de la Phase 8
 
-- [ ] L’état actuel d’un incident est compréhensible rapidement.
-- [ ] Observation, investigation, diagnostic, décision et résultat sont distincts.
-- [ ] Les principales preuves sont accessibles sans consulter directement les bases Agent.
-- [ ] Les hypothèses sont visuellement distinguées des faits.
-- [ ] Une contribution Katsuyu indique clairement sa nature.
-- [ ] Les limites principales d’une analyse sont visibles.
-- [ ] Une réparation affiche décision, autorisation, exécution et vérification lorsqu’elles existent.
-- [ ] Vision représente les états fournis par Agent au lieu de reconstruire sa propre logique.
-- [ ] Les performances restent suffisantes pour l’usage réel.
-- [ ] Un incident représentatif peut être compris intégralement depuis Vision.
+- [x] L’état actuel d’un incident est compréhensible rapidement.
+- [x] Observation, investigation, diagnostic, décision et résultat sont distincts.
+- [x] Les principales preuves sont accessibles sans consulter directement les bases Agent.
+- [x] Les hypothèses sont visuellement distinguées des faits.
+- [x] Une contribution Katsuyu indique clairement sa nature.
+- [x] Les limites principales d’une analyse sont visibles.
+- [x] Une réparation affiche décision, autorisation, exécution et vérification lorsqu’elles existent.
+- [x] Vision représente les états fournis par Agent au lieu de reconstruire sa propre logique.
+- [x] Les performances restent suffisantes pour l’usage réel.
+- [x] Un incident représentatif peut être compris intégralement depuis Vision.
 
 ---
 
