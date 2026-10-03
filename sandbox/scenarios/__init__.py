@@ -1,4 +1,8 @@
 SCENARIOS = {
+    "incident-dossier": (
+        "scenarios.incident_dossier",
+        "Phase 8 : dossiers Vision, preuves et réparations, API et rendu d’un incident long.",
+    ),
     "incident-history": (
         "scenarios.incident_history",
         "Phase 3 : historique Vision (filtres, fiche, frise) et incidents semblables.",
