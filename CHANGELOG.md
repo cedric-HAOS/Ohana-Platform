@@ -6,6 +6,25 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.140] - 2026-10-09
+
+### Composition
+
+- Ohana-Agent 1.44.0 → 1.45.0 : publication des noms des réservations DHCP dans
+  `ohana.lan` vers AdGuard Home, registre de réconciliation et vérification de
+  la réplique. Aucun bail dynamique ni DHCP AdGuard activé.
+- Vision 1.36.0 et Shizune 0.5.0 inchangés.
+
+### Reconstruction et exploitation
+
+- Modèles et procédure d'installation du cycle DNS dans Ohana-House 2.2.0.
+  Les unités et les accès AdGuard restent à installer explicitement.
+- Les anciennes sauvegardes restent restaurables : restaurer d'abord leur
+  composition exacte, mettre à jour vers cette release, puis configurer et
+  activer la synchronisation des réservations.
+- Publication avant reconstruction d'INFRA-01 ; aucune preuve de déploiement
+  ni de résolution DNS réelle n'est incluse dans la validation locale.
+
 ## [1.0.139] - 2026-10-03
 
 ### Composition
