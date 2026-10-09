@@ -6,6 +6,14 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+# [1.0.141] — Sauvegarde des autorisations INFRA-01 — 2026-10-09
+
+- Composition Agent 1.45.1, Vision 1.36.0 et Shizune 0.5.0.
+- Agent exporte les autorisations durables Katsuyu/Shizune sans les anciens jobs.
+  Installer 1.15.5 contrôle SQLite et ses WAL, rétablit les permissions DHCP
+  et importe ces autorisations lors de la restauration.
+
+
 ## [1.0.140] - 2026-10-09
 
 ### Composition
