@@ -1,12 +1,12 @@
 # Supervision de la synchronisation AdGuard
 
-Disponible avec Platform 1.0.143 : Agent 1.46.1, Vision 1.37.0 et Shizune 0.5.0.
+Disponible avec Platform 1.0.145 : Agent 1.48.0, Vision 1.38.1 et Shizune 0.5.0.
 
 ## Après la mise à jour
 
 1. Dans Vision, ouvrir **Configuration → Plugins → Synchronisation AdGuard**.
-2. Activer la surveillance ; régler l’intervalle, le délai API/DNS, l’âge maximal
-   du cycle et le nom DNS stable à résoudre par les deux instances.
+2. Activer la surveillance ; régler l’intervalle, le délai API et l’âge maximal
+   du cycle.
 3. Enregistrer puis tester ; vérifier le résultat des contrôles.
 4. Dans Shizune, vérifier **Services essentiels → Synchro AdGuard**.
 
@@ -19,11 +19,14 @@ par `ohana-agent`. Aucun mot de passe n’est saisi dans le formulaire du plugin
 
 ## Résultat
 
-La santé vérifiée exige un cycle récent réussi, des sections répliquées identiques
-et un DNS fonctionnel sur les deux IP. Un cycle en cours diffère la comparaison.
+La santé vérifiée exige un cycle récent réussi et des sections répliquées identiques.
+La disponibilité DNS relève du plugin DNS. Un cycle en cours diffère la comparaison.
 Une configuration incompatible ou illisible donne un résultat inconnu. Shizune
 présente une surveillance désactivée, une mesure absente ou de plus de quinze
 minutes comme non vérifiée. Le plugin ne synchronise ni ne répare automatiquement.
+Lorsque la synchronisation est saine et la fin du cycle connue, la tuile
+affiche son âge : **Dernière synchro il y a 3 min**. La mesure correspond
+à la fin du dernier cycle réussi, même lorsqu’aucun paramètre n’a changé.
 
 Les tests locaux utilisent des API et unités simulées ; la publication ne vaut
 pas confirmation du déploiement ni preuve de synchronisation réelle.

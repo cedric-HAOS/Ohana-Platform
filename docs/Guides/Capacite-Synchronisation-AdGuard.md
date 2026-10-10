@@ -1,6 +1,6 @@
 # Capacité de synchronisation AdGuard gérée par Installer
 
-Platform 1.0.144 compose Agent 1.47.0, Vision 1.38.0 et Shizune 0.5.0.
+Platform 1.0.145 compose Agent 1.48.0, Vision 1.38.1 et Shizune 0.5.0.
 Installer **1.16.0** est nécessaire pour provisionner cette capacité.
 La commande `ohana update` met d’abord Installer à jour avant la composition.
 
@@ -12,6 +12,11 @@ une installation neuve reste inactive.
 Dans Vision, ouvrir **Configuration → Plugins → Synchronisation AdGuard** :
 configurer et vérifier les accès, puis activer le moteur. Activer séparément
 la surveillance pour obtenir le résultat dans les services essentiels Shizune.
+La surveillance vérifie le cycle, sa fraîcheur et la cohérence des sections
+répliquées ; la disponibilité DNS relève du plugin DNS. Lorsque le contrôle
+est sain, Shizune affiche l’âge du dernier cycle réussi, par exemple
+**Dernière synchro il y a 3 min**.
+
 Les mots de passe existants sont masqués et conservés lorsqu’un champ reste vide.
 
 L’archive INFRA-01 inclut la configuration et le choix durable d’activation.
