@@ -6,6 +6,14 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Contrôle documentaire D04/D09/D10/D12 : guide d'installation canonique,
+  versions référencées au catalogue, priorités consolidées sans lever les
+  réserves réelles des phases 6/7, commandes Bash/PowerShell et dépannage
+  transversal actualisés.
+- D14/D15 : couleurs alignées sur les tokens Vision ; schémas de l'écosystème
+  et de l'autorisation Agent corrigés, copies SVG identiques retirées au profit
+  du répertoire canonique `deployment/`.
+
 ## [1.0.143] — 2026-10-10 — Compatibilité des listes AdGuard vides
 
 - Correctif urgent du défaut constaté sur INFRA-01 : Agent 1.46.1 accepte les

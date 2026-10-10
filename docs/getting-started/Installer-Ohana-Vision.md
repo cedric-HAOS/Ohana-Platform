@@ -59,7 +59,7 @@ python -m venv .venv
 ### Windows
 
 ```powershell
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### Linux
@@ -89,7 +89,7 @@ pip install --upgrade pip
 Installer Ohana-Vision :
 
 ```bash
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 Vérifier l'installation :

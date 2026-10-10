@@ -22,34 +22,13 @@ Son backend utilise un secret partagé pour appeler l'API locale
 d'Ohana-Agent. Agent reste responsable de la validation et des écritures
 atomiques.
 
-## Compatibilité
+## Composition et compatibilité
 
-| Vision | Agent minimal | Installer recommandé | Platform |
-|---|---|---|---|
-| 1.14.1 | 1.15.1 | 1.9.7 | 1.0.59 |
-| 1.14.0 | 1.15.0 | 1.9.7 | 1.0.58 |
-| 1.13.1 | 1.14.4 | 1.9.7 | 1.0.57 |
-| 1.13.0 | 1.14.3 | 1.9.7 | 1.0.56 |
-| 1.13.0 | 1.14.2 | 1.9.4 | 1.0.55 |
-| 1.13.0 | 1.14.1 | 1.9.4 | 1.0.54 |
-| 1.13.0 | 1.14.0 | 1.9.0 | 1.0.53 |
-| 1.12.1 | 1.13.1 | 1.8.1 | 1.0.52 |
-| 1.12.0 | 1.13.0 | 1.8.0 | 1.0.51 |
-| 1.11.8 | 1.12.7 | 1.7.3 | 1.0.50 |
-| 1.11.7 | 1.12.7 | 1.7.3 | 1.0.49 |
-| 1.11.7 | 1.12.6 | 1.7.3 | 1.0.48 |
-| 1.11.6 | 1.12.5 | 1.7.3 | 1.0.47 |
-| 1.10.2 | 1.11.5 | 1.7.0 | 1.0.28 |
-| 1.10.1 | 1.11.5 | 1.7.0 | 1.0.27 |
-| 1.10.1 | 1.11.3 | 1.6.1 | 1.0.25 |
-| 1.10.1 | 1.11.2 | 1.6.1 | 1.0.24 |
-| 1.10.0 | 1.11.1 | 1.6.1 | 1.0.23 |
-| 1.10.0 | 1.11.0 | 1.5.0 | 1.0.22 |
-| 1.10.0 | 1.11.0 | 1.0.13 | 1.0.21 |
-| 1.9.0 | 1.10.0 | 1.0.12 | 1.0.20 |
-| 1.8.0 | 1.9.0 | 1.0.11 | 1.0.19 |
-| 1.7.1 | 1.8.1 | 1.0.10 | 1.0.18 |
-
+Les versions installables et la recommandation courante sont définies dans
+[le catalogue Platform](../../release-catalog.yaml), avec leurs contrats dans
+[le manifeste](../../release-manifest.yaml). Sélectionner une composition publiée
+et contrôler les versions après installation selon [le guide nominal](../Installer-Ohana-Platform.md).
+L'historique des évolutions ci-dessous ne définit pas une nouvelle recommandation.
 
 ## Téléinformation Linky
 

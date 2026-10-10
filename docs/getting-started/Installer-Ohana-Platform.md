@@ -83,7 +83,7 @@ Activer l'environnement :
 ### Windows
 
 ```powershell
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### Linux
@@ -109,6 +109,7 @@ ohana-agent --help
 Quitter le projet :
 
 ```bash
+deactivate
 cd ..
 ```
 
@@ -133,7 +134,7 @@ Activer l'environnement :
 ### Windows
 
 ```powershell
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### Linux
@@ -159,6 +160,7 @@ ohana-vision --help
 Quitter le projet :
 
 ```bash
+deactivate
 cd ..
 ```
 
@@ -166,14 +168,26 @@ cd ..
 
 # Étape 4 — Démarrer Ohana-Agent
 
-Depuis le répertoire **Ohana-Agent** :
+Dans un terminal Bash dédié, depuis **Ohana-Agent**, activer son environnement :
 
 ```bash
+source .venv/bin/activate
 ohana-agent \
     --config config/shikamaru.yaml \
     --infrastructure config/infrastructure.yaml \
-    --dns-config config/plugins/dns.yaml
-    --ntp-config config/plugins/ntp.yaml
+    --dns-config config/plugins/dns.yaml \
+    --ntp-config config/plugins/ntp.yaml \
+    --mqtt-config config/plugins/mqtt.yaml
+```
+
+Alternative PowerShell, depuis **Ohana-Agent** :
+
+```powershell
+& .\.venv\Scripts\ohana-agent.exe `
+    --config config/shikamaru.yaml `
+    --infrastructure config/infrastructure.yaml `
+    --dns-config config/plugins/dns.yaml `
+    --ntp-config config/plugins/ntp.yaml `
     --mqtt-config config/plugins/mqtt.yaml
 ```
 
@@ -183,11 +197,18 @@ Le journal doit indiquer que l'agent est démarré.
 
 # Étape 5 — Démarrer Ohana-Vision
 
-Depuis le répertoire **Ohana-Vision** :
+Dans un second terminal Bash, depuis **Ohana-Vision**, utiliser son environnement :
 
 ```bash
+source .venv/bin/activate
 ohana-vision \
     --config config/vision.yaml
+```
+
+Alternative PowerShell, depuis **Ohana-Vision** :
+
+```powershell
+& .\.venv\Scripts\ohana-vision.exe --config config/vision.yaml
 ```
 
 Le serveur démarre par défaut sur :
@@ -268,8 +289,7 @@ Vérifier que **Ohana-Vision** est démarré et qu'aucune autre application n'ut
 
 Les guides suivants complètent cette procédure :
 
-* Installer-Ohana-Agent.md
-* Installer-Ohana-Vision.md
-* Guide de déploiement
-* Guide de développement
-* Guide de contribution
+* [Installation Agent](Installer-Ohana-Agent.md)
+* [Installation Vision](Installer-Ohana-Vision.md)
+* [Installation de production](../Installer-Ohana-Platform.md)
+* [Exploitation](../Operations.md)

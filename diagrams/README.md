@@ -76,7 +76,10 @@ Les diagrammes contenus dans `deployment/` présentent les différents scénario
 
 # Conventions graphiques
 
-Tous les diagrammes officiels respectent les conventions du Design System Ohana.
+Les diagrammes suivent les conventions de lisibilité du Design System Ohana.
+La palette de l'interface Vision reste celle de ses tokens CSS ; certains SVG
+historiques conservent leurs couleurs d'illustration et ne prescrivent pas les
+valeurs à utiliser dans les composants de l'interface.
 
 * Palette de couleurs officielle de la plateforme.
 * Fond sombre Ohana.
@@ -89,6 +92,15 @@ Tous les diagrammes officiels respectent les conventions du Design System Ohana.
 * Format SVG autonome, sans dépendance externe.
 
 ---
+
+## Sources et périmètre
+
+La palette de l'interface est documentée dans [Colors](../docs/Design/Colors.md).
+La vue [écosystème](architecture/ecosystem.svg) inclut les huit dépôts ;
+[le flux d'administration](flows/administration-flow.svg) place la validation
+et l'exécution dans Agent. Le répertoire canonique est `deployment/` ;
+les copies identiques de l'ancien répertoire mal orthographié ont été retirées.
+Le schéma multi-sites représente une extension prévue, pas un déploiement acquis.
 
 # Maintenance
 

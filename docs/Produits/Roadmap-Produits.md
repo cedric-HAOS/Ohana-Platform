@@ -1,17 +1,17 @@
 # Roadmap des produits Ohana
 
-## Composition publiée
+## Composition disponible
 
-| Produit | Version | État |
-|---|---:|---|
-| Ohana-Platform | 1.0.59 | publiée |
-| Ohana-Agent | 1.15.1 | publié |
-| Ohana-Vision | 1.14.1 | publiée |
-| Ohana-Installer | 1.9.7 | publié |
-| Ohana-House | 2.1.0 | publié |
+La recommandation et ses versions Agent/Vision/Shizune sont définies dans
+[release-catalog.yaml](../../release-catalog.yaml). Le
+[manifeste](../../release-manifest.yaml) décrit ses assets et son déploiement.
+Installer et Katsuyu ont leur propre cycle de release ; House a une version
+documentaire indépendante. Les versions disponibles ne prouvent pas un déploiement.
 
-## Prochaines évolutions
+## Évolutions et critères
 
-Les évolutions sont suivies dans le `ROADMAP.md` de chaque dépôt. Platform ne
-réplique ici que les jalons transverses : compatibilité des contrats, composition
-des releases, documentation commune et Design System.
+Le [ROADMAP Platform](../../ROADMAP.md) suit les phases, les essais réellement
+acquis et les réserves. Les responsabilités restent définies dans
+[l'architecture](../Architecture/Architecture.md). Utiliser
+[le guide d'installation](../Installer-Ohana-Platform.md) pour sélectionner un
+couple publié plutôt que recopier une table de versions historique.

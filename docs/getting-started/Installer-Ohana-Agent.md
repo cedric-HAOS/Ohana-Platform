@@ -46,7 +46,6 @@ Vous devez notamment retrouver :
 
 ```text
 config/
-plugins/
 src/
 tests/
 pyproject.toml
@@ -66,7 +65,7 @@ python -m venv .venv
 Activation sous Windows :
 
 ```powershell
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 ```
 
 Activation sous Linux :
@@ -96,7 +95,7 @@ pip install --upgrade pip
 Installer Ohana-Agent :
 
 ```bash
-pip install -e .
+pip install -e ".[development]"
 ```
 
 Vérifier que l'installation est correcte :
@@ -131,16 +130,32 @@ Tous les tests doivent réussir.
 
 # Étape 5 — Démarrer Ohana-Agent
 
-Lancer l'agent avec la configuration fournie :
+Depuis la racine du dépôt Agent, dans un terminal Bash avec son environnement
+virtuel activé, lancer l'agent avec la configuration locale :
 
 ```bash
 ohana-agent \
     --config config/shikamaru.yaml \
     --infrastructure config/infrastructure.yaml \
-    --dns-config config/plugins/dns.yaml
-    --mqtt-config config/plugins/mqtt.yaml
+    --dns-config config/plugins/dns.yaml \
+    --mqtt-config config/plugins/mqtt.yaml \
     --ntp-config config/plugins/ntp.yaml
 ```
+
+Sous PowerShell, depuis cette même racine, utiliser les continuations propres
+à PowerShell et l'exécutable de l'environnement Agent :
+
+```powershell
+& .\.venv\Scripts\ohana-agent.exe `
+    --config config/shikamaru.yaml `
+    --infrastructure config/infrastructure.yaml `
+    --dns-config config/plugins/dns.yaml `
+    --mqtt-config config/plugins/mqtt.yaml `
+    --ntp-config config/plugins/ntp.yaml
+```
+
+Conserver ce terminal pour Agent ; démarrer Vision dans un autre terminal avec
+son propre environnement. Adapter les cibles de configuration au laboratoire.
 
 Au démarrage, le journal doit confirmer le chargement de la configuration et l'initialisation des plugins.
 

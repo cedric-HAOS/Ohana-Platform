@@ -2025,27 +2025,20 @@ Toutes les phases
 
 # Priorité immédiate
 
-État de la Phase 1 au 22 septembre 2026 : **9 critères de sortie acquis sur 10**.
+État consolidé au 10 octobre 2026 : les phases 1 à 5 et 8 sont clôturées selon
+leurs preuves datées. Les phases 6 et 7 restent ouvertes pour leurs essais réels.
 
-Deux pannes contrôlées réelles sont validées :
+1. Conserver le suivi des réserves de [Phase 6](docs/Phase-6-Katsuyu.md) : cycle
+   complet sans intervention, arrêt effectif de Bubule et veto avec une vraie
+   session. Ces essais réels restent différés et ne sont pas réputés validés.
+2. Conserver le suivi de [Phase 7](docs/Phase-7-Shizune.md) sur l'iPhone : demandes
+   réelles, autoriser/refuser/reporter, suivi de l'issue et perte/reprise de
+   synchronisation. Leur qualification reste différée.
+3. Contrôler la reprise INFRA-01 et la prochaine sauvegarde selon House ;
+   distinguer publication, installation et recette réelle des correctifs AdGuard.
+4. Poursuivre les phases 9/10 lorsque leurs lots sont choisis, sans déduire leur
+   validation de la seule clôture des phases précédentes.
 
-```text
-#1 Service — teleinfo2mqtt
-VALIDÉE
-        │
-        ▼
-#2 Réseau — SHE-04
-VALIDÉE sous Agent 1.29.19
-        │
-        ▼
-#3 Panne contrôlée
-À RÉALISER
-        │
-        ▼
-10/10
-        │
-        ▼
-Clôture Phase 1
-        │
-        ▼
-Phase 2 — première réparation supervisée
+Le chantier documentaire transversal maintient les guides, contrats et copies
+de compositions. L'état 9/10 de la Phase 1 au 22 septembre est un historique
+remplacé par sa clôture datée du 25 septembre ; il ne constitue plus la priorité.
