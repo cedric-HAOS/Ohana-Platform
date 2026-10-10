@@ -1,6 +1,6 @@
 # Supervision de la synchronisation AdGuard
 
-Disponible avec Platform 1.0.142 : Agent 1.46.0, Vision 1.37.0 et Shizune 0.5.0.
+Disponible avec Platform 1.0.143 : Agent 1.46.1, Vision 1.37.0 et Shizune 0.5.0.
 
 ## Après la mise à jour
 

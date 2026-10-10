@@ -6,6 +6,14 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.143] — 2026-10-10 — Compatibilité des listes AdGuard vides
+
+- Correctif urgent du défaut constaté sur INFRA-01 : Agent 1.46.1 accepte les
+  listes de filtres et clients explicitement nulles dans les réponses AdGuard.
+- Vision 1.37.0 et Shizune 0.5.0 conservés ; les paramètres existants sont préservés.
+- Le code corrigé exécuté en mémoire sur INFRA-01 a comparé 16 sections sans
+  divergence, avec les deux contrôles DNS réussis. Déploiement non effectué.
+
 ## [1.0.142] — 2026-10-10 — Supervision AdGuard administrable
 
 - Composition Agent 1.46.0 et Vision 1.37.0 ; Shizune 0.5.0 conservé.
