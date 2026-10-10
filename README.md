@@ -89,6 +89,7 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Cible |
 | --- | --- | --- | --- | --- |
+| 1.0.142 | 1.46.0 | 1.37.0 | 3.13+ | Linux/systemd |
 | 1.0.141 | 1.45.1 | 1.36.0 | 3.13+ | Linux/systemd |
 | 1.0.139 | 1.44.0 | 1.36.0 | 3.13+ | Linux/systemd |
 | 1.0.138 | 1.44.0 | 1.35.0 | 3.13+ | Linux/systemd |
@@ -467,3 +468,6 @@ La reprise des incidents des équipements retirés est automatique au démarrage
 d’Agent et à l’enregistrement de l’architecture. Vision conserve leur historique
 et les exclut uniquement de l’état courant. Les contrôles locaux ne constituent
 pas une validation du prochain cycle nocturne sur INFRA-01.
+
+La [supervision AdGuard](docs/Guides/Supervision-AdGuard.md) est administrable
+dans Vision et visible dans les services essentiels de Shizune dès Platform 1.0.142.

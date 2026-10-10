@@ -6,6 +6,18 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.142] — 2026-10-10 — Supervision AdGuard administrable
+
+- Composition Agent 1.46.0 et Vision 1.37.0 ; Shizune 0.5.0 conservé.
+- Distribution du modèle `adguard-sync.example.yaml`, désactivé par défaut,
+  et de son argument de service Agent. La configuration existante est conservée.
+- Au démarrage de production, Agent prépare le service local pour une activation
+  et un test depuis Vision, sans création manuelle de service ou de fichier.
+- Shizune affiche Synchro AdGuard dans Services essentiels ; absence de mesure,
+  désactivation et mesure ancienne restent non vérifiées.
+- Publication validée localement ; déploiement et contrôles sur les instances
+  AdGuard réelles restent à effectuer. Voir le guide de supervision.
+
 # [1.0.141] — Sauvegarde des autorisations INFRA-01 — 2026-10-09
 
 - Composition Agent 1.45.1, Vision 1.36.0 et Shizune 0.5.0.
