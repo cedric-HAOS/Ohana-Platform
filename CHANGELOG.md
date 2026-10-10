@@ -17,6 +17,16 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
   et de l'autorisation Agent corrigés, copies SVG identiques retirées au profit
   du répertoire canonique `deployment/`.
 
+## [1.0.144] — 2026-10-10 — Capacité de synchronisation AdGuard
+
+- Composition Agent 1.47.0, Vision 1.38.0 et Shizune 0.5.0 ; Installer 1.16.0
+  nécessaire pour provisionner la nouvelle capacité explicite `adguard-sync`.
+- Installer prend en charge le moteur, ses unités, la conservation et la
+  restauration. Vision permet de configurer les accès et d’activer le moteur,
+  séparément de sa surveillance et de la tuile Shizune existante.
+- Validation locale des installations, transitions et retours arrière ;
+  publication sans déploiement ni confirmation d’une restauration réelle.
+
 ## [1.0.143] — 2026-10-10 — Compatibilité des listes AdGuard vides
 
 - Correctif urgent du défaut constaté sur INFRA-01 : Agent 1.46.1 accepte les

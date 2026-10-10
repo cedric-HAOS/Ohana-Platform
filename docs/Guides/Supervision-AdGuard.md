@@ -33,3 +33,11 @@ détaille les sections comparées et les limites. Le
 décrit l’administration ; le
 [guide Shizune](https://github.com/cedric-HAOS/Ohana-Shizune/blob/main/docs/PWA.md)
 décrit la tuile.
+
+## Gestion complète depuis Platform 1.0.144
+
+Installer 1.16.0 installe et reconstruit désormais le moteur et les unités.
+Agent 1.47.0 et Vision 1.38.0 permettent de configurer les accès et d’activer
+le moteur depuis cette même fiche, séparément de la surveillance. Le choix
+d’activation est sauvegardé et restauré après validation. Voir
+[la capacité gérée par Installer](Capacite-Synchronisation-AdGuard.md).
