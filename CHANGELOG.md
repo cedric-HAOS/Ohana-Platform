@@ -6,6 +6,9 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Outillage commun versionné sous `scripts/` : contrôle documentaire sans
+  publication, messages de release conformes et tests de propagation adaptés.
+
 - Contrôle documentaire D04/D09/D10/D12 : guide d'installation canonique,
   versions référencées au catalogue, priorités consolidées sans lever les
   réserves réelles des phases 6/7, commandes Bash/PowerShell et dépannage
