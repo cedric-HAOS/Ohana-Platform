@@ -167,25 +167,39 @@ def _backups(recette: Recette) -> None:
     _try(recette, "Intégrité des archives relues", integrity)
 
 
+# A journal window that never reaches back before the last restart of the Agent: the
+# lines written by the previous version are not those of the one being checked.
+SINCE = (
+    'S=$(systemctl show ohana-agent -p ActiveEnterTimestamp --value); '
+    'if [ $(( $(date +%s) - $(date -d "$S" +%s) )) -lt 900 ]; '
+    'then SINCE="$S"; else SINCE="15 min ago"; fi; '
+)
+
+
 def _journal(recette: Recette) -> None:
     def httpx() -> tuple[str, str]:
         count = recette.shell(
-            "journalctl -u ohana-agent --since '15 min ago' --no-pager | grep -c httpx"
+            SINCE + 'journalctl -u ohana-agent --since "$SINCE" --no-pager '
+            "| grep -c httpx"
         )
         total = recette.shell(
-            "journalctl -u ohana-agent --since '15 min ago' --no-pager | wc -l"
+            SINCE + 'journalctl -u ohana-agent --since "$SINCE" --no-pager | wc -l'
         )
         return (
             "OK" if count.strip() in {"0", ""} else "KO",
-            f"{count or 0} ligne(s) httpx sur {total} en 15 minutes",
+            f"{count or 0} ligne(s) httpx sur {total} depuis le démarrage ou "
+            "depuis 15 minutes",
         )
 
     def warnings() -> tuple[str, str]:
         count = recette.shell(
-            "journalctl -u ohana-agent -u ohana-vision --since '15 min ago' "
+            SINCE + 'journalctl -u ohana-agent -u ohana-vision --since "$SINCE" '
             "-p warning --no-pager | grep -vc '^-- '"
         )
-        return ("OK" if count.strip() in {"0", ""} else "ATTENTION", f"{count or 0} avertissement(s)")
+        return (
+            "OK" if count.strip() in {"0", ""} else "ATTENTION",
+            f"{count or 0} avertissement(s)",
+        )
 
     _try(recette, "Journal de l'Agent sans lignes httpx", httpx)
     _try(recette, "Aucun avertissement récent", warnings)
