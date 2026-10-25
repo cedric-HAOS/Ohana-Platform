@@ -27,6 +27,8 @@ from ohana_agent.infrastructure.repository import InfrastructureConfigurationRep
 from ohana_agent.jobs.log_sources import LogSourceBroker
 from ohana_agent.jobs.repository import DistributedJobRepository
 from ohana_agent.observation import Observation, ObservationStatus
+from ohana_agent.plugins.backup.archive_integrity import ArchiveIntegrityReporter
+from ohana_agent.plugins.backup.archive_verifier import ArchiveVerifier
 from ohana_agent.plugins.backup.config import BackupConfig, BackupTarget
 from ohana_agent.tsunade.companion_overview import services_overview
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
@@ -37,6 +39,7 @@ from ohana_vision.configuration import ApplicationConfiguration
 from ohana_vision.web.bootstrap import build_application
 from playwright.sync_api import expect, sync_playwright
 from starlette.staticfiles import StaticFiles
+from scenarios._archives import REMOTE, DirectoryRemote, age_body, publish_haos
 from scenarios._support import NoProbes
 from scenarios.supervised_repair_cycle import DnsmasqStopped
 from ohana_agent.tsunade.incident_summary import incident_assessment
@@ -346,15 +349,60 @@ def _shizune_phase7(phone, payloads, gateway_down, summary, output, report, chec
     check("Shizune reprend la synchronisation sans rechargement", True)
 
 
-def _restore_views(page, preventive, output, report, check):
-    """Phase 10: declare a real restoration from Vision, through the Agent."""
+def _restore_views(page, preventive, service, output, report, check):
+    """Phase 10: declare a restoration and verify an archive from Vision."""
     now = datetime.now(ZoneInfo("Europe/Paris"))
     preventive.record_backup_success("ha-01", now - timedelta(hours=2))
+    with TemporaryDirectory(prefix="ohana-fullstack-archives-") as tmp:
+        archives = Path(tmp)
+        publish_haos(archives, "ha-01", "20261025T000000Z", age_body(512 * 1024))
+        service.archive_integrity = ArchiveIntegrityReporter(
+            ArchiveVerifier(
+                BackupConfig(
+                    targets=(
+                        BackupTarget(
+                            id="ha-01", label="HA-01", url="http://ha", schedule="0 2 * * 6"
+                        ),
+                    ),
+                    rclone_remote=REMOTE,
+                ),
+                reader=DirectoryRemote(archives),
+            ),
+            record=preventive.record_archive_check,
+            last_check=preventive.last_archive_check,
+        )
+        _restore_block(page, preventive, output, report, check)
+
+
+def _restore_block(page, preventive, output, report, check):
     page.reload(wait_until="networkidle")
     page.locator('[data-navigation-target="incidents"]').click()
     page.locator('[data-tsunade-tab="preventive"]').click()
     section = page.locator("#tsunade-preventive")
     expect(section).to_contain_text("HA-01 : sauvegarde jamais testée en restauration", timeout=15000)
+    expect(section).to_contain_text("Intégrité de l’archive pas encore contrôlée.")
+    with page.expect_response(
+        lambda response: (
+            response.url.endswith("/tsunade/backups/archives/verify")
+            and response.request.method == "POST"
+        )
+    ) as verify:
+        section.locator('[data-tsunade-archive-verify="ha-01"]').click()
+    verify_ok, verify_body = verify.value.ok, verify.value.json()
+    deadline = monotonic() + 30
+    while preventive.last_archive_check("ha-01") is None and monotonic() < deadline:
+        sleep(0.2)
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    page.locator('[data-tsunade-tab="preventive"]').click()
+    section = page.locator("#tsunade-preventive")
+    expect(section).to_contain_text("archive relue, taille et empreinte conformes", timeout=15000)
+    check(
+        "Vérification d'archive lancée depuis Vision : archive HAOS relue et conforme",
+        verify_ok
+        and verify_body["started"] == ["ha-01"]
+        and preventive.last_archive_check("ha-01")["outcome"] == "ok",
+    )
     form = section.locator("[data-tsunade-restore-form]")
     expect(form).to_be_visible()
     form.locator('select[name="target"]').select_option("ha-01")
@@ -1121,7 +1169,7 @@ def run(*, args):
             )
             _preventive_views(page, context, browser, preventive, service, output, report, check)
             _preventive_backfill(page, jobs, home_assistant, worker, output, report, check)
-            _restore_views(page, preventive, output, report, check)
+            _restore_views(page, preventive, service, output, report, check)
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page.set_viewport_size({"width": width, "height": height})
                 expect(page.locator("#incidents-heading")).to_be_visible()

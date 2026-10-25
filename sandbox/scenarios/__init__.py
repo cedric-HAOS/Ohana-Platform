@@ -202,6 +202,14 @@ SCENARIOS = {
             "preuves conservées au redémarrage, aucune action automatique."
         ),
     ),
+    "backup-archive-integrity": (
+        "scenarios.backup_archive_integrity",
+        (
+            "Phase 10 : archives publiées relues et comparées à leur "
+            "enregistrement ; altération prouvée urgente, remote illisible "
+            "sans preuve, aucune archive modifiée."
+        ),
+    ),
     "preventive-backfill": (
         "scenarios.preventive_backfill",
         (
