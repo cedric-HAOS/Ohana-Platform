@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Interactive, verified release workflow for the Ohana repositories."""
+"""Verified release workflow for the Ohana repositories.
+
+Interactive by default; `--yes`, `--version DÉPÔT=X.Y.Z` and `--dry-run` let it run
+unattended, and the one-release-a-day rule is enforced unless `--urgent` is given.
+"""
 
 from __future__ import annotations
 
@@ -12,7 +16,7 @@ import subprocess
 import sys
 import tempfile
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
@@ -60,6 +64,19 @@ REPOSITORIES = (
 
 class ReleaseError(RuntimeError):
     pass
+
+
+@dataclass
+class Options:
+    """Command line choices; the defaults keep the historical interactive flow."""
+
+    yes: bool = False
+    dry_run: bool = False
+    urgent: bool = False
+    versions: dict[str, str] = field(default_factory=dict)
+
+
+OPTIONS = Options()
 
 
 def write_utf8(path: Path, text: str) -> None:
@@ -132,6 +149,9 @@ def clear_progress_line() -> None:
 
 def ask_yes_no(question: str) -> bool:
     clear_progress_line()
+    if OPTIONS.yes:
+        print(f"{question} [o/N] oui (--yes)")
+        return True
     while True:
         answer = input(f"{question} [o/N] ").strip().lower()
         if answer in {"o", "oui", "y", "yes"}:
@@ -240,7 +260,11 @@ def request_new_version(
     clear_progress_line()
     print(f"  Version locale actuelle : {current}")
     print(f"  Dernière release GitHub : {remote or 'aucune'}")
-    value = input("  Nouvelle version à appliquer (X.Y.Z) : ").strip()
+    value = OPTIONS.versions.get(repository.key, "")
+    if value:
+        print(f"  Nouvelle version à appliquer (X.Y.Z) : {value} (--version)")
+    else:
+        value = input("  Nouvelle version à appliquer (X.Y.Z) : ").strip()
     parsed = parse_version(value)
     current_parsed = parse_version(current)
     if parsed < current_parsed:
@@ -1044,10 +1068,108 @@ def validate_asset_contract(
         )
 
 
-def commit_release(repository: Repository, version: str) -> None:
+UNRELEASED = "## Non publié"
+RELEASED_HEADING = re.compile(r"^## \[", re.MULTILINE)
+
+
+def promote_changelog(
+    repository: Repository, version: str, *, today: str | None = None
+) -> str | None:
+    """Turn « Non publié » into the release section; returns its text (the notes).
+
+    Does nothing, and returns ``None``, when the repository has no CHANGELOG or
+    its « Non publié » section is empty: the release then gets GitHub's notes.
+    """
+    path = repository.path / "CHANGELOG.md"
+    if not path.is_file():
+        return None
+    text = path.read_bytes().decode("utf-8")
+    newline = "\r\n" if "\r\n" in text else "\n"
+    text = text.replace("\r\n", "\n")
+    start = text.find(UNRELEASED)
+    if start < 0:
+        return None
+    body_start = start + len(UNRELEASED)
+    following = RELEASED_HEADING.search(text, body_start)
+    body_end = following.start() if following else len(text)
+    body = text[body_start:body_end].strip("\n")
+    if not body.strip():
+        return None
+    first = next((line for line in body.splitlines() if line.strip()), "")
+    title = re.sub(r"^[-*] +", "", first).strip()
+    title = (re.split(r"[.:;]", title)[0] or title)[:70].strip() or f"Version {version}"
+    stamp = today or datetime.now().strftime("%Y-%m-%d")
+    promoted = (
+        f"{UNRELEASED}\n\n## [{version}] — {stamp} — {title}\n\n{body}\n\n"
+    )
+    text = text[:start] + promoted + text[body_end:].lstrip("\n")
+    path.write_text(text.replace("\n", newline), encoding="utf-8", newline="")
+    return body.strip() + "\n"
+
+
+def tracked_changes(repository: Repository) -> dict[str, str]:
+    """Modified tracked files with a hash of their content."""
+    names = run(["git", "ls-files", "--modified"], repository.path, capture=True)
+    changes = {}
+    for name in sorted(set(names.splitlines())):
+        path = repository.path / name
+        changes[name] = (
+            run(["git", "hash-object", name], repository.path, capture=True)
+            if path.is_file()
+            else "deleted"
+        )
+    return changes
+
+
+def files_edited_since(
+    repository: Repository, baseline: dict[str, str]
+) -> list[str]:
+    """Tracked files the release changed, not the work already pending."""
+    now = tracked_changes(repository)
+    return sorted(name for name, digest in now.items() if baseline.get(name) != digest)
+
+
+def todays_release(repository: Repository) -> bool:
+    """True when the latest GitHub release of the repository was made today."""
+    result = execute(
+        [
+            "gh",
+            "api",
+            f"repos/{repository.github}/releases/latest",
+            "--jq",
+            ".published_at",
+        ],
+        ROOT,
+    )
+    stamp = result.stdout.strip()
+    if result.returncode or not stamp or stamp == "null":
+        return False
+    published = datetime.fromisoformat(stamp.replace("Z", "+00:00")).astimezone()
+    return published.date() == datetime.now().astimezone().date()
+
+
+def ensure_one_release_a_day(repository: Repository) -> None:
+    """Versions-et-releases.md, rule 3: one release per component and per day."""
+    if OPTIONS.urgent or not todays_release(repository):
+        return
+    raise ReleaseError(
+        f"{repository.directory}: une release a déjà été publiée aujourd'hui. La "
+        "règle est d'une release par composant et par jour; relancez avec "
+        "--urgent pour un correctif d'un défaut constaté en production."
+    )
+
+
+def commit_release(
+    repository: Repository, version: str, files: list[str] | None = None
+) -> None:
     progress(repository, 86, "création du commit de release")
     run(["git", "diff", "--check"], repository.path)
-    run(["git", "add", "--all"], repository.path)
+    # Never `git add --all`: it swept untracked files (graphify-out) and pending
+    # work into the release commit. Only what the release itself changed.
+    if files is None:
+        run(["git", "add", "--update"], repository.path)
+    elif files:
+        run(["git", "add", "--", *files], repository.path)
     if execute(["git", "diff", "--cached", "--quiet"], repository.path).returncode == 0:
         raise ReleaseError(f"{repository.directory}: aucun changement à committer")
     message = (
@@ -1058,7 +1180,12 @@ def commit_release(repository: Repository, version: str) -> None:
     run(["git", "commit", "-m", message], repository.path)
 
 
-def publish(repository: Repository, version: str, assets: list[Path]) -> None:
+def publish(
+    repository: Repository,
+    version: str,
+    assets: list[Path],
+    notes: str | None = None,
+) -> None:
     tag = f"v{version}"
     progress(repository, 90, "push du commit sur main")
     run(["git", "push", "origin", "main"], repository.path)
@@ -1066,6 +1193,10 @@ def publish(repository: Repository, version: str, assets: list[Path]) -> None:
     run(["git", "tag", "-a", tag, "-m", f"Release {tag}"], repository.path)
     run(["git", "push", "origin", tag], repository.path)
     progress(repository, 96, "création de la release GitHub")
+    notes_file: Path | None = None
+    if notes:
+        notes_file = LOG_DIRECTORY / f"notes-{repository.key}-{version}.md"
+        write_utf8(notes_file, notes)
     run(
         [
             "gh",
@@ -1076,7 +1207,11 @@ def publish(repository: Repository, version: str, assets: list[Path]) -> None:
             repository.github,
             "--title",
             f"{repository.directory} {version}",
-            "--generate-notes",
+            *(
+                ["--notes-file", str(notes_file)]
+                if notes_file is not None
+                else ["--generate-notes"]
+            ),
             *map(str, assets),
         ],
         repository.path,
@@ -1136,6 +1271,20 @@ def verify_published_release(
     progress(repository, 100, "release publiée et vérifiée")
 
 
+def parse_version_options(values: list[str]) -> dict[str, str]:
+    versions: dict[str, str] = {}
+    keys = {repository.key for repository in REPOSITORIES}
+    for value in values:
+        key, separator, version = value.partition("=")
+        if not separator or key not in keys:
+            raise ReleaseError(
+                f"--version attend DÉPÔT=X.Y.Z avec un dépôt parmi {sorted(keys)}"
+            )
+        parse_version(version)
+        versions[key] = version
+    return versions
+
+
 def selected(keys: list[str] | None) -> tuple[Repository, ...]:
     if not keys:
         return REPOSITORIES
@@ -1167,6 +1316,8 @@ def process_repository(repository: Repository) -> None:
     if not ask_yes_no(f"Créer une release pour {repository.directory} ?"):
         progress(repository, 100, "release ignorée à la demande de l’utilisateur")
         return
+    ensure_one_release_a_day(repository)
+    baseline = tracked_changes(repository)
     current = local_version(repository)
     remote = github_version(repository)
     progress(repository, 12, "choix de la nouvelle version")
@@ -1175,6 +1326,7 @@ def process_repository(repository: Repository) -> None:
         progress(repository, 18, "version locale déjà préparée, propagation inchangée")
     else:
         update_version_references(repository, current, new_version)
+    notes = promote_changelog(repository, new_version)
     normalize_version_file_line_endings(repository)
     try:
         run_checks(repository)
@@ -1183,8 +1335,16 @@ def process_repository(repository: Repository) -> None:
             f"{repository.directory}: validation échouée; vérifiez le dépôt avant de reprendre. {error}"
         ) from error
     assets = prepare_assets(repository, new_version)
-    commit_release(repository, new_version)
-    publish(repository, new_version, assets)
+    if OPTIONS.dry_run:
+        progress(
+            repository,
+            100,
+            f"simulation de {new_version} terminée avant le commit "
+            "(fichiers de version modifiés, rien de publié)",
+        )
+        return
+    commit_release(repository, new_version, files_edited_since(repository, baseline))
+    publish(repository, new_version, assets, notes)
     propagate_component_to_platform(
         repository,
         new_version,
@@ -1196,7 +1356,32 @@ def main() -> int:
     parser.add_argument(
         "--repo", action="append", choices=[r.key for r in REPOSITORIES]
     )
+    parser.add_argument(
+        "--yes", action="store_true", help="répondre oui aux demandes de confirmation"
+    )
+    parser.add_argument(
+        "--version",
+        action="append",
+        default=[],
+        metavar="DÉPÔT=X.Y.Z",
+        help="nouvelle version d'un dépôt, sans la demander (répétable)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="propager, valider et préparer les assets, sans commit ni publication",
+    )
+    parser.add_argument(
+        "--urgent",
+        action="store_true",
+        help="autoriser une seconde release le même jour (défaut en production)",
+    )
     args = parser.parse_args()
+    OPTIONS.yes, OPTIONS.dry_run, OPTIONS.urgent = args.yes, args.dry_run, args.urgent
+    try:
+        OPTIONS.versions = parse_version_options(args.version)
+    except ReleaseError as error:
+        parser.error(str(error))
     try:
         for repository in selected(args.repo):
             process_repository(repository)

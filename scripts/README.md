@@ -17,6 +17,25 @@ le traitement à un dépôt :
 Dépôts disponibles : `agent`, `vision`, `katsuyu`, `shizune`, `platform` et
 `installer`.
 
+## Options
+
+Sans option, le script pose ses questions comme avant. Pour l'enchaîner sans
+intervention (par exemple depuis une session de travail) :
+
+| Option | Effet |
+| --- | --- |
+| `--yes` | répond oui aux confirmations |
+| `--version DÉPÔT=X.Y.Z` | impose la nouvelle version d'un dépôt (répétable) au lieu de la demander |
+| `--dry-run` | propage les versions, valide, construit et prépare les assets, puis s'arrête **avant** le commit : rien n'est publié (les fichiers de version modifiés restent visibles, `git checkout` les annule) |
+| `--urgent` | autorise une seconde release le même jour, pour un défaut constaté en production |
+
+Exemple : `release_all.py --repo agent --yes --version agent=1.50.0`.
+
+Le script applique aussi la règle d'**une release par composant et par jour**
+([Versions et releases](../docs/Guides/Versions-et-releases.md), règle 3) : si la
+dernière release GitHub du dépôt date d'aujourd'hui, il s'arrête sans
+`--urgent`.
+
 ## Déroulement
 
 Pour chaque dépôt, le script :
@@ -30,8 +49,12 @@ Pour chaque dépôt, le script :
 6. propage cette version dans les sources et tests déclarés ;
 7. exécute les validations adaptées au dépôt ;
 8. prépare et vérifie les assets ;
-9. crée un commit `release: Ohana-Agent 1.26.14` (ou
-   `release: compose Platform 1.0.X` pour une composition), pousse `main`, crée le tag
+9. promeut la section « Non publié » du `CHANGELOG.md` en section de la
+   nouvelle version (elle sert de notes à la release GitHub ; sans entrée, GitHub
+   génère les notes), puis crée un commit `release: Ohana-Agent 1.26.14` (ou
+   `release: compose Platform 1.0.X` pour une composition) qui ne contient que
+   les fichiers modifiés par la release (jamais `git add --all` : les fichiers non
+   suivis et le travail déjà en attente restent hors du commit), pousse `main`, crée le tag
    `v1.26.14` et la release `Ohana-Agent 1.26.14` ;
 10. retélécharge tous les assets et vérifie les hashes ainsi que
     `HEAD == origin/main == tag`.
