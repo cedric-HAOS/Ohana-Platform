@@ -1589,6 +1589,9 @@ Vision doit distinguer clairement :
 
 # Phase 9 — Shikamaru
 
+Suivi : [Phase 9 — Shikamaru](docs/Phase-9-Shikamaru.md) (audit des neuf critères
+le 25 octobre 2026 ; la phase n'est pas close).
+
 ## Objectif
 
 Continuer à renforcer la **qualité des observations** plutôt que multiplier les capacités.
@@ -1619,13 +1622,13 @@ Il ne remplace pas Tsunade dans le diagnostic.
 
 - [ ] Les capacités essentielles produisent des observations suffisamment stables pour être exploitées.
 - [ ] Les principaux faux positifs connus sont réduits ou documentés.
-- [ ] Les états transitoires sont distingués des pannes réelles lorsqu’une règle raisonnable le permet.
-- [ ] L’âge d’une observation permet de savoir si elle est encore exploitable.
-- [ ] Une panne du collecteur est distinguée autant que possible de la panne de ce qu’il observe.
-- [ ] Les dépendances objectives peuvent être représentées sans inventer de causalité.
-- [ ] Les changements d’état sont historisés.
-- [ ] La charge globale reste adaptée à INFRA-01.
-- [ ] Une nouvelle capacité n’est ajoutée que lorsqu’elle garantit une fonction réellement utile de Konoha.
+- [x] Les états transitoires sont distingués des pannes réelles lorsqu’une règle raisonnable le permet. *(Sandbox : retard de relevé confirmé avant incident, délai de grâce de redémarrage de Home Assistant ; réel à mesurer après déploiement)*
+- [x] L’âge d’une observation permet de savoir si elle est encore exploitable. *(âge de chaque valeur de télémétrie, âge du dernier cycle AdGuard, retard d'ingestion dans la vue Ohana)*
+- [x] Une panne du collecteur est distinguée autant que possible de la panne de ce qu’il observe. *(réel, Phase 5 : composants de l'Agent, sonde de Vision ; lecture impossible = inconnu, jamais panne)*
+- [x] Les dépendances objectives peuvent être représentées sans inventer de causalité. *(Sandbox, Phase 4 : dépendances déclarées, corrélations sans cause affirmée)*
+- [x] Les changements d’état sont historisés. *(réel, Phase 3 : historique des incidents et fiche par équipement dans Vision)*
+- [x] La charge globale reste adaptée à INFRA-01. *(réel : Agent environ 2 % d'un cœur, journal allégé de 14 000 lignes par jour, carte SD surveillée par `storage_health`)*
+- [x] Une nouvelle capacité n’est ajoutée que lorsqu’elle garantit une fonction réellement utile de Konoha. *(critère de méthode : aucune capacité d'observation ajoutée depuis l'ouverture de la phase)*
 
 ---
 
