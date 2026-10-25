@@ -95,6 +95,23 @@ depuis laquelle l'état dure :
 - **Shizune** : l'alerte apparaît dans la carte « Prévention ».
 - **Sandbox** : scénario `preventive-infra-health` et recette `--full-stack`.
 
+## Lot 4 — sauvegarde à l'heure et compte rendu de `ohana restore` (non publié)
+
+- **Sauvegarde à l'heure** : règle préventive `backup_freshness`. Une sauvegarde
+  planifiée qui n'a pas eu lieu, sans échec ni incident (tâche perdue, horaire
+  erroné), est signalée en retard au-delà d'un intervalle et demi de son horaire
+  (plus 2 heures), urgente au-delà de trois. La dernière sauvegarde est la plus
+  récente entre un succès observé et l'horodatage de l'archive relue sur le remote.
+- **Compte rendu de l'Installer** : `ohana restore` écrit un JSON sans secret dans
+  `/var/lib/ohana-installer/restore-reports` (résultat `ok`, `partial` après
+  l'installation, `failed` avant ; étape atteinte ; sauvegarde utilisée). L'Agent le
+  lit une fois et l'enregistre pour INFRA-01, marqué « rapport d'Ohana-Installer » ;
+  une restauration partielle ou échouée est urgente. Une annulation ne laisse aucun
+  compte rendu. Scénario Sandbox `restore-report-ingestion` (le vrai module de
+  l'Installer écrit, le vrai moniteur de l'Agent lit).
+- **À vérifier au premier déploiement** : que l'utilisateur système de l'Agent peut
+  lire `/var/lib/ohana-installer/restore-reports` (répertoire 0755, fichiers 0644).
+
 ## Audit des dix critères
 
 Légende : **Sandbox** = démontré avec de vrais composants hors production ;
@@ -108,14 +125,12 @@ Légende : **Sandbox** = démontré avec de vrais composants hors production ;
 | Intégrité vérifiable indépendamment de la création | Sandbox (lot 2) ; essai réel en lecture seule le 25/10 sur INFRA-01, LINKY-01 et ZWAVE-01 ; actif après déploiement |
 | Sauvegarde jamais testée identifiable | Sandbox (Agent 1.49.0, Vision 1.39.0) ; visible après déploiement |
 | Versions nécessaires à la restauration | acquis : le manifeste publié porte la composition Agent/Vision ; non retravaillé |
-| Restauration échouée ou incomplète : état explicite | Sandbox : l'état `last_failed` est urgent ; les échecs de `ohana restore` ne sont pas encore enregistrés automatiquement |
+| Restauration échouée ou incomplète : état explicite | Sandbox : l'état `last_failed` est urgent, et `ohana restore` laisse un compte rendu (résultat, étape) que l'Agent enregistre ; réel après déploiement |
 | Chiffrement vérifiable sans exposer les secrets | INFRA-01 : en-tête `age` relu avec l'empreinte (lot 2) ; HAOS : chiffrement natif de Home Assistant, non contrôlé |
 | Sauvegarde distante réussie seulement si l'archive existe | acquis : taille contrôlée après l'envoi, manifeste publié en dernier ; réel : sept sauvegardes INFRA-01 réussies du 19 au 25/10 |
 | État exploitable par Tsunade | Sandbox : règles préventives `backup_restore` et `icloud_session` ; l'état iCloud est aussi lisible dans Vision |
 
 ## Lots suivants
 
-1. **Échecs de `ohana restore`** : Installer écrit un compte rendu que l'Agent
-   lit et enregistre comme test échoué ou partiel.
-2. **Essai réel HAOS** : restaurer une sauvegarde HA-01 sur une instance de
+1. **Essai réel HAOS** : restaurer une sauvegarde HA-01 sur une instance de
    test. Cet essai appartient à l'utilisateur.

@@ -1673,7 +1673,7 @@ L’existence du fichier de sauvegarde n’est pas une validation suffisante.
 - [x] L’intégrité d’une archive peut être vérifiée indépendamment de sa création. *(Sandbox : Agent et Vision du lot 2 ; essai réel en lecture seule le 25/10 sur les archives INFRA-01, LINKY-01 et ZWAVE-01 ; actif après déploiement)*
 - [x] Une sauvegarde jamais testée est explicitement identifiable. *(Sandbox : règle préventive `backup_restore`, Agent 1.49.0 et Vision 1.39.0)*
 - [ ] Les versions nécessaires à la restauration sont disponibles.
-- [ ] Une restauration échouée ou incomplète produit un état explicite.
+- [x] Une restauration échouée ou incomplète produit un état explicite. *(Sandbox : compte rendu d'Ohana-Installer lu par l'Agent, urgent si partielle ou échouée ; réel après déploiement)*
 - [ ] Le chiffrement reste vérifiable sans exposer les secrets. *(INFRA-01 : en-tête `age` relu avec l'empreinte ; les archives HAOS sont chiffrées par Home Assistant et ne sont pas contrôlées)*
 - [x] Une sauvegarde distante n’est déclarée réussie que lorsque l’archive attendue est réellement disponible. *(taille contrôlée après l'envoi, manifeste publié en dernier ; réel : `backup.infra` réussi chaque jour du 19 au 25/10)*
 - [x] L’état sauvegarde/restauration peut être exploité par Tsunade. *(Sandbox : règles préventives `backup_restore` et `icloud_session` ; état iCloud lisible dans Vision et Shizune)*

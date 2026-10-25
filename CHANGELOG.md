@@ -6,6 +6,12 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Outil de release (`scripts/release_all.py`) : options `--yes`, `--version
+  DÉPÔT=X.Y.Z`, `--dry-run` et `--urgent` pour l'exécuter sans questions ; règle
+  d'une release par composant et par jour appliquée (sauf `--urgent`) ; la
+  section « Non publié » du CHANGELOG devient la section de la version et les
+  notes de la release GitHub ; le commit de release ne contient plus que les
+  fichiers modifiés par la release (`git add --all` emportait `graphify-out/`).
 ## [1.0.146] — 2026-10-25 — Restauration des sauvegardes et changement d'heure
 
 - Composition Agent 1.49.0 et Vision 1.39.0 : première étape de la Phase 10
