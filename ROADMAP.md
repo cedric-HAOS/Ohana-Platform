@@ -1676,7 +1676,7 @@ L’existence du fichier de sauvegarde n’est pas une validation suffisante.
 - [ ] Une restauration échouée ou incomplète produit un état explicite.
 - [ ] Le chiffrement reste vérifiable sans exposer les secrets. *(INFRA-01 : en-tête `age` relu avec l'empreinte ; les archives HAOS sont chiffrées par Home Assistant et ne sont pas contrôlées)*
 - [x] Une sauvegarde distante n’est déclarée réussie que lorsque l’archive attendue est réellement disponible. *(taille contrôlée après l'envoi, manifeste publié en dernier ; réel : `backup.infra` réussi chaque jour du 19 au 25/10)*
-- [x] L’état sauvegarde/restauration peut être exploité par Tsunade. *(Sandbox : règle préventive ; l'état iCloud reste publié seulement vers Home Assistant)*
+- [x] L’état sauvegarde/restauration peut être exploité par Tsunade. *(Sandbox : règles préventives `backup_restore` et `icloud_session` ; état iCloud lisible dans Vision et Shizune)*
 
 ---
 

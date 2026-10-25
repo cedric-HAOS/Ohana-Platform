@@ -79,6 +79,22 @@ L'Agent les relit maintenant de façon indépendante :
   dans l'heure répétée du changement d'heure ; HA-01 avait été sauvegardé deux
   fois (00:00 et 01:00 UTC) le 25/10.
 
+## Lot 3 — état de la session iCloud (Agent, Vision, non publié)
+
+Le contrôle horaire de rclone (session ouverte, expirée, injoignable) n'était
+publié que vers Home Assistant. Tsunade le conserve maintenant avec la date
+depuis laquelle l'état dure :
+
+- **Agent** : règle préventive `icloud_session`. Une session expirée est
+  **urgente** (les prochaines sauvegardes échoueront), un iCloud injoignable ou en
+  erreur depuis plus de 3 heures est signalé, un relevé de plus de 3 heures n'est
+  pas une preuve. L'état est servi avec les restaurations (`icloud`).
+- **Vision** : le bloc « Sauvegardes restaurées » affiche la session, la date de
+  son dernier contrôle, depuis quand elle est dans cet état et sa dernière
+  session valide, avec le chemin de reconnexion.
+- **Shizune** : l'alerte apparaît dans la carte « Prévention ».
+- **Sandbox** : scénario `preventive-infra-health` et recette `--full-stack`.
+
 ## Audit des dix critères
 
 Légende : **Sandbox** = démontré avec de vrais composants hors production ;
@@ -95,12 +111,11 @@ Légende : **Sandbox** = démontré avec de vrais composants hors production ;
 | Restauration échouée ou incomplète : état explicite | Sandbox : l'état `last_failed` est urgent ; les échecs de `ohana restore` ne sont pas encore enregistrés automatiquement |
 | Chiffrement vérifiable sans exposer les secrets | INFRA-01 : en-tête `age` relu avec l'empreinte (lot 2) ; HAOS : chiffrement natif de Home Assistant, non contrôlé |
 | Sauvegarde distante réussie seulement si l'archive existe | acquis : taille contrôlée après l'envoi, manifeste publié en dernier ; réel : sept sauvegardes INFRA-01 réussies du 19 au 25/10 |
-| État exploitable par Tsunade | Sandbox : règle préventive ; l'état iCloud reste publié seulement vers Home Assistant |
+| État exploitable par Tsunade | Sandbox : règles préventives `backup_restore` et `icloud_session` ; l'état iCloud est aussi lisible dans Vision |
 
 ## Lots suivants
 
 1. **Échecs de `ohana restore`** : Installer écrit un compte rendu que l'Agent
    lit et enregistre comme test échoué ou partiel.
-2. **État iCloud** dans Vision et Tsunade (aujourd'hui seulement Home Assistant).
-3. **Essai réel HAOS** : restaurer une sauvegarde HA-01 sur une instance de
+2. **Essai réel HAOS** : restaurer une sauvegarde HA-01 sur une instance de
    test. Cet essai appartient à l'utilisateur.

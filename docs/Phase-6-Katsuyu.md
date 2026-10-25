@@ -211,6 +211,23 @@ peut établir :
   toujours l'arrêt ;
 - `shutdown.exe` éteint bien Bubule quand aucune session n'est ouverte.
 
+### Constat du 25 octobre : les « timeouts » de Bubule
+
+Sur 14 jours, 34 jobs `ai.inference` et `logs.health_check` ont fini en `TIMEOUT`.
+Tous, sauf un, n'avaient **jamais été pris** (tentative 0, aucun worker) : ils
+étaient créés par des incidents en journée, hors de la fenêtre de réveil de
+05:00, alors que Bubule est éteint par conception, et ont expiré après leurs
+15 minutes. Les cycles de 05:00 ont réussi chaque jour (réveil en 38 à 101 s).
+Les jobs de journée aboutissent seulement quand le PC est déjà allumé (11/10
+17:32, 13/10 20:41, 24/10 22:37). Ce n'est donc pas une panne de Katsuyu. L'Agent
+marque désormais ces travaux `worker.unavailable` et le rapport des jobs les
+compte à part (`NON_PRIS`). Le seul vrai dépassement est un `ai.inference` du
+13/10 à 21:47, pris puis resté sans résultat pendant 15 minutes.
+
+Choix ouvert, qui change le comportement et revient à l'utilisateur : réveiller
+Bubule pour un incident en journée, ou reporter ces travaux au lot de 05:00
+(analyse le lendemain matin), ou laisser expirer comme aujourd'hui.
+
 ## Validation réelle (après publication et déploiement)
 
 Déployer l'Agent avant Katsuyu ; Katsuyu 0.13.0 s'installe sur Bubule
