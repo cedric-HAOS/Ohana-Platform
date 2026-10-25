@@ -224,9 +224,14 @@ marque désormais ces travaux `worker.unavailable` et le rapport des jobs les
 compte à part (`NON_PRIS`). Le seul vrai dépassement est un `ai.inference` du
 13/10 à 21:47, pris puis resté sans résultat pendant 15 minutes.
 
-Choix ouvert, qui change le comportement et revient à l'utilisateur : réveiller
-Bubule pour un incident en journée, ou reporter ces travaux au lot de 05:00
-(analyse le lendemain matin), ou laisser expirer comme aujourd'hui.
+Décision de l'utilisateur (25 octobre) : **reporter** ces travaux au lot de 05:00.
+Les travaux d'incident de journée (`ai.inference`, `logs.health_check`,
+`logs.investigate`) gardent leur place jusqu'au prochain réveil planifié au lieu
+d'expirer en 15 minutes ; Bubule n'est pas réveillé en journée, une sauvegarde
+demandée à la main n'est pas reportée, et l'analyse d'un incident de journée
+arrive donc le lendemain matin. Scénario Sandbox `daytime-incident-deferral`
+(échoue sur Agent 1.49.0). Effet à surveiller après déploiement : des travaux
+« en attente de Katsuyu » visibles toute la journée dans Vision.
 
 ## Validation réelle (après publication et déploiement)
 

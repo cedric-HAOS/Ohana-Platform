@@ -218,6 +218,14 @@ SCENARIOS = {
             "Shizune, sans aucune action automatique."
         ),
     ),
+    "daytime-incident-deferral": (
+        "scenarios.daytime_incident_deferral",
+        (
+            "Phase 6 : l'IA et les journaux d'un incident de journée attendent le "
+            "lot de 05:00 au lieu d'expirer en 15 minutes ; pas de réveil de "
+            "journée ; sauvegarde manuelle non reportée."
+        ),
+    ),
     "preventive-backfill": (
         "scenarios.preventive_backfill",
         (
