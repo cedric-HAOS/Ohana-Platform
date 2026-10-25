@@ -30,6 +30,7 @@ from ohana_agent.observation import Observation, ObservationStatus
 from ohana_agent.plugins.backup.archive_integrity import ArchiveIntegrityReporter
 from ohana_agent.plugins.backup.archive_verifier import ArchiveVerifier
 from ohana_agent.plugins.backup.config import BackupConfig, BackupTarget
+from ohana_agent.plugins.backup.icloud_connectivity import ICloudConnectivityStatus
 from ohana_agent.tsunade.companion_overview import services_overview
 from ohana_agent.tsunade.expertise import TsunadeExpertiseService
 from ohana_agent.tsunade.incidents import TsunadeIncidentRepository
@@ -371,6 +372,16 @@ def _restore_views(page, preventive, service, output, report, check):
             record=preventive.record_archive_check,
             last_check=preventive.last_archive_check,
         )
+        preventive.record_icloud_status(
+            ICloudConnectivityStatus(
+                state="session_expired",
+                connected=False,
+                remote="icloud:",
+                checked_at=now.isoformat(timespec="seconds"),
+                last_success_at=None,
+                detail="Invalid global session",
+            )
+        )
         _restore_block(page, preventive, output, report, check)
 
 
@@ -380,6 +391,11 @@ def _restore_block(page, preventive, output, report, check):
     page.locator('[data-tsunade-tab="preventive"]').click()
     section = page.locator("#tsunade-preventive")
     expect(section).to_contain_text("HA-01 : sauvegarde jamais testée en restauration", timeout=15000)
+    expect(section).to_contain_text("session expirée : reconnectez iCloud", timeout=15000)
+    check(
+        "Vision signale la session iCloud expirée dans le bloc des sauvegardes",
+        True,
+    )
     expect(section).to_contain_text("Intégrité de l’archive pas encore contrôlée.")
     with page.expect_response(
         lambda response: (

@@ -210,6 +210,14 @@ SCENARIOS = {
             "sans preuve, aucune archive modifiée."
         ),
     ),
+    "preventive-infra-health": (
+        "scenarios.preventive_infra_health",
+        (
+            "Phases 4 et 10 : pause AdGuard prolongée, carte SD lente ou en "
+            "lecture seule et session iCloud expirée remontent à Vision et "
+            "Shizune, sans aucune action automatique."
+        ),
+    ),
     "preventive-backfill": (
         "scenarios.preventive_backfill",
         (
