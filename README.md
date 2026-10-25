@@ -89,6 +89,8 @@ Ohana-Platform/
 
 | Platform | Agent | Vision | Python | Cible |
 | --- | --- | --- | --- | --- |
+| 1.0.146 | 1.49.0 | 1.39.0 | 3.13+ | Linux/systemd |
+| 1.0.145 | 1.48.0 | 1.38.1 | 3.13+ | Linux/systemd |
 | 1.0.144 | 1.47.0 | 1.38.0 | 3.13+ | Linux/systemd |
 | 1.0.143 | 1.46.1 | 1.37.0 | 3.13+ | Linux/systemd |
 | 1.0.142 | 1.46.0 | 1.37.0 | 3.13+ | Linux/systemd |

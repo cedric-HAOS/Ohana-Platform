@@ -1641,6 +1641,9 @@ Il ne remplace pas Tsunade dans le diagnostic.
 
 # Phase 10 — Sauvegarde et restauration
 
+Suivi : [Phase 10 — Sauvegarde et restauration](docs/Phase-10-Sauvegarde-restauration.md)
+(démarrée le 25 octobre 2026 ; audit des dix critères dans le document).
+
 ## Objectif
 
 Considérer une sauvegarde comme fiable uniquement lorsqu’elle peut **réellement être restaurée**.
@@ -1666,14 +1669,14 @@ L’existence du fichier de sauvegarde n’est pas une validation suffisante.
 
 - [ ] Une sauvegarde HAOS peut être restaurée selon une procédure documentée et réellement vérifiée.
 - [ ] Une sauvegarde INFRA-01 peut être restaurée selon une procédure documentée et réellement vérifiée.
-- [ ] La date du dernier test de restauration est conservée.
+- [x] La date du dernier test de restauration est conservée. *(Sandbox : Agent 1.49.0, déclaration depuis Vision ; réel dès la première déclaration)*
 - [ ] L’intégrité d’une archive peut être vérifiée indépendamment de sa création.
-- [ ] Une sauvegarde jamais testée est explicitement identifiable.
+- [x] Une sauvegarde jamais testée est explicitement identifiable. *(Sandbox : règle préventive `backup_restore`, Agent 1.49.0 et Vision 1.39.0)*
 - [ ] Les versions nécessaires à la restauration sont disponibles.
 - [ ] Une restauration échouée ou incomplète produit un état explicite.
 - [ ] Le chiffrement reste vérifiable sans exposer les secrets.
-- [ ] Une sauvegarde distante n’est déclarée réussie que lorsque l’archive attendue est réellement disponible.
-- [ ] L’état sauvegarde/restauration peut être exploité par Tsunade.
+- [x] Une sauvegarde distante n’est déclarée réussie que lorsque l’archive attendue est réellement disponible. *(taille contrôlée après l'envoi, manifeste publié en dernier ; réel : `backup.infra` réussi chaque jour du 19 au 25/10)*
+- [x] L’état sauvegarde/restauration peut être exploité par Tsunade. *(Sandbox : règle préventive ; l'état iCloud reste publié seulement vers Home Assistant)*
 
 ---
 
