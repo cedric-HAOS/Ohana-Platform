@@ -93,6 +93,7 @@ def run() -> dict:
         monitor = TsunadePreventiveMonitor(
             root / "control.db",
             storage_sampler=StorageSampler(sys_block=root / "block", mounts=mounts),
+            schedule_reader=lambda: {"infra-01": "0 4 * * *"},
         )
         service = AdministrationService(
             infrastructure_repository=InfrastructureConfigurationRepository(
@@ -149,6 +150,12 @@ def run() -> dict:
             expired = service.read_preventive_summary()
             essential = service.read_companion_summary()["preventive"]
             document = service.read_restore_tests()
+
+            # A daily backup that did not happen, without any failure to report.
+            monitor.record_backup_success("infra-01", now - timedelta(hours=10))
+            on_time = service.read_preventive_summary()
+            monitor.record_backup_success("infra-01", now - timedelta(hours=1))
+            late_summary = monitor.summary(now=now + timedelta(hours=41))
         finally:
             monitor.close()
             incidents.close()
@@ -199,6 +206,17 @@ def run() -> dict:
         (
             "Vision lit l'état iCloud avec les restaurations",
             document["icloud"]["state"] == "session_expired",
+        ),
+        (
+            "sauvegarde du jour faite : à l'heure",
+            all(i["rule"] != "backup_freshness" for i in on_time["watch"]),
+        ),
+        (
+            "sauvegarde quotidienne manquée sans aucun échec : signalée en retard",
+            any(
+                i["rule"] == "backup_freshness" and "en retard" in i["title"]
+                for i in late_summary["watch"]
+            ),
         ),
         (
             "aucune réparation automatique",

@@ -134,10 +134,27 @@ def run() -> dict:
                 observation, incident = observe("stale")
                 checks.append(
                     (
-                        "valeur qui ne rapporte plus : critique immédiatement",
+                        "premier relevé en retard : aucun incident",
+                        observation.status is ObservationStatus.UNKNOWN
+                        and incident is None,
+                    )
+                )
+                observation, incident = observe("stale")
+                checks.append(
+                    (
+                        "retard confirmé au contrôle suivant : critique",
                         observation.status is ObservationStatus.UNHEALTHY
                         and incident is not None
                         and incident.severity == "critical",
+                    )
+                )
+                observe("fresh")
+                observation, incident = observe("stale")
+                checks.append(
+                    (
+                        "un retard isolé entre deux relevés frais ne compte pas",
+                        observation.status is ObservationStatus.UNKNOWN
+                        and (incident is None or incident.state == "resolved"),
                     )
                 )
             finally:

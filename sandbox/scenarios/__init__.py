@@ -226,6 +226,13 @@ SCENARIOS = {
             "journée ; sauvegarde manuelle non reportée."
         ),
     ),
+    "restore-report-ingestion": (
+        "scenarios.restore_report_ingestion",
+        (
+            "Phase 10 : le compte rendu écrit par l'Installer après ohana restore "
+            "entre dans le registre de Tsunade ; partielle ou échouée = urgent."
+        ),
+    ),
     "preventive-backfill": (
         "scenarios.preventive_backfill",
         (
