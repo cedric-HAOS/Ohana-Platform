@@ -50,6 +50,35 @@ sauvegarde échouée ne crée pas de cible et ne compte pas.
   recette `--full-stack` : déclaration depuis Vision dans Chromium, refus d'une
   restauration partielle sans note, conservation par l'Agent.
 
+## Lot 2 — intégrité des archives (Agent, Vision, non publié)
+
+Les archives iCloud étaient contrôlées une seule fois, à leur publication.
+L'Agent les relit maintenant de façon indépendante :
+
+- **Quoi** : l'archive la plus récente de chaque cible (INFRA-01 et les HAOS
+  activés), relue en flux par `rclone cat` : rien n'est écrit sur la microSD,
+  rien n'est déchiffré, aucun secret n'est lu.
+- **Comparaison** : taille et SHA-256 contre le manifeste (INFRA-01) ou le fichier
+  `.sha256` (HAOS) ; pour INFRA-01, l'en-tête `age` confirme le chiffrement.
+- **Quand** : une passe par jour (30 minutes après le démarrage de l'Agent) ;
+  une archive n'est relue qu'une fois, puis une fois par semaine. Vision peut
+  lancer un contrôle immédiat (`POST /v1/backups/archives/verify`).
+- **Verdicts** : archive absente, taille ou empreinte différente, chiffrement
+  absent = **urgent** ; remote illisible (session iCloud expirée) = non urgent,
+  car rien n'est prouvé sur l'archive ; dernier contrôle de plus de 14 jours =
+  à surveiller. Le contrôle ne modifie ni ne supprime aucune archive.
+- **Essai réel en lecture seule (25/10)** : le code du vérificateur, exécuté sur
+  INFRA-01 contre iCloud, a relu l'archive INFRA-01 du 25/10 (16 Mo, 20 s :
+  conforme, chiffrée `age`) et les dernières archives LINKY-01 et ZWAVE-01
+  (70 Mo, environ 30 s chacune : conformes). Les archives HA-01 (450 Mo) n'ont
+  pas été relues pour cet essai.
+- **Sandbox** : scénario `backup-archive-integrity` (octet altéré sans changer la
+  taille, remote illisible, rétablissement) et recette `--full-stack`
+  (« Vérifier maintenant » depuis Vision).
+- **Planificateur** : une tâche cron à heure fixe ne se déclenche plus deux fois
+  dans l'heure répétée du changement d'heure ; HA-01 avait été sauvegardé deux
+  fois (00:00 et 01:00 UTC) le 25/10.
+
 ## Audit des dix critères
 
 Légende : **Sandbox** = démontré avec de vrais composants hors production ;
@@ -60,21 +89,18 @@ Légende : **Sandbox** = démontré avec de vrais composants hors production ;
 | Restauration HAOS documentée et vérifiée | à faire : aucune restauration d'une sauvegarde HAOS n'a été déclarée |
 | Restauration INFRA-01 documentée et vérifiée | procédure en place (`ohana restore`, guide House) ; la reconstruction après la carte SD du 9 octobre en est une occurrence, à déclarer par l'utilisateur s'il la juge complète |
 | Date du dernier test conservée | Sandbox (Agent 1.49.0) ; réel dès la première déclaration |
-| Intégrité vérifiable indépendamment de la création | à faire : le contrat `backup.verify` existe (SHA-256 et taille d'un fichier) mais n'est pas planifié sur les archives iCloud |
+| Intégrité vérifiable indépendamment de la création | Sandbox (lot 2) ; essai réel en lecture seule le 25/10 sur INFRA-01, LINKY-01 et ZWAVE-01 ; actif après déploiement |
 | Sauvegarde jamais testée identifiable | Sandbox (Agent 1.49.0, Vision 1.39.0) ; visible après déploiement |
 | Versions nécessaires à la restauration | acquis : le manifeste publié porte la composition Agent/Vision ; non retravaillé |
 | Restauration échouée ou incomplète : état explicite | Sandbox : l'état `last_failed` est urgent ; les échecs de `ohana restore` ne sont pas encore enregistrés automatiquement |
-| Chiffrement vérifiable sans exposer les secrets | à faire |
+| Chiffrement vérifiable sans exposer les secrets | INFRA-01 : en-tête `age` relu avec l'empreinte (lot 2) ; HAOS : chiffrement natif de Home Assistant, non contrôlé |
 | Sauvegarde distante réussie seulement si l'archive existe | acquis : taille contrôlée après l'envoi, manifeste publié en dernier ; réel : sept sauvegardes INFRA-01 réussies du 19 au 25/10 |
 | État exploitable par Tsunade | Sandbox : règle préventive ; l'état iCloud reste publié seulement vers Home Assistant |
 
 ## Lots suivants
 
-1. **Intégrité indépendante** : planifier `backup.verify` (Katsuyu) sur la
-   dernière archive iCloud de chaque cible, sans la déchiffrer, et conserver le
-   résultat dans le registre.
-2. **Échecs de `ohana restore`** : Installer écrit un compte rendu que l'Agent
+1. **Échecs de `ohana restore`** : Installer écrit un compte rendu que l'Agent
    lit et enregistre comme test échoué ou partiel.
-3. **État iCloud** dans Vision et Tsunade (aujourd'hui seulement Home Assistant).
-4. **Essai réel HAOS** : restaurer une sauvegarde HA-01 sur une instance de
+2. **État iCloud** dans Vision et Tsunade (aujourd'hui seulement Home Assistant).
+3. **Essai réel HAOS** : restaurer une sauvegarde HA-01 sur une instance de
    test. Cet essai appartient à l'utilisateur.
