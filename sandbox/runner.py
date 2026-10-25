@@ -218,7 +218,9 @@ def _parse_args() -> argparse.Namespace:
         "live",
         help="Rapports en lecture seule sur Konoha.",
     )
-    live.add_argument("report", choices=["jobs-report"])
+    live.add_argument("report", choices=["jobs-report", "recette"])
+    live.add_argument("--agent-version", help="Version d'Agent attendue (recette).")
+    live.add_argument("--vision-version", help="Version de Vision attendue (recette).")
     live.add_argument(
         "--days", type=int, default=8, help="Nombre de jours analysés."
     )
@@ -299,6 +301,16 @@ def main() -> int:
         return 0 if passed else 1
 
     if args.command == "live":
+        if args.report == "recette":
+            from production import recette
+
+            if not (args.agent_version and args.vision_version):
+                print("--agent-version et --vision-version sont requis.")
+                return 2
+            result = recette.run(args.agent_version, args.vision_version)
+            recette.print_report(result)
+            return 0 if result.passed() else 1
+
         from production.live import jobs_report, print_jobs_report
 
         print_jobs_report(jobs_report(args.days))
