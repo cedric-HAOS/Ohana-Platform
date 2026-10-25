@@ -6,6 +6,19 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.146] — 2026-10-25 — Restauration des sauvegardes et changement d'heure
+
+- Composition Agent 1.49.0 et Vision 1.39.0 : première étape de la Phase 10
+  (registre des restaurations déclarées, règle préventive `backup_restore`,
+  bloc « Sauvegardes restaurées » dans Vision), horloge des jobs exacte dans
+  l'heure répétée du changement d'heure, journal INFRA-01 sans les lignes
+  `httpx` et fin de la fausse divergence AdGuard lors d'une pause de protection.
+  Shizune 0.5.0 et Installer 1.16.0 restent compatibles. Publication sans
+  déploiement.
+- Sandbox : scénario `backup-restore-evidence`, déclaration d'une restauration
+  depuis Vision dans la recette `--full-stack`, libellé « Hypothèses à
+  confirmer » aligné sur Vision. Suivi : `docs/Phase-10-Sauvegarde-restauration.md`.
+
 ## [1.0.145] — 2026-10-10 — Supervision et mesure de la réplication AdGuard
 
 - Composition Agent 1.48.0 et Vision 1.38.1 : surveillance AdGuard centrée sur
