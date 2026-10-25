@@ -54,14 +54,21 @@ slow: list[dict] = []
 
 for row in connection.execute(
     """SELECT type, status, created_at, started_at, finished_at, timeout_seconds,
-    parameters_json, result_json FROM distributed_jobs
+    parameters_json, result_json, error_json FROM distributed_jobs
     ORDER BY julianday(created_at)"""
 ):
     created = moment(row["created_at"])
     if created is None or created < since:
         continue
     day = created.strftime("%Y-%m-%d")
-    per_day[day][f"{row['type']} {row['status']}"] += 1
+    status = row["status"]
+    if status == "TIMEOUT" and (
+        '"worker.unavailable"' in (row["error_json"] or "")
+        or (row["started_at"] is None and row["error_json"] is None)
+    ):
+        # Expired without any worker taking it (Bubule off), not a slow job.
+        status = "NON_PRIS"
+    per_day[day][f"{row['type']} {status}"] += 1
     finished = moment(row["finished_at"])
     if finished is not None:
         duration = (finished - created).total_seconds()
