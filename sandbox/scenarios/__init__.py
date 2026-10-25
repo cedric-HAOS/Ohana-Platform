@@ -194,6 +194,14 @@ SCENARIOS = {
             "jours ; semaine normale « aucune intervention », sans Katsuyu."
         ),
     ),
+    "backup-restore-evidence": (
+        "scenarios.backup_restore_evidence",
+        (
+            "Phase 10 : une sauvegarde jamais restaurée est nommée, une "
+            "restauration échouée est urgente, une réussie sort de la liste ; "
+            "preuves conservées au redémarrage, aucune action automatique."
+        ),
+    ),
     "preventive-backfill": (
         "scenarios.preventive_backfill",
         (

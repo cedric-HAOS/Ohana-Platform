@@ -346,6 +346,64 @@ def _shizune_phase7(phone, payloads, gateway_down, summary, output, report, chec
     check("Shizune reprend la synchronisation sans rechargement", True)
 
 
+def _restore_views(page, preventive, output, report, check):
+    """Phase 10: declare a real restoration from Vision, through the Agent."""
+    now = datetime.now(ZoneInfo("Europe/Paris"))
+    preventive.record_backup_success("ha-01", now - timedelta(hours=2))
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    page.locator('[data-tsunade-tab="preventive"]').click()
+    section = page.locator("#tsunade-preventive")
+    expect(section).to_contain_text("HA-01 : sauvegarde jamais testée en restauration", timeout=15000)
+    form = section.locator("[data-tsunade-restore-form]")
+    expect(form).to_be_visible()
+    form.locator('select[name="target"]').select_option("ha-01")
+    form.locator('select[name="outcome"]').select_option("partial")
+    form.locator('input[name="reference"]').fill("copie de HA-01 du Sandbox")
+    with page.expect_response(
+        lambda response: (
+            response.url.endswith("/tsunade/backups/restore-tests")
+            and response.request.method == "POST"
+        )
+    ) as refused:
+        form.locator("button[type=submit]").click()
+    # A partial restoration needs a note: the Agent refuses, Vision says so.
+    check(
+        "Vision relaie le refus de l'Agent : restauration partielle sans note",
+        not refused.value.ok,
+    )
+    form.locator('input[name="note"]').fill("Les automatisations n'ont pas démarré.")
+    with page.expect_response(
+        lambda response: (
+            response.url.endswith("/tsunade/backups/restore-tests")
+            and response.request.method == "POST"
+        )
+    ) as accepted:
+        form.locator("button[type=submit]").click()
+    expect(section).to_contain_text("dernière restauration partielle", timeout=15000)
+    form = section.locator("[data-tsunade-restore-form]")
+    form.locator('select[name="outcome"]').select_option("ok")
+    with page.expect_response(
+        lambda response: (
+            response.url.endswith("/tsunade/backups/restore-tests")
+            and response.request.method == "POST"
+        )
+    ):
+        form.locator("button[type=submit]").click()
+    expect(section).to_contain_text("restaurée avec succès", timeout=15000)
+    section.scroll_into_view_if_needed()
+    page.screenshot(path=str(output / "vision-restore-tests.png"))
+    report["screenshots"].append("vision-restore-tests.png")
+    posture = preventive.backup_posture()[0]
+    check(
+        "Restauration déclarée dans Vision : conservée par l'Agent, cible vérifiée",
+        accepted.value.ok
+        and posture["target"] == "ha-01"
+        and posture["state"] == "verified"
+        and [t["outcome"] for t in posture["history"]] == ["ok", "partial"],
+    )
+
+
 def _preventive_backfill(page, jobs, home_assistant, worker, output, report, check):
     """Phase 4 lot 3: Vision → Agent → Katsuyu (HTTPS) → Home Assistant."""
     page.reload(wait_until="networkidle")
@@ -811,7 +869,7 @@ def run(*, args):
             )
 
             expect(katsuyu_analysis).to_contain_text(
-                "Hypothèses exploitables"
+                "Hypothèses à confirmer"
             )
 
             expect(page.locator("#incidents-list")).to_contain_text(
@@ -1063,6 +1121,7 @@ def run(*, args):
             )
             _preventive_views(page, context, browser, preventive, service, output, report, check)
             _preventive_backfill(page, jobs, home_assistant, worker, output, report, check)
+            _restore_views(page, preventive, output, report, check)
             for name, width, height in (("desktop", 1440, 1000), ("mobile", 390, 844)):
                 page.set_viewport_size({"width": width, "height": height})
                 expect(page.locator("#incidents-heading")).to_be_visible()
