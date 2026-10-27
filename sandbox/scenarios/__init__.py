@@ -283,6 +283,14 @@ SCENARIOS = {
             "Assistant par MQTT sans bloquer le planificateur."
         ),
     ),
+    "log-window-extension": (
+        "scenarios.log_window_extension",
+        (
+            "Un suivi de journaux terminé s'étend une seule fois aux 24 heures "
+            "précédentes depuis le bouton de Vision : fenêtre vue par Katsuyu, "
+            "même motif et mêmes limites, jamais reproposé."
+        ),
+    ),
     "ambiguous-katsuyu-cycle": (
         "scenarios.ambiguous_katsuyu_cycle",
         (

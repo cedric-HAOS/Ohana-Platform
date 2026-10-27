@@ -151,6 +151,14 @@ def _tables(root: Path) -> dict[str, int]:
         connection.close()
 
 
+def _paris_hours(day) -> int:
+    """Real hours of one Europe/Paris day, 23 or 25 at the clock changes."""
+    following = day + timedelta(days=1)
+    first = datetime(day.year, day.month, day.day, tzinfo=PARIS)
+    last = datetime(following.year, following.month, following.day, tzinfo=PARIS)
+    return int((last.astimezone(UTC) - first.astimezone(UTC)).total_seconds() // 3600)
+
+
 def _disk(summary):
     check = next(c for c in summary["checks"] if c["id"] == "disk_growth")
     return check, (check["nodes"] or [{}])[0]
@@ -217,6 +225,11 @@ def run() -> dict:
                 )
             }
             home_assistant = HomeAssistant(history)
+            # A local day has 23 or 25 hours when the clocks change (25 October).
+            expected_rows = sum(
+                _paris_hours(start.date() - timedelta(days=offset))
+                for offset in range(1, 7)
+            )
             handler = TrendsHistoryBackfillHandler(
                 service.read_history_source, connect=home_assistant
             )
@@ -247,7 +260,7 @@ def run() -> dict:
                         "config/entity_registry/list",
                         "recorder/statistics_during_period",
                     ]
-                    and result["rows_read"] == 6 * 24
+                    and result["rows_read"] == expected_rows
                     and len(result["days"]) == 6,
                 ),
                 (

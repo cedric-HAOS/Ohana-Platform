@@ -16,6 +16,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Thread
 from time import monotonic, sleep
+from types import SimpleNamespace
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
@@ -520,6 +521,157 @@ def _preventive_backfill(page, jobs, home_assistant, worker, output, report, che
             "recorder/statistics_during_period",
         ],
     )
+
+
+def _log_window_extension(
+    page, jobs, incidents, service, worker, ai_job, incident_id, add_journal_line,
+    post, timeout, output, report, check
+):
+    """A finished 2-hour follow-up is extended to 24 hours from the Vision button.
+
+    The real worker runs both collections over HTTPS and the real model reviews
+    each of them. Only the suggestion may come from a fixture, when the model's
+    own text proposed no log collection.
+    """
+    terminal = {"SUCCEEDED", "FAILED", "TIMEOUT", "CANCELLED"}
+
+    def pending():
+        return [
+            item
+            for item in service.read_companion_requests().requests
+            if item.kind == "investigation_authorization"
+            and str(item.incident_id) == incident_id
+        ]
+
+    from_model = bool(pending())
+    if not from_model:
+        service.followups.consider(
+            SimpleNamespace(
+                job_id=ai_job.job_id,
+                parameters=ai_job.parameters,
+                result={
+                    "recommended_investigation": [
+                        "Collecter les journaux autour de l'erreur de modèle."
+                    ]
+                },
+            )
+        )
+    request = _wait("demande de collecte", pending, timeout=15, worker=worker)[0]
+    check("Une collecte de deux heures attend l'autorisation de l'opérateur", True)
+    service.respond_companion_request(
+        str(request.request_id), "sandbox-operator", {"choice": "AUTHORIZE"}
+    )
+    first = _wait(
+        "collecte de deux heures par le worker HTTPS",
+        lambda: (
+            job
+            if (job := jobs.latest_for_incident("logs.investigate", incident_id))
+            and job.status.value in terminal
+            else None
+        ),
+        timeout=120,
+        worker=worker,
+        page=page,
+    )
+    window = lambda job: (  # noqa: E731
+        datetime.fromisoformat(job.parameters["window_ended_at"])
+        - datetime.fromisoformat(job.parameters["window_started_at"])
+    )
+    check(
+        "Collecte de deux heures exécutée par le vrai worker",
+        first.status.value == "SUCCEEDED" and window(first) == timedelta(hours=2),
+    )
+
+    def reviewed():
+        followup = incidents.latest_followup(incident_id)
+        return followup["status"] in {"completed", "incomplete", "failed"} and followup
+
+    followup = _wait(
+        "réévaluation Katsuyu de la collecte",
+        reviewed,
+        timeout=timeout,
+        worker=worker,
+        page=page,
+    )
+    check("Réévaluation Katsuyu terminée", followup["status"] != "failed")
+    assessment = incident_assessment(incidents.get(incident_id))
+    button = page.locator(f'[data-tsunade-log-extend="{incident_id}"]')
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    expect(button).to_be_visible(timeout=15000)
+    check(
+        "Vision propose d'étendre aux 24 h précédentes",
+        assessment["state"] == "investigation_exhausted"
+        and assessment["followup"]["window_extension_available"],
+    )
+    page.screenshot(path=str(output / "vision-window-extension-offer.png"))
+    report["screenshots"].append("vision-window-extension-offer.png")
+
+    # Only a 24-hour search can reach this line: it is older than two hours.
+    older = (datetime.now(ZoneInfo("Europe/Paris")) - timedelta(hours=5)).isoformat()
+    add_journal_line(
+        f"{older} ERROR [homeassistant.components.template.template_entity] "
+        f"Template error for {followup['plan']['pattern']}\n"
+    )
+    clicked_ok = post("/logs/investigate/extend", button)
+    expect(button).to_have_count(0, timeout=15000)
+    second = _wait(
+        "collecte de 24 heures par le worker HTTPS",
+        lambda: (
+            job
+            if (job := jobs.latest_for_incident("logs.investigate", incident_id))
+            and job.job_id != first.job_id
+            and job.status.value in terminal
+            else None
+        ),
+        timeout=120,
+        worker=worker,
+        page=page,
+    )
+    check(
+        "Extension autorisée depuis Vision : le vrai worker lit 24 heures",
+        clicked_ok
+        and second.status.value == "SUCCEEDED"
+        and window(second) == timedelta(hours=24)
+        and second.parameters["pattern"] == first.parameters["pattern"]
+        and second.parameters["max_bytes"] == first.parameters["max_bytes"],
+    )
+    check(
+        "Katsuyu trouve la ligne de 5 h absente de la première collecte",
+        second.result["matched_lines"] == first.result["matched_lines"] + 1,
+    )
+    _wait(
+        "réévaluation Katsuyu des 24 heures",
+        lambda: (
+            (latest := incidents.latest_followup(incident_id))
+            and latest["plan"].get("window_hours") == 24
+            and latest["status"] in {"completed", "incomplete", "failed"}
+            and latest
+        ),
+        timeout=timeout,
+        worker=worker,
+        page=page,
+    )
+    latest = incidents.latest_followup(incident_id)
+    final = incident_assessment(incidents.get(incident_id))
+    check(
+        "Réévaluation des 24 heures terminée, extension non reproposée",
+        latest["status"] != "failed"
+        and final["followup"]["window_hours"] == 24
+        and final["followup"]["window_extension_available"] is False
+        and jobs.count("logs.investigate") == 2,
+    )
+    page.reload(wait_until="networkidle")
+    page.locator('[data-navigation-target="incidents"]').click()
+    expect(page.locator("#incidents-error")).not_to_be_visible()
+    expect(page.locator("#incidents-list .incident-card").first).to_be_visible()
+    check(
+        "Vision n'affiche plus le bouton après l'extension",
+        page.locator("[data-tsunade-log-extend]").count() == 0,
+    )
+    page.screenshot(path=str(output / "vision-window-extension-done.png"))
+    report["screenshots"].append("vision-window-extension-done.png")
+    return "suggestion du modèle" if from_model else "suggestion enregistrée"
 
 
 def run(*, args):
@@ -1139,6 +1291,14 @@ def run(*, args):
                     item["action"].get("kind") == "manual"
                     for item in service.list_experiences()["experiences"]
                 ),
+            )
+            def add_journal_line(line):
+                nonlocal journal
+                journal += line
+
+            details["Extension 24 h"] = _log_window_extension(
+                page, jobs, incidents, service, worker, ai_job, incident_id,
+                add_journal_line, post, args.stack_timeout, output, report, check,
             )
             # Known log noise: every remaining anomaly accepted from the dossier
             # resolves the log incident, and the daily report lists them.

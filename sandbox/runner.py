@@ -331,6 +331,7 @@ def main() -> int:
             "all",
             "recurring-log-review",
             "log-noise-triage",
+            "log-window-extension",
             "log-components",
             "supervisor-log-window",
             "slow-completion-reads",
@@ -353,6 +354,7 @@ def main() -> int:
         "katsuyu-shizune-vitals",
         "ohana-self-supervision",
         "incident-history",
+        "log-window-extension",
     }:
         _add_python_repo(args.vision, "ohana_vision")
     if args.full_stack:

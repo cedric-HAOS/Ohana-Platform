@@ -81,7 +81,8 @@ et [la recette réelle restant en Phase 7](Phase-7-Shizune.md).
 
 « Contrôler les journaux » utilise la fenêtre `window_hours` configurée du
 contrôle général. « Approfondir les journaux » correspond à une investigation
-ciblée, bornée à deux heures. Ces actions créent des jobs et peuvent alimenter
+ciblée, bornée à deux heures (24 heures après autorisation explicite du bouton
+« étendre aux 24 h précédentes » d'un dossier terminé). Ces actions créent des jobs et peuvent alimenter
 des incidents : ce ne sont pas les premiers contrôles passifs de ce guide.
 
 Depuis Katsuyu 0.13.2, seule la source `infra-01` attend au moins 45 secondes,

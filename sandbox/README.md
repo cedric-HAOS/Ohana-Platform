@@ -102,6 +102,15 @@ reprise, sans job IA ni collecte complémentaire. Aucune sonde réelle ni aucun
 arrêt/redémarrage d'add-on n'est effectué. Ce scénario ne remplace pas la
 requalification de la panne contrôlée sur Konoha après déploiement.
 
+`log-window-extension` : un suivi de journaux terminé (« Investigation terminée — suite à
+préciser ») est étendu une seule fois aux 24 heures précédentes par le bouton de Vision,
+cliqué dans Chromium sur le vrai serveur Vision et le vrai écouteur HTTP de l'Agent. Le vrai
+`LogsInvestigateHandler` de Katsuyu filtre un journal de laboratoire par la fenêtre reçue
+(lignes de 90 min, 3 h et 23 h retenues, 25 h écartée) ; motif et volume maximal restent ceux
+de la première collecte ; l'autorisation est tracée « vision » ; aucune seconde extension
+n'est acceptée ni proposée ; l'état survit à une reprise SQLite. `run --full-stack` rejoue le
+même parcours avec le worker HTTPS réel et le modèle réel (deux collectes, deux réévaluations).
+
 `manual-resolution` (Phase 3) déclare une action manuelle sur un incident
 dnsmasq. Il vérifie que Shikamaru confirme le retour sain et que Tsunade
 demande avant de conserver la piste, en signalant que la proximité dans le
