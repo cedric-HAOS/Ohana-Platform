@@ -218,6 +218,15 @@ SCENARIOS = {
             "Shizune, sans aucune action automatique."
         ),
     ),
+    "system-maintenance": (
+        "scenarios.system_maintenance",
+        (
+            "Phase 4 : mises à jour de sécurité apt, certificats TLS et mises à "
+            "jour Home Assistant jugés jour après jour ; demandes d'actualisation "
+            "et de mise à jour écrites pour l'assistant, refusées sur listes "
+            "périmées, ignorées pendant qu'apt travaille."
+        ),
+    ),
     "daytime-incident-deferral": (
         "scenarios.daytime_incident_deferral",
         (
