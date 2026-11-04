@@ -2,17 +2,22 @@
 
 ## État de référence
 
-Cette roadmap prend **Ohana-Platform 1.0.100** comme baseline fonctionnelle de départ.
+Cette roadmap est partie de **Ohana-Platform 1.0.100** (baseline fonctionnelle de départ, septembre 2026).
+Les phases 1 à 7 ont été conduites depuis cette baseline ; les versions indiquées dans les validations de chaque
+phase sont donc postérieures à celle-ci.
 
-Les versions indiquées dans les validations de chaque phase peuvent être ultérieures à cette composition.
-
-Composition de référence :
+Composition de départ (historique) :
 
 - Ohana-Agent 1.29.0 ;
 - Ohana-Vision 1.22.14 ;
 - Ohana-Katsuyu 0.8.7 ;
 - Ohana-Shizune 0.3.0 ;
 - Ohana-Installer 1.14.3.
+
+Composition courante (4 novembre 2026, déployée sur INFRA-01) : **Ohana-Platform 1.0.152**, soit
+Ohana-Agent 1.54.1, Ohana-Vision 1.43.1, Ohana-Shizune 0.5.0 et Ohana-Installer 1.18.0 ;
+Ohana-Katsuyu 0.14.0 est installé sur Bubule. Les compositions à jour sont dans les releases GitHub
+d'Ohana-Platform et dans le catalogue de l'Installer.
 
 L’architecture fonctionnelle actuelle est :
 
