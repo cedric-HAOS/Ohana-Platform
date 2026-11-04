@@ -169,10 +169,11 @@ diagnostic mémoire (Agent 1.54.1).
    et les cinq branches de Vision « Agent plus ancien », qui servent aussi de
    repli quand une lecture échoue.
 6. **Découpage** : `service.py` passe de 2 265 à 853 lignes (cinq modules par
-   domaine, copies à l'identique) ; les méthodes de maintenance préventive de
-   `incidents.js` (299 lignes) sont dans `incidents_preventive.js`. `incidents.js`
-   garde 2 414 lignes : le reste (journaux, réparations, décisions) reste à
-   découper, car ses tests évaluent ce fichier seul.
+   domaine, copies à l'identique). `incidents.js` passe de 2 713 à 940 lignes :
+   maintenance préventive, journaux, réparations, décisions de Tsunade et
+   réparations connues sont dans cinq modules qui ajoutent leurs méthodes au
+   contrôleur, et les libellés dans `incidents_shared.js` (94 méthodes avant et
+   après, vérifié dans le navigateur).
 
 Défaut constaté en direct : le bouton « Mettre à jour » a répondu « Agent :
 délai dépassé » alors que l'installation démarrait. Cause : la demande relançait
