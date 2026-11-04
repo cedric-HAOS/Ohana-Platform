@@ -130,3 +130,51 @@ dire lesquelles vous ouvrez réellement.
 6. Découpage de `service.py` et `incidents.js` au fil des changements (4).
 
 Chaque point est indépendant et se décide séparément.
+
+## Suite donnée (4 novembre 2026, soir)
+
+Les points 1 à 6 ont été traités le jour même à la demande de l'utilisateur.
+Rien de ce qui suit n'est publié ni déployé à l'heure de l'écriture, sauf le
+diagnostic mémoire (Agent 1.54.1).
+
+1. **Fuite mémoire de l'Agent** : diagnostic à la demande
+   (`/v1/diagnostics/memory`, trace `tracemalloc` déployée en 1.54.1) puis mesures
+   en production : les objets vivants sont stables (107 500 à 107 700 sur 10
+   minutes, 0,7 Mo suivis), donc **pas de fuite d'objets**. Le seul gros
+   consommateur éphémère est la sonde Z-Wave JS, qui charge toute l'état du
+   contrôleur chaque minute (5 Mo de JSON, 1 700 valeurs, copies). Ce graphe en
+   cycles attend le prochain ramasse-miettes complet et laisse des pages libres
+   dans l'allocateur : la mémoire résidente ne fait que monter. Correctif :
+   `release_freed_memory()` (ramasse-miettes puis `malloc_trim`) après chaque
+   sonde. À confirmer par `memory_growth` quelques jours après déploiement. Une
+   piste plus radicale (sonde dans un sous-processus) reste ouverte si ce
+   correctif ne suffit pas.
+2. **DNS de LINKY-01** : 10 des 20 incidents duraient moins de deux minutes (un
+   contrôle manqué). Un échec DNS doit maintenant se répéter (`failure_threshold`,
+   2 par défaut) ; le premier est « inconnu ». La cause du vacillement de LINKY-01
+   reste inconnue (pas de lien avec la synchronisation AdGuard, qui tourne toutes
+   les 5 minutes). Les autres sources bruyantes ont des durées médianes de 10 à
+   30 minutes : ce sont de vraies indisponibilités, laissées telles quelles.
+3. **Helpers de Vision et base de la roadmap** : cartes partagées entre « Ohana »
+   et « Mise à jour système » ; `formatDate` affiche l'heure de Paris ; roadmap
+   avec la composition courante.
+4. **Registre unique des règles** : `all_rules()` ; correction d'un défaut au
+   passage : les règles de sauvegarde, d'iCloud et d'AdGuard ne pouvaient pas
+   être mises en sourdine (l'audit supposait le contraire).
+5. **Compatibilité** : retirés `PluginRuntime.state()`, les alias `device_name`,
+   `power`, `energy` de la télémétrie Home Assistant, l'attribut
+   `shelly_telemetry_config` et `infrastructure.Observation`. Conservés : le
+   fichier `shelly-telemetry.yaml`, le mode Linky par Home Assistant et la
+   vérification HTTP de Z-Wave JS UI (dépendent de la configuration d'INFRA-01),
+   et les cinq branches de Vision « Agent plus ancien », qui servent aussi de
+   repli quand une lecture échoue.
+6. **Découpage** : `service.py` passe de 2 265 à 853 lignes (cinq modules par
+   domaine, copies à l'identique) ; les méthodes de maintenance préventive de
+   `incidents.js` (299 lignes) sont dans `incidents_preventive.js`. `incidents.js`
+   garde 2 414 lignes : le reste (journaux, réparations, décisions) reste à
+   découper, car ses tests évaluent ce fichier seul.
+
+Défaut constaté en direct : le bouton « Mettre à jour » a répondu « Agent :
+délai dépassé » alors que l'installation démarrait. Cause : la demande relançait
+la simulation apt, lente sur INFRA-01 (surtout avec la trace mémoire active).
+Corrigé (dernière lecture réutilisée, délai de Vision porté à 30 s).
