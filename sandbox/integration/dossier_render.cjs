@@ -3,9 +3,15 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const {performance} = require('node:perf_hooks');
-const source = fs.readFileSync(path.resolve(__dirname,
-    '../../../Ohana-Vision/src/ohana_vision/web/static/incidents.js'), 'utf8')
-    .replace(/^import .*;$/gm, '').replace('export class', 'class');
+// The controller is split into modules (Vision 1.43.2): the shared labels, the
+// class, then the method groups that mix themselves into it. Same order as the
+// browser's import graph; imports are stripped because there is no module loader.
+const staticDir = path.resolve(__dirname, '../../../Ohana-Vision/src/ohana_vision/web/static');
+const source = ['incidents_shared', 'incidents', 'incidents_decisions',
+    'incidents_experiences', 'incidents_logs', 'incidents_preventive', 'incidents_repairs']
+    .map(name => fs.readFileSync(path.join(staticDir, `${name}.js`), 'utf8')
+        .replace(/^import .*;$/gm, '').replace(/^export /gm, ''))
+    .join('\n');
 const context = vm.createContext({
     escapeHtml: value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;'),
     formatDate: value => String(value),
