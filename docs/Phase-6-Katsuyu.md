@@ -349,15 +349,18 @@ dans Vision s'applique sans redémarrage).
    Plugin désactivé : rien n'est lu ni journalisé.
 2. **PC démarré seul au retour du courant** (BIOS « Power On after AC loss ») :
    si le worker est connecté au bout des 15 s, aucun paquet n'est envoyé.
-3. **Après un cycle** : la prise est coupée seulement quand le PC est
-   démontrablement éteint.
+3. **Après un cycle** : la prise est coupée seulement si Ohana l'a allumée
+   lui-même (marqueur durable `distributed_power_plug_state`) et que le PC est
+   démontrablement éteint. Une prise allumée par le propriétaire, ou déjà
+   allumée au moment du réveil, n'est jamais coupée (constat réel du
+   9 novembre : PC démarré puis éteint à la main, prise coupée à tort à cause
+   de l'arrêt du cycle de 05:00 ; corrigé dans l'Agent suivant la 1.58.0).
    - Après un arrêt lancé par Ohana (`shutdown_started`) : consommation sous
      `idle_watts` (5 W) pendant `idle_confirm_seconds` (30 s) si
      `power_entity_id` est configurée ; sinon `shutdown_grace_seconds` (300 s)
      après l'arrêt.
    - Réveil abandonné ou sans réponse, ou PC éteint à la main après un veto :
-     seulement avec une consommation mesurée sous le seuil, et seulement si
-     Ohana avait allumé la prise (marqueur durable `distributed_power_plug_state`).
+     seulement avec une consommation mesurée sous le seuil.
    - Jamais pendant que le worker est connecté, qu'un réveil est en cours ou
      qu'une relance est due.
    - Une coupure en échec est retentée sans bruit (`poll_seconds`), signalée une
