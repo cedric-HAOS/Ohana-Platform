@@ -180,6 +180,19 @@ vérifiés sur une socket UDP locale. Agent 1.42.0 (sans journal) échoue.
 .\sandbox\run.ps1 run katsuyu-wake-cycle
 ```
 
+`katsuyu-power-plug` (Phase 6, prise connectée) démarre l'Agent HTTP, un vrai
+worker Katsuyu, le vrai client de prise et le vrai émetteur Wake-on-LAN face à
+un Home Assistant simulé en HTTP (état de la prise, consommation, jeton). Il
+vérifie que la prise est allumée avant le réveil et que les paquets partent
+15 s plus tard, qu'elle reste allumée tant que le PC consomme, qu'elle est
+coupée une seule fois après l'arrêt, qu'un veto de session la garde allumée,
+qu'une prise injoignable ne retarde pas le réveil et qu'un réveil abandonné ne
+touche pas une prise qu'Ohana n'a pas allumée. Agent 1.57.0 (sans prise) échoue.
+
+```powershell
+.\sandbox\run.ps1 run katsuyu-power-plug
+```
+
 `katsuyu-resilience` (Phase 6, lot 3) vérifie qu'un job IA dont le worker
 disparaît trois fois échoue explicitement (`worker.interrupted`) et laisse à
 Tsunade son repli sans conclusion, puis, avec un vrai worker Katsuyu en HTTP,

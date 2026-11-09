@@ -27,6 +27,10 @@ SCENARIOS = {
         "scenarios.katsuyu_wake_cycle",
         "Phase 6 : raison du réveil, travail exécuté, arrêt ou veto de session, sans réveil inutile.",
     ),
+    "katsuyu-power-plug": (
+        "scenarios.katsuyu_power_plug",
+        "Phase 6 : prise de Bubule allumée avant le réveil, coupée une fois le PC éteint, sans jamais couper un PC actif.",
+    ),
     "katsuyu-resilience": (
         "scenarios.katsuyu_resilience",
         "Phase 6 : job interrompu repris puis échec explicite, IA impossible sans conclusion artificielle.",

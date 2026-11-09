@@ -319,3 +319,93 @@ ne compte plus. Une session déjà utilisée, déconnectée, d'état illisible o
 d'historique inconnu (worker redémarré) bloque toujours l'arrêt. Tests
 unitaires et `katsuyu-wake-cycle` PASS ; preuve réelle à refaire avec un cycle
 complet sans toucher à Bubule.
+
+## Prise connectée de Bubule — 9 novembre 2026
+
+Demande de l'utilisateur (départ en vacances, Bubule débranché, Katsuyu
+injoignable) : plutôt qu'un mode « Absent », une prise Shelly Plug S Gen3
+(`switch.shellyplugsg3_80b54e297538`) pilotée par Ohana. Le PC n'est alimenté
+que le temps d'un cycle, ce qui le protège aussi des surtensions, et reste
+joignable pendant l'absence (contrôle des journaux de 05:00, sauvegarde
+INFRA-01 de 01:00). Aucun état « Absent » à déclarer, donc rien à oublier.
+
+Choix de l'utilisateur : la prise est un **plugin** de l'Agent (page Plugins de
+Vision, comme les autres), le jeton Home Assistant est enregistré **dans le
+fichier du plugin** (masqué à la lecture, conservé si on le laisse vide), comme
+pour le plugin Sauvegardes, et le fichier est **créé par la mise à jour**.
+
+### Comportement (Agent, `jobs/power_plug.py` + `plugins/power_plug/`)
+
+Le plugin lit et commande la prise ; le noyau (`PowerPlugController`) décide, et
+relit la configuration du plugin à chaque décision (une modification enregistrée
+dans Vision s'applique sans redémarrage).
+
+1. **Avant un réveil** (travaux en attente, relance, contrôle demandé, test
+   manuel) : l'Agent lit la prise. Éteinte : `switch.turn_on`, journal `plug_on`,
+   puis les paquets Wake-on-LAN partent `boot_delay_seconds` (15 s) plus tard ; le
+   réveil est déjà « en cours » (`wake_sent` porte `plug` et `wol_delay_seconds`).
+   Déjà allumée : paquets tout de suite. Prise illisible ou qui refuse : journal
+   `plug_failed`, paquets tout de suite, exactement le comportement d'avant la prise.
+   Plugin désactivé : rien n'est lu ni journalisé.
+2. **PC démarré seul au retour du courant** (BIOS « Power On after AC loss ») :
+   si le worker est connecté au bout des 15 s, aucun paquet n'est envoyé.
+3. **Après un cycle** : la prise est coupée seulement quand le PC est
+   démontrablement éteint.
+   - Après un arrêt lancé par Ohana (`shutdown_started`) : consommation sous
+     `idle_watts` (5 W) pendant `idle_confirm_seconds` (30 s) si
+     `power_entity_id` est configurée ; sinon `shutdown_grace_seconds` (300 s)
+     après l'arrêt.
+   - Réveil abandonné ou sans réponse, ou PC éteint à la main après un veto :
+     seulement avec une consommation mesurée sous le seuil, et seulement si
+     Ohana avait allumé la prise (marqueur durable `distributed_power_plug_state`).
+   - Jamais pendant que le worker est connecté, qu'un réveil est en cours ou
+     qu'une relance est due.
+   - Une coupure en échec est retentée sans bruit (`poll_seconds`), signalée une
+     fois (`plug_failed`, cycle dégradé dans Vision). Coupée une fois : `plug_off`.
+4. Les événements `plug_*` ne sont lus par aucune règle du cycle de réveil
+   (réveils sans réponse, délai de connexion, candidat à la coupure).
+5. Le worker concerné est celui de `jobs.wake_on_lan.worker_id` ; à défaut, le
+   worker qui a annoncé une adresse Wake-on-LAN.
+
+### Configuration et mise à jour
+
+- Fichier `/etc/ohana-agent/plugins/power-plug.yaml`, modèle
+  `config/plugins/power-plug.example.yaml` livré avec l'Agent (désactivé, champs
+  vides). La mise à jour le crée s'il est absent (entrée du manifeste de
+  release) et ne l'écrase jamais ; l'Agent le charge par défaut à côté du fichier
+  DNS, sans option de ligne de commande, et traite un fichier absent comme un
+  plugin désactivé.
+- Vision, Configuration → Plugins → Prise connectée : adresse de Home Assistant,
+  jeton (jamais réaffiché), interrupteur, capteur de puissance, délais, bouton
+  « Tester » (lecture seule de la prise).
+- Le jeton est un jeton d'accès longue durée Home Assistant (profil → Sécurité),
+  de préférence dédié et révocable. Le fichier passe en mode 600 quand l'Agent en
+  a le droit.
+
+### Limites assumées
+
+- **Mise à jour Windows à l'arrêt** : sans mesure de puissance, 300 s peuvent ne
+  pas suffire. Renseigner le capteur de puissance de la prise est le réglage
+  recommandé : une machine qui installe des mises à jour consomme et n'est donc
+  pas coupée.
+- **Une prise n'est pas un parafoudre** : relais ouvert = isolation raisonnable
+  contre les surtensions secteur, aucune garantie contre la foudre.
+- **Dépendance** : Agent → Home Assistant → Wi-Fi → Shelly. Si l'un manque, le
+  cycle retombe sur le comportement sans prise (réveil échoué, aucun incident).
+- **Droit nouveau** : l'Agent peut commander `switch.turn_on` / `turn_off` sur
+  l'unique entité configurée, avec un jeton Home Assistant dédié et révocable.
+
+### Essai réel avant de s'absenter
+
+Le point qu'aucune Sandbox ne prouve : Bubule éteint, prise coupée, « Tester le
+réveil » dans Vision. Attendu : `plug_on`, `wake_sent`, Katsuyu connecté en moins
+de 3 minutes, puis après l'arrêt `plug_off` avec la consommation. Si Bubule ne
+démarre pas après la coupure complète, activer « Power On after AC loss » dans le
+BIOS, ou augmenter le délai avant le réveil.
+
+### Preuves
+
+Tests `tests/test_power_plug.py` (Agent, 37), test de formulaire Vision
+(`test_power_plug_editor_never_shows_or_drops_the_stored_token`) et scénario
+Sandbox `katsuyu-power-plug` (PASS ; Agent 1.57.0 sans le plugin échoue). Preuve
+réelle restante : l'essai ci-dessus, puis un cycle de 05:00 sans intervention.

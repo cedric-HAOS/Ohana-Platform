@@ -337,6 +337,7 @@ def main() -> int:
             "slow-completion-reads",
             "katsuyu-shizune-vitals",
             "katsuyu-wake-cycle",
+            "katsuyu-power-plug",
             "katsuyu-resilience",
             "ohana-self-supervision",
         }

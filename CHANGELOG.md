@@ -6,6 +6,8 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : scénario `katsuyu-power-plug` (plugin « Prise connectée » de Bubule) avec un Home Assistant simulé en HTTP, le vrai client de prise, le vrai émetteur Wake-on-LAN et le vrai worker Katsuyu : allumage avant le réveil, paquet 15 s plus tard, prise gardée tant que le PC consomme, coupée après l'arrêt, gardée avec une session ouverte, réveil malgré un Home Assistant injoignable, plugin désactivé à chaud.
+
 ## [1.0.147] — 2026-10-25 — Outil de release (`scripts/release_all
 
 - Outil de release (`scripts/release_all.py`) : options `--yes`, `--version
