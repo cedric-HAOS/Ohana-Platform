@@ -32,7 +32,7 @@ Le système n'est donc pas maintenu à jour, et rien ne le signale.
 
 ## Lots
 
-### Lot 1 — lecture (fait, local, non publié)
+### Lot 1 — lecture (publié : Agent 1.54.0, Vision 1.43.0)
 
 - Agent : `ohana_agent/host/system_updates.py`, `GET /v1/system/updates`,
   opération `system.updates.read`. Lecture sans privilège : `apt-get -s` simule,
@@ -43,7 +43,11 @@ Le système n'est donc pas maintenu à jour, et rien ne le signale.
 - Tests : Agent 2110 réussis, Vision 949 réussis, aperçu navigateur vérifié sur
   une réponse simulée. Sandbox pas encore étendue.
 
-### Lot 2 — actions (fait, local, non publié ni déployé)
+### Lot 2 — actions (publié : Agent 1.54.0, Installer 1.18.0, Vision 1.43.0)
+
+Première mise à jour du système d'INFRA-01 réalisée, selon la déclaration de
+l'utilisateur du 10/11/2026 ; relevé (paquets, noyau, redémarrage) à consigner.
+Le texte ci-dessous est celui de l'écriture du lot, le 04/11.
 
 Le privilège root ne revient jamais à l'Agent : même modèle que
 `ohana-chrony-restart` (demande dans `/run/ohana-agent`, unité de chemin, service
@@ -71,7 +75,7 @@ demande n'ait rien à décider.
   la liste, puis « Mettre à jour » avec les correctifs de sécurité en tête. Un
   nouveau noyau demande un redémarrage manuel d'INFRA-01 (jamais automatique).
 
-### Lot 3 — échéances périmables (point 4) (fait, local, non publié)
+### Lot 3 — échéances périmables (point 4) (publié : Agent 1.54.0)
 
 Trois règles préventives de la Phase 4 (Agent, `tsunade/preventive_expiry.py`),
 sans incident ni réparation. Un échantillonneur d'arrière-plan (30 minutes)
@@ -95,7 +99,11 @@ relevés, donc installer les mises à jour la remet à zéro.
   sourdine). Vision affiche les règles et leurs constats sans modification.
 - Pas de scénario Sandbox pour ces règles : à écrire avant la release.
 
-### Lot 4 — alerte indépendante d'INFRA-01 (point 1) (fait, non installé)
+### Lot 4 — alerte indépendante d'INFRA-01 (point 1) (installé sur HA-01)
+
+Paquet installé sur HA-01, selon la déclaration de l'utilisateur du 10/11/2026.
+L'essai réel (arrêt de Vision puis de l'Agent) reste à consigner avec sa date.
+Le texte ci-dessous est celui de l'écriture du lot, le 04/11.
 
 - Ohana-House : `config/home-assistant/ohana-veille.yaml` (paquet HA) et
   `docs/home-assistant/Veille-Ohana.md`. HA-01 interroge

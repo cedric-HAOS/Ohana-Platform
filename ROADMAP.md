@@ -14,10 +14,13 @@ Composition de départ (historique) :
 - Ohana-Shizune 0.3.0 ;
 - Ohana-Installer 1.14.3.
 
-Composition courante (4 novembre 2026, déployée sur INFRA-01) : **Ohana-Platform 1.0.152**, soit
-Ohana-Agent 1.54.1, Ohana-Vision 1.43.1, Ohana-Shizune 0.5.0 et Ohana-Installer 1.18.0 ;
-Ohana-Katsuyu 0.14.0 est installé sur Bubule. Les compositions à jour sont dans les releases GitHub
-d'Ohana-Platform et dans le catalogue de l'Installer.
+Dernière composition publiée (9 novembre 2026) : **Ohana-Platform 1.0.157**, soit
+Ohana-Agent 1.58.1, Ohana-Vision 1.45.0, Ohana-Shizune 0.5.1 et Ohana-Installer 1.20.0 ;
+Ohana-Katsuyu 0.14.2 est la dernière version du worker. Dernier relevé de déploiement consigné
+ici : Ohana-Platform 1.0.152 sur INFRA-01 et Ohana-Katsuyu 0.14.0 sur Bubule, le 4 novembre 2026.
+Une publication ne prouve pas un déploiement. Les compositions à jour sont dans les releases
+GitHub d'Ohana-Platform, dans [`release-catalog.yaml`](release-catalog.yaml) et dans le
+[CHANGELOG](CHANGELOG.md).
 
 L’architecture fonctionnelle actuelle est :
 
@@ -2053,3 +2056,24 @@ leurs preuves datées. Les phases 6 et 7 restent ouvertes pour leurs essais rée
 Le chantier documentaire transversal maintient les guides, contrats et copies
 de compositions. L'état 9/10 de la Phase 1 au 22 septembre est un historique
 remplacé par sa clôture datée du 25 septembre ; il ne constitue plus la priorité.
+
+## État au 10 novembre 2026
+
+Les points 1 à 4 ci-dessus restent valables. Ce qui a changé depuis :
+
+- Phase 9 : audit du 25 octobre ; deux critères attendent la mesure réelle des
+  incidents de fraîcheur, de présence et du DNS de LINKY-01
+  ([suivi](docs/Phase-9-Shikamaru.md)).
+- Phase 10 : registre des restaurations, intégrité des archives et état iCloud
+  livrés ; une restauration HAOS réelle reste à faire et à déclarer
+  ([suivi](docs/Phase-10-Sauvegarde-restauration.md)).
+- [Chantier maintenance et alerte](docs/Chantier-Maintenance-systeme-et-alerte.md) :
+  l'utilisateur déclare le 10 novembre que la veille est installée sur HA-01 et
+  que la première mise à jour du système d'INFRA-01 est faite.
+- Correctif mémoire de l'Agent (1.55.0) : effet à confirmer par la règle
+  `memory_growth`.
+- Gravité des incidents : tout contrôle en échec ouvre un incident « critique »,
+  sans tenir compte du champ `critical` des services déclarés ; décision à
+  prendre (point 1 de l'[audit de simplification](docs/Audit-Simplification-2026-11.md)).
+- Contrôle inter-dépôts : le workflow `ecosystem.yml` exécute la documentation
+  et la Sandbox à chaque push ([Versions et releases](docs/Guides/Versions-et-releases.md)).
