@@ -647,6 +647,66 @@ class ChangelogPromotionTests(unittest.TestCase):
         self.assertIsNone(release_all.promote_changelog(self.repository, "1.1.0"))
         self.assertEqual(path.read_text(encoding="utf-8"), original)
 
+    def test_an_empty_section_takes_the_fallback_entry(self) -> None:
+        path = self._changelog("# CHANGELOG\n\n## Non publié\n\n## [1.0.0] — x\n")
+
+        notes = release_all.promote_changelog(
+            self.repository,
+            "1.0.1",
+            today="2026-11-10",
+            fallback="- Composition Agent 1.58.1, Vision 1.45.0 et Shizune 0.5.1.",
+        )
+
+        self.assertEqual(
+            notes, "- Composition Agent 1.58.1, Vision 1.45.0 et Shizune 0.5.1.\n"
+        )
+        self.assertIn(
+            "## Non publié\n\n## [1.0.1] — 2026-11-10 — "
+            "Composition Agent 1.58.1, Vision 1.45.0 et Shizune 0.5.1\n\n"
+            "- Composition Agent 1.58.1, Vision 1.45.0 et Shizune 0.5.1.\n\n"
+            "## [1.0.0]",
+            path.read_text(encoding="utf-8"),
+        )
+
+    def test_written_notes_win_over_the_fallback(self) -> None:
+        self._changelog("# CHANGELOG\n\n## Non publié\n\n- Sandbox : scénario.\n")
+
+        notes = release_all.promote_changelog(
+            self.repository, "1.0.1", fallback="- Composition."
+        )
+
+        self.assertEqual(notes, "- Sandbox : scénario.\n")
+
+    def test_a_dot_inside_a_name_does_not_end_the_title(self) -> None:
+        path = self._changelog(
+            "# C\n\n## Non publié\n\n- Outil (`scripts/release_all.py`) : options.\n"
+        )
+
+        release_all.promote_changelog(self.repository, "1.0.1", today="2026-11-10")
+
+        self.assertIn(
+            "## [1.0.1] — 2026-11-10 — Outil (`scripts/release_all.py`)\n",
+            path.read_text(encoding="utf-8"),
+        )
+
+    def test_only_a_platform_composition_has_a_default_entry(self) -> None:
+        self.assertIsNone(release_all.composition_entry(self.repository))
+        platform = release_all.Repository(
+            "platform", self.repository.directory, "owner/repo", "platform"
+        )
+        (platform.path / "release-manifest.yaml").write_text(
+            "components:\n"
+            '  agent:\n    version: "1.58.1"\n'
+            '  vision:\n    version: "1.45.0"\n'
+            '  shizune:\n    version: "0.5.1"\n',
+            encoding="utf-8",
+        )
+
+        self.assertEqual(
+            release_all.composition_entry(platform),
+            "- Composition Agent 1.58.1, Vision 1.45.0 et Shizune 0.5.1.",
+        )
+
     def test_a_repository_without_changelog_is_not_an_error(self) -> None:
         self.assertIsNone(release_all.promote_changelog(self.repository, "1.1.0"))
 

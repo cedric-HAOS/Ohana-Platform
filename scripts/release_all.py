@@ -1072,13 +1072,35 @@ UNRELEASED = "## Non publié"
 RELEASED_HEADING = re.compile(r"^## \[", re.MULTILINE)
 
 
+def composition_entry(repository: Repository) -> str | None:
+    """The CHANGELOG line of a Platform composition published without notes.
+
+    A composition often has nothing to say beyond the versions it assembles;
+    without this line the release left no section at all in the CHANGELOG.
+    """
+    if repository.key != "platform":
+        return None
+    versions = manifest_component_versions(
+        (repository.path / "release-manifest.yaml").read_text(encoding="utf-8")
+    )
+    return (
+        f"- Composition Agent {versions['agent']}, Vision {versions['vision']} "
+        f"et Shizune {versions['shizune']}."
+    )
+
+
 def promote_changelog(
-    repository: Repository, version: str, *, today: str | None = None
+    repository: Repository,
+    version: str,
+    *,
+    today: str | None = None,
+    fallback: str | None = None,
 ) -> str | None:
     """Turn « Non publié » into the release section; returns its text (the notes).
 
-    Does nothing, and returns ``None``, when the repository has no CHANGELOG or
-    its « Non publié » section is empty: the release then gets GitHub's notes.
+    An empty « Non publié » section takes ``fallback`` as its text. Without one,
+    or without a CHANGELOG, nothing is written and ``None`` is returned: the
+    release then gets GitHub's notes.
     """
     path = repository.path / "CHANGELOG.md"
     if not path.is_file():
@@ -1094,10 +1116,15 @@ def promote_changelog(
     body_end = following.start() if following else len(text)
     body = text[body_start:body_end].strip("\n")
     if not body.strip():
-        return None
+        if not fallback:
+            return None
+        body = fallback.strip("\n")
     first = next((line for line in body.splitlines() if line.strip()), "")
     title = re.sub(r"^[-*] +", "", first).strip()
-    title = (re.split(r"[.:;]", title)[0] or title)[:70].strip() or f"Version {version}"
+    # The title is the first clause: a dot inside a version or a file name
+    # does not end it.
+    title = re.split(r"\s*[.:;](?:\s|$)", title)[0] or title
+    title = title[:70].strip() or f"Version {version}"
     stamp = today or datetime.now().strftime("%Y-%m-%d")
     promoted = (
         f"{UNRELEASED}\n\n## [{version}] — {stamp} — {title}\n\n{body}\n\n"
@@ -1326,7 +1353,9 @@ def process_repository(repository: Repository) -> None:
         progress(repository, 18, "version locale déjà préparée, propagation inchangée")
     else:
         update_version_references(repository, current, new_version)
-    notes = promote_changelog(repository, new_version)
+    notes = promote_changelog(
+        repository, new_version, fallback=composition_entry(repository)
+    )
     normalize_version_file_line_endings(repository)
     try:
         run_checks(repository)
