@@ -51,7 +51,8 @@ Pour chaque dépôt, le script :
 8. prépare et vérifie les assets ;
 9. promeut la section « Non publié » du `CHANGELOG.md` en section de la
    nouvelle version (elle sert de notes à la release GitHub ; sans entrée, GitHub
-   génère les notes), puis crée un commit `release: Ohana-Agent 1.26.14` (ou
+   génère les notes, sauf pour une composition Platform, qui reçoit l'entrée
+   « Composition Agent X, Vision Y et Shizune Z »), puis crée un commit `release: Ohana-Agent 1.26.14` (ou
    `release: compose Platform 1.0.X` pour une composition) qui ne contient que
    les fichiers modifiés par la release (jamais `git add --all` : les fichiers non
    suivis et le travail déjà en attente restent hors du commit), pousse `main`, crée le tag
