@@ -222,6 +222,14 @@ SCENARIOS = {
             "Shizune, sans aucune action automatique."
         ),
     ),
+    "shizune-system-update": (
+        "scenarios.shizune_system_update",
+        (
+            "Shizune vérifie et lance la mise à jour du système d'INFRA-01 : état "
+            "lu par la passerelle Vision et le listener compagnon, confirmation "
+            "avant la demande, avancement suivi, refus de l'Agent transmis."
+        ),
+    ),
     "system-maintenance": (
         "scenarios.system_maintenance",
         (
