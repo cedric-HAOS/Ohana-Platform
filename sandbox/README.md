@@ -201,6 +201,20 @@ touche pas une prise qu'Ohana n'a pas allumée. Agent 1.57.0 (sans prise) échou
 .\sandbox\run.ps1 run katsuyu-power-plug
 ```
 
+`shizune-system-update` (Phase 7) ouvre la vraie PWA Shizune dans Chromium, à
+la taille d'un iPhone, derrière la vraie passerelle Vision et le vrai listener
+compagnon de l'Agent. L'association passe par l'écran de Shizune. Il vérifie la
+lecture de l'état des mises à jour d'INFRA-01 sans liste de paquets, « Vérifier
+maintenant » sur des listes périmées, « Mettre à jour » seulement après
+confirmation (« Annuler » n'écrit rien), l'avancement relu pendant l'opération,
+une seconde demande ignorée, le refus quand rien n'attend et le refus de toute
+autre action. La lecture apt et `systemctl` sont simulés : aucun assistant root
+ne tourne. Captures dans `sandbox/runs/`.
+
+```powershell
+.\sandbox\run.ps1 run shizune-system-update
+```
+
 `katsuyu-resilience` (Phase 6, lot 3) vérifie qu'un job IA dont le worker
 disparaît trois fois échoue explicitement (`worker.interrupted`) et laisse à
 Tsunade son repli sans conclusion, puis, avec un vrai worker Katsuyu en HTTP,

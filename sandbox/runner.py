@@ -340,6 +340,7 @@ def main() -> int:
             "katsuyu-power-plug",
             "katsuyu-resilience",
             "ohana-self-supervision",
+            "shizune-system-update",
         }
     ):
         katsuyu_root = args.katsuyu.resolve()
@@ -354,6 +355,7 @@ def main() -> int:
         "agent-silent",
         "katsuyu-shizune-vitals",
         "ohana-self-supervision",
+        "shizune-system-update",
         "incident-history",
         "log-window-extension",
     }:
