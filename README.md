@@ -87,8 +87,23 @@ Ohana-Platform/
 
 ## Compatibilité des versions
 
+La liste qui fait foi est [`release-catalog.yaml`](release-catalog.yaml), mis à
+jour par chaque release ; ce tableau en est une copie lisible, relevée le
+10 novembre 2026.
+
 | Platform | Agent | Vision | Python | Cible |
 | --- | --- | --- | --- | --- |
+| 1.0.157 | 1.58.1 | 1.45.0 | 3.13+ | Linux/systemd |
+| 1.0.156 | 1.58.0 | 1.45.0 | 3.13+ | Linux/systemd |
+| 1.0.155 | 1.57.0 | 1.44.0 | 3.13+ | Linux/systemd |
+| 1.0.154 | 1.56.0 | 1.43.2 | 3.13+ | Linux/systemd |
+| 1.0.153 | 1.55.0 | 1.43.2 | 3.13+ | Linux/systemd |
+| 1.0.152 | 1.54.1 | 1.43.1 | 3.13+ | Linux/systemd |
+| 1.0.151 | 1.54.0 | 1.43.0 | 3.13+ | Linux/systemd |
+| 1.0.150 | 1.53.0 | 1.42.0 | 3.13+ | Linux/systemd |
+| 1.0.149 | 1.52.0 | 1.42.0 | 3.13+ | Linux/systemd |
+| 1.0.148 | 1.51.0 | 1.41.0 | 3.13+ | Linux/systemd |
+| 1.0.147 | 1.50.0 | 1.40.0 | 3.13+ | Linux/systemd |
 | 1.0.146 | 1.49.0 | 1.39.0 | 3.13+ | Linux/systemd |
 | 1.0.145 | 1.48.0 | 1.38.1 | 3.13+ | Linux/systemd |
 | 1.0.144 | 1.47.0 | 1.38.0 | 3.13+ | Linux/systemd |

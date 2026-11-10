@@ -6,9 +6,53 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- CI : le workflow réutilisable `ecosystem.yml` exécute sous Linux le contrôle documentaire de tous les dépôts, les tests de l'outillage de release et de la recette, puis la Sandbox complète (`run all --exercise-logs`, sans `--full-stack`). Il tourne à chaque push de Platform et il est appelé par Agent, Vision, Katsuyu, Installer et Shizune sur `main` et sur leurs pull requests. Chaque dépôt est pris sur la branche du même nom que celle de l'événement si elle existe, sinon sur sa branche par défaut.
+- Outil de release : une composition Platform publiée sans note reçoit une entrée « Composition Agent X, Vision Y et Shizune Z » au lieu de ne laisser aucune section dans ce fichier (les versions 1.0.148 à 1.0.155 et 1.0.157 n'en avaient pas). Le titre d'une section n'est plus coupé au premier point d'un numéro de version ou d'un nom de fichier.
+- Entrées 1.0.148 à 1.0.155 et 1.0.157 reconstituées le 10 novembre 2026 à partir du catalogue des compositions et des CHANGELOG des composants.
+
+## [1.0.157] — 2026-11-09 — Prise connectée coupée seulement si Ohana l'a allumée
+
+- Composition Agent 1.58.1, Vision 1.45.0 et Shizune 0.5.1 : Ohana ne coupe plus que la prise connectée qu'il a lui-même allumée. *(entrée reconstituée)*
+
 ## [1.0.156] — 2026-11-09 — Sandbox
 
 - Sandbox : scénario `katsuyu-power-plug` (plugin « Prise connectée » de Bubule) avec un Home Assistant simulé en HTTP, le vrai client de prise, le vrai émetteur Wake-on-LAN et le vrai worker Katsuyu : allumage avant le réveil, paquet 15 s plus tard, prise gardée tant que le PC consomme, coupée après l'arrêt, gardée avec une session ouverte, réveil malgré un Home Assistant injoignable, plugin désactivé à chaud.
+
+## [1.0.155] — 2026-11-07 — Alerte Z-Wave sans contact
+
+- Composition Agent 1.57.0, Vision 1.44.0 et Shizune 0.5.1 : alerte Z-Wave sur la dernière connexion d'un équipement, délais réglables dans la page Plugins de Vision. Installer 1.19.0 ajoute les nouvelles clés à `plugins/zwave.yaml`. *(entrée reconstituée)*
+- Sandbox : le dossier d'incident est rendu avec les modules de Vision découpés.
+
+## [1.0.154] — 2026-11-06 — État du dernier contrôle des journaux
+
+- Composition Agent 1.56.0, Vision 1.43.2 et Shizune 0.5.1 : la synthèse compagnon porte l'état du dernier contrôle quotidien des journaux, et Shizune marque « Non vérifié » les sources non lues après un contrôle en échec. *(entrée reconstituée)*
+
+## [1.0.153] — 2026-11-04 — Suite de l'audit de simplification
+
+- Composition Agent 1.55.0, Vision 1.43.2 et Shizune 0.5.0 : mémoire rendue au système après chaque sonde Z-Wave, échec DNS confirmé sur deux contrôles avant d'ouvrir un incident, registre unique des règles préventives, découpage de `service.py` et d'`incidents.js`, demande de mise à jour système qui n'attend plus la simulation apt. Suivi : `docs/Audit-Simplification-2026-11.md`. *(entrée reconstituée)*
+
+## [1.0.152] — 2026-11-04 — Diagnostic de la mémoire de l'Agent
+
+- Composition Agent 1.54.1, Vision 1.43.1 et Shizune 0.5.0 : diagnostic de mémoire à la demande (`/v1/diagnostics/memory`) relayé par Vision. *(entrée reconstituée)*
+
+## [1.0.151] — 2026-11-04 — Mises à jour système
+
+- Composition Agent 1.54.0, Vision 1.43.0 et Shizune 0.5.0 : page « Mise à jour système » (état apt, actualisation des listes, mise à jour confirmée) et règles préventives `system_updates`, `tls_certificates` et `ha_updates`. Installer 1.18.0 est nécessaire pour les assistants apt. Suivi : `docs/Chantier-Maintenance-systeme-et-alerte.md`. *(entrée reconstituée)*
+- Sandbox : scénario `system-maintenance`.
+
+## [1.0.150] — 2026-10-30 — Purge des observations traitées
+
+- Composition Agent 1.53.0, Vision 1.42.0 et Shizune 0.5.0 : les identifiants d'observations déjà traitées sont purgés après 24 heures (la table grossissait d'environ 22,5 Mo par jour). *(entrée reconstituée)*
+
+## [1.0.149] — 2026-10-27 — Investigation des journaux sur 24 heures
+
+- Composition Agent 1.52.0, Vision 1.42.0 et Shizune 0.5.0 : une investigation de journaux terminée sans conclusion peut être étendue une fois aux 24 heures précédentes depuis Vision. Katsuyu 0.14.0 est nécessaire pour cette fenêtre. *(entrée reconstituée)*
+- Sandbox : scénario `log-window-extension`.
+
+## [1.0.148] — 2026-10-25 — Mémoire par processus
+
+- Composition Agent 1.51.0, Vision 1.41.0 et Shizune 0.5.0 : la mémoire résidente de l'Agent et de Vision est mesurée séparément, et la règle `memory_growth` nomme le processus qui grossit. *(entrée reconstituée)*
+- Sandbox : les contrôles du journal sont limités à l'exécution courante de l'Agent.
 
 ## [1.0.147] — 2026-10-25 — Outil de release (`scripts/release_all
 
