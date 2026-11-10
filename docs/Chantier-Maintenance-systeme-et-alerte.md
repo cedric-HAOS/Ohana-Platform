@@ -101,8 +101,8 @@ relevés, donc installer les mises à jour la remet à zéro.
 
 ### Lot 4 — alerte indépendante d'INFRA-01 (point 1) (installé sur HA-01)
 
-Paquet installé sur HA-01, selon la déclaration de l'utilisateur du 10/11/2026.
-L'essai réel (arrêt de Vision puis de l'Agent) reste à consigner avec sa date.
+Paquet installé sur HA-01 et essai de panne réalisé, selon la déclaration de
+l'utilisateur du 10/11/2026.
 Le texte ci-dessous est celui de l'écriture du lot, le 04/11.
 
 - Ohana-House : `config/home-assistant/ohana-veille.yaml` (paquet HA) et

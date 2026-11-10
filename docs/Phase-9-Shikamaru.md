@@ -40,3 +40,6 @@ analyse IA. C'est la mesure qui a guidé le premier lot.
 2. **Mesurer l'effet réel** de la confirmation de télémétrie après déploiement :
    nombre d'incidents de fraîcheur par semaine (11 sur 14 jours avant).
 3. **Phase non close** : les critères 1 et 2 attendent cette mesure.
+4. **Gravité** (10 novembre) : une source secondaire qui oscille ouvre désormais
+   un incident dégradé et non critique (Agent non publié). Cela réduit ce qui
+   alerte, pas le nombre d'incidents : les points 1 et 2 restent à mesurer.
