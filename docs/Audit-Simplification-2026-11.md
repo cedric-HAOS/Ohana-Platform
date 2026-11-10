@@ -175,6 +175,17 @@ diagnostic mémoire (Agent 1.54.1).
    contrôleur, et les libellés dans `incidents_shared.js` (94 méthodes avant et
    après, vérifié dans le navigateur).
 
+7. **Gravité des incidents** (point 1, décidée le 10 novembre) : la politique de
+   gravité « critique » par défaut est remplacée. Un contrôle en échec ouvre un
+   incident critique seulement pour un service déclaré `critical`, ou pour un
+   équipement critique (case de Vision, ou équipement qui héberge un service
+   critique) ; le reste est dégradé. La santé de l'hôte et les sauvegardes
+   gardent leur gravité. Avec le modèle de configuration, quatre des cinq
+   sources les plus bruyantes deviennent dégradées (télémétrie, synchro AdGuard,
+   présence d'un appareil secondaire, téléinformation) ; le DNS de LINKY-01
+   reste critique, la redondance des deux DNS n'étant pas prise en compte. Non
+   publié, non déployé : à mesurer sur les incidents réels.
+
 Défaut constaté en direct : le bouton « Mettre à jour » a répondu « Agent :
 délai dépassé » alors que l'installation démarrait. Cause : la demande relançait
 la simulation apt, lente sur INFRA-01 (surtout avec la trace mémoire active).

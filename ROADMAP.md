@@ -1480,7 +1480,7 @@ Chromium sur le vrai résumé de l'Agent), la preuve réelle restant à faire.
 - [x] Le résultat de la décision peut être suivi. *(réel : le suivi de l'issue d'une décision (autorisation, exécution, vérification) est prouvé en Phase 2 ; Sandbox : « Décisions récentes » dans Shizune avec l'issue publiée par l'Agent)*
 - [x] Les informations viennent des contrats Agent et ne recréent pas une logique métier parallèle. *(la PWA ne fait que présenter `summary`, `requests`, `activity` ; seul le rapprochement décision/issue par incident est côté PWA)*
 - [x] Une perte de synchronisation est explicitement visible. *(Sandbox : « Connexion indisponible » avec la dernière synchronisation réussie, puis reprise ; réel à prouver)*
-- [x] Shizune n’introduit pas d’administration technique directe. *(tests Agent et Vision : listener et passerelle limités au contrat synthétique)*
+- [x] Shizune n’introduit pas d’administration technique directe. *(tests Agent et Vision : listener et passerelle limités au contrat synthétique ; exception décidée par l'utilisateur le 10/11/2026 : vérifier et lancer la mise à jour du système d'INFRA-01, sans paramètre, avec les refus de l'Agent)*
 - [ ] Toute nouvelle fonctionnalité répond à un besoin réellement observé dans l’usage quotidien. *(critère de méthode, jugé à la clôture : l'accueil « ce qui va / ce qui ne va pas » répond à une demande de l'utilisateur ; le reste attend des constats d'usage)*
 
 La phase n'est pas close : validation réelle sur l'iPhone après le déploiement
@@ -1974,7 +1974,7 @@ Les sujets suivants ne doivent pas être développés sans besoin concret :
 - cloud Ohana ;
 - exécution de commandes libres par IA ;
 - administration directe depuis Katsuyu ;
-- administration directe depuis Shizune ;
+- administration directe depuis Shizune (une seule exception, décidée le 10/11/2026 : la mise à jour du système d'INFRA-01) ;
 - remplacement de Vision par Shizune ;
 - système générique de plugins externes ;
 - SDK public ;
@@ -2068,12 +2068,17 @@ Les points 1 à 4 ci-dessus restent valables. Ce qui a changé depuis :
   livrés ; une restauration HAOS réelle reste à faire et à déclarer
   ([suivi](docs/Phase-10-Sauvegarde-restauration.md)).
 - [Chantier maintenance et alerte](docs/Chantier-Maintenance-systeme-et-alerte.md) :
-  l'utilisateur déclare le 10 novembre que la veille est installée sur HA-01 et
-  que la première mise à jour du système d'INFRA-01 est faite.
+  l'utilisateur déclare le 10 novembre que la veille est installée et essayée
+  sur HA-01, et que la première mise à jour du système d'INFRA-01 est faite.
 - Correctif mémoire de l'Agent (1.55.0) : effet à confirmer par la règle
   `memory_growth`.
-- Gravité des incidents : tout contrôle en échec ouvre un incident « critique »,
-  sans tenir compte du champ `critical` des services déclarés ; décision à
-  prendre (point 1 de l'[audit de simplification](docs/Audit-Simplification-2026-11.md)).
+- Gravité des incidents : décidée le 10 novembre. Un incident n'est critique
+  que pour un service déclaré `critical` ou un équipement critique ; le reste
+  est dégradé (point 1 de l'[audit de simplification](docs/Audit-Simplification-2026-11.md)).
+  Non publié, non déployé : l'effet réel sur le bruit reste à mesurer.
+- Shizune vérifie et lance la mise à jour du système d'INFRA-01, à la demande
+  de l'utilisateur ([suivi](docs/Phase-7-Shizune.md)). Non publié, non déployé.
+- House : le DHCP de secours ESP-03 a été essayé sur le matériel et l'essai de
+  panne de la veille HA-01 est fait, selon l'utilisateur.
 - Contrôle inter-dépôts : le workflow `ecosystem.yml` exécute la documentation
   et la Sandbox à chaque push ([Versions et releases](docs/Guides/Versions-et-releases.md)).

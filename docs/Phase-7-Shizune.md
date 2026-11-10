@@ -40,7 +40,7 @@ Constats faits par lecture de `Shizune/PWA/app.js`, `read_companion_summary`
 | Résultat de la décision suivi | **écart** : seule l'« Activité » (événements `action`/`result`) le laisse deviner ; pas de rappel « Vous avez autorisé X → réparé / échoué / refusé » lié à la demande | 2 |
 | Informations des contrats Agent, pas de logique parallèle | acquis : la PWA ne fait que mapper les contrats (`assessment`, `attention`, `preventive`). Point de vigilance : le regroupement en accueil (`stale`/`analyzing`/`watch`) est côté PWA | — |
 | Perte de synchronisation explicite | **écart** : l'écran d'erreur ne dit pas depuis quand les données sont perdues (choix : écran d'erreur conservé, ancienneté ajoutée) | 1 |
-| Pas d'administration technique | acquis : routes bornées (association, résumé, demandes, activité, réponse, diagnostic) ; test « aucune route système avec la session compagnon » | — |
+| Pas d'administration technique | acquis : routes bornées (association, résumé, demandes, activité, réponse, diagnostic) ; test « aucune route système avec la session compagnon ». Exception du 10 novembre : la mise à jour du système d'INFRA-01 (ci-dessous) | — |
 | Besoin réel à l'usage | à alimenter par l'utilisateur ; aucune fonctionnalité ajoutée sans constat | — |
 
 ## Lots proposés
@@ -81,6 +81,26 @@ restent atteignables.
 Contexte de demande lisible : non modifié. Les questions et contextes viennent
 de l'Agent (`repair_catalog.py`) ; à relire sur les demandes réelles avant de
 toucher au texte (critère 10).
+
+## Mise à jour du système d'INFRA-01 depuis Shizune (10 novembre 2026)
+
+Demande de l'utilisateur : Shizune ne pouvait ni vérifier ni lancer la mise à
+jour d'INFRA-01. C'est un besoin constaté à l'usage (critère 10), et une
+exception assumée au critère « pas d'administration technique » : la seule
+opération système du compagnon.
+
+- **Agent** : le listener compagnon expose `GET /v1/system/updates` (verdict,
+  compteurs, âge des listes, redémarrage requis, avancement des assistants ;
+  jamais la liste des paquets) et `POST /v1/system/updates/refresh` et `/apply`,
+  sans paramètre. Mêmes refus que depuis Vision : listes périmées, rien en
+  attente, assistant déjà en cours. Aucune autre route système n'est ouverte.
+- **Vision** : la passerelle relaie ces trois routes et refuse toute autre action.
+- **Shizune** : écran « Mise à jour d'INFRA-01 » ouvert depuis l'accueil, lu à
+  part de la synthèse ; « Vérifier maintenant », « Mettre à jour » avec
+  confirmation, avancement relu toutes les 5 secondes.
+- **Sandbox** : scénario `shizune-system-update` (vraie PWA dans Chromium, vraie
+  passerelle, vrai listener ; apt et `systemctl` simulés).
+- Non publié, non déployé. À vérifier sur l'iPhone après déploiement.
 
 ## Hors périmètre
 
