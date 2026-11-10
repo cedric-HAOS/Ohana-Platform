@@ -8,6 +8,7 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 - CI : le workflow réutilisable `ecosystem.yml` exécute sous Linux le contrôle documentaire de tous les dépôts, les tests de l'outillage de release et de la recette, puis la Sandbox complète (`run all --exercise-logs`, sans `--full-stack`). Il tourne à chaque push de Platform et il est appelé par Agent, Vision, Katsuyu, Installer et Shizune sur `main` et sur leurs pull requests. Chaque dépôt est pris sur la branche du même nom que celle de l'événement si elle existe, sinon sur sa branche par défaut.
 - Outil de release : une composition Platform publiée sans note reçoit une entrée « Composition Agent X, Vision Y et Shizune Z » au lieu de ne laisser aucune section dans ce fichier (les versions 1.0.148 à 1.0.155 et 1.0.157 n'en avaient pas). Le titre d'une section n'est plus coupé au premier point d'un numéro de version ou d'un nom de fichier.
+- Outil de release : une release de Shizune met aussi à jour le nom du cache dans `Shizune/PWA/sw.js` (il était resté à 0.5.0 pour la 0.5.1) et s'arrête si ce nom ne correspond pas à la version courante.
 - Entrées 1.0.148 à 1.0.155 et 1.0.157 reconstituées le 10 novembre 2026 à partir du catalogue des compositions et des CHANGELOG des composants.
 
 ## [1.0.157] — 2026-11-09 — Prise connectée coupée seulement si Ohana l'a allumée

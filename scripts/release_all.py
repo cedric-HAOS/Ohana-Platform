@@ -419,7 +419,7 @@ def normalize_version_file_line_endings(repository: Repository) -> None:
             "tests/test_setup.py",
             "tests/test_updates.py",
         ),
-        "shizune": ("Shizune/PWA/version.json",),
+        "shizune": ("Shizune/PWA/version.json", "Shizune/PWA/sw.js"),
         "platform": (
             "release-manifest.yaml",
             "release-catalog.yaml",
@@ -533,6 +533,16 @@ def update_version_references(repository: Repository, old: str, new: str) -> Non
             f'"version": "{new}"',
             expected=1,
             label="Shizune version.json",
+        )
+        # A browser reinstalls a service worker only when its file changes,
+        # and the worker drops the caches whose name differs from its own:
+        # with an unchanged name an installed PWA keeps the previous app.js.
+        replace_literal(
+            repository.path / "Shizune" / "PWA" / "sw.js",
+            f"'shizune-pwa-{old}'",
+            f"'shizune-pwa-{new}'",
+            expected=1,
+            label="Shizune sw.js",
         )
 
     elif repository.key == "platform":
