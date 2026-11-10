@@ -127,3 +127,27 @@ titre de chaque commit poussé :
   poussé sur `main` ne peut plus être renommé.
 
 Les commits de merge et les titres `Revert "…"` générés par Git sont acceptés.
+
+Le workflow réutilisable
+[`ecosystem.yml`](../../.github/workflows/ecosystem.yml) vérifie ce qu'aucun
+dépôt ne peut vérifier seul :
+
+- le contrôle documentaire de tous les dépôts (`scripts/check_documentation.py` :
+  liens, exemples, copies du catalogue dans l'Installer) ;
+- les tests de l'outil de release et de la recette de production ;
+- la Sandbox complète, `run all --exercise-logs`, sous Linux avec Chromium. Le
+  parcours `--full-stack` n'y est pas : il demande un modèle d'IA local.
+
+Il tourne à chaque push et pull request de Platform, et il est appelé par Agent,
+Vision, Katsuyu, Installer et Shizune sur `main` et sur leurs pull requests.
+Chaque dépôt est pris sur la branche du même nom que celle de l'événement si elle
+existe, sinon sur sa branche par défaut : un lot réparti sur plusieurs dépôts
+est donc validé ensemble.
+
+Deux limites à connaître :
+
+- un scénario de Sandbox poussé avant le code d'Agent ou de Vision qu'il
+  exerce échoue jusqu'au push de ce code : pousser le composant d'abord ;
+- sur un commit `release:` de Platform, le contrôle documentaire est sauté, car
+  le catalogue de l'Installer n'est synchronisé qu'au commit suivant, dont le
+  contrôle relit tout.

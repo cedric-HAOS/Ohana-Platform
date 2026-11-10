@@ -27,6 +27,14 @@ d'Ohana-Agent.
 Par exemple, activer le même environnement virtuel que celui utilisé
 pour lancer les tests d'Ohana-Agent.
 
+Sous Linux, sans `run.ps1` : installer dans un même environnement Python 3.13
+`Ohana-Agent[development]`, `Ohana-Vision[dev]`, `Ohana-Katsuyu` et `playwright`
+(avec Chromium), puis lancer `python -X utf8 sandbox/runner.py run all`. Les
+checkouts d'Agent, Vision, Katsuyu, Installer et Shizune doivent être voisins de
+celui de Platform. C'est ce que fait le workflow
+[`ecosystem.yml`](../.github/workflows/ecosystem.yml) à chaque push
+([Versions et releases](../docs/Guides/Versions-et-releases.md)).
+
 ## Lister les scénarios
 
 ```powershell

@@ -1,0 +1,166 @@
+name: Écosystème
+
+# Contrôles inter-dépôts : documentation de tous les dépôts Ohana, tests de
+# l'outillage Platform et Sandbox complète (sans --full-stack, qui demande un
+# modèle d'IA local).
+#
+# Chaque dépôt est pris sur la branche du même nom que celle de l'événement si
+# elle existe, sinon sur sa branche par défaut. Le dépôt qui déclenche le
+# contrôle est pris au commit de l'événement.
+#
+# Réutilisable depuis les autres dépôts Ohana :
+#   ecosystem:
+#     uses: cedric-HAOS/Ohana-Platform/.github/workflows/ecosystem.yml@main
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+    tags-ignore: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ecosystem-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ecosystem:
+    name: Documentation et Sandbox
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Choisir la branche de chaque dépôt
+        id: refs
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          TRIGGER: ${{ github.event.repository.name }}
+        run: |
+          for repo in Platform Agent Vision Katsuyu Shizune Installer House hassio-addons; do
+            ref=""
+            # Vide : commit de l'événement pour le dépôt déclencheur, branche
+            # par défaut pour les autres.
+            if [ "${TRIGGER,,}" != "ohana-${repo,,}" ] && git ls-remote --exit-code --heads \
+              "https://github.com/cedric-HAOS/Ohana-$repo" "refs/heads/$BRANCH" > /dev/null; then
+              ref="$BRANCH"
+            fi
+            echo "Ohana-$repo : ${ref:-par défaut}"
+            echo "${repo,,}=$ref" >> "$GITHUB_OUTPUT"
+          done
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-Platform
+          ref: ${{ steps.refs.outputs.platform }}
+          path: Ohana-Platform
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-Agent
+          ref: ${{ steps.refs.outputs.agent }}
+          path: Ohana-Agent
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-Vision
+          ref: ${{ steps.refs.outputs.vision }}
+          path: Ohana-Vision
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-Katsuyu
+          ref: ${{ steps.refs.outputs.katsuyu }}
+          path: Ohana-Katsuyu
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-Shizune
+          ref: ${{ steps.refs.outputs.shizune }}
+          path: Ohana-Shizune
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-Installer
+          ref: ${{ steps.refs.outputs.installer }}
+          path: Ohana-Installer
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-House
+          ref: ${{ steps.refs.outputs.house }}
+          path: Ohana-House
+
+      - uses: actions/checkout@v4
+        with:
+          repository: cedric-HAOS/Ohana-hassio-addons
+          ref: ${{ steps.refs.outputs.hassio-addons }}
+          path: Ohana-hassio-addons
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            Ohana-Agent/pyproject.toml
+            Ohana-Vision/pyproject.toml
+            Ohana-Katsuyu/pyproject.toml
+
+      - name: Installer Agent, Vision, Katsuyu et Playwright
+        id: install
+        run: |
+          python -m pip install \
+            -e "Ohana-Agent[development]" \
+            -e "Ohana-Vision[dev]" \
+            -e Ohana-Katsuyu \
+            playwright
+          python -m playwright install --with-deps chromium
+
+      # Une release Platform est suivie de la synchronisation du catalogue
+      # dans l'Installer, dont le contrôle relit tout : entre les deux, les
+      # copies diffèrent forcément.
+      - name: Contrôle documentaire
+        if: >-
+          !(github.event_name == 'push'
+          && github.event.repository.name == 'Ohana-Platform'
+          && startsWith(github.event.head_commit.message, 'release:'))
+        run: python Ohana-Platform/scripts/check_documentation.py --root .
+
+      - name: Tests de l'outillage de release
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        working-directory: Ohana-Platform
+        run: python -m pytest scripts -q -ra
+
+      - name: Tests de la recette de production
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        working-directory: Ohana-Platform/sandbox/production
+        run: python -m pytest -q -ra
+
+      - name: Sandbox
+        id: sandbox
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        working-directory: Ohana-Platform
+        run: |
+          set -o pipefail
+          python -X utf8 sandbox/runner.py run all --exercise-logs | tee sandbox.log
+
+      # « run all » ne donne que le verdict : rejouer les échecs avec leurs
+      # vérifications et leurs journaux.
+      - name: Détail des scénarios en échec
+        if: ${{ failure() && steps.sandbox.outcome == 'failure' }}
+        working-directory: Ohana-Platform
+        run: |
+          grep -E '^✗ .* FAIL$' sandbox.log | awk '{print $2}' | while read -r scenario; do
+            python -X utf8 sandbox/runner.py run "$scenario" || true
+          done
+
+      - name: Conserver les captures de la Sandbox
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-runs
+          path: Ohana-Platform/sandbox/runs
+          if-no-files-found: ignore
+          retention-days: 7
