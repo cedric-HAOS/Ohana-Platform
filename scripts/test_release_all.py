@@ -230,10 +230,10 @@ class VersionPropagationTests(unittest.TestCase):
             (repository.path / "tests/test_updates.py").read_text(encoding="utf-8"),
         )
 
-    def test_shizune_version_json_is_updated(self) -> None:
+    def test_shizune_version_json_and_cache_name_are_updated(self) -> None:
         repository = self.copy_repository(
             "shizune",
-            ("Shizune/PWA/version.json",),
+            ("Shizune/PWA/version.json", "Shizune/PWA/sw.js"),
         )
 
         old = release_all.local_version(repository)
@@ -249,6 +249,26 @@ class VersionPropagationTests(unittest.TestCase):
             release_all.local_version(repository),
             new,
         )
+        worker = (repository.path / "Shizune/PWA/sw.js").read_text(encoding="utf-8")
+        self.assertIn(f"const CACHE = 'shizune-pwa-{new}';", worker)
+        self.assertNotIn(old, worker)
+
+    def test_a_cache_name_behind_the_version_stops_the_release(self) -> None:
+        repository = self.copy_repository(
+            "shizune",
+            ("Shizune/PWA/version.json", "Shizune/PWA/sw.js"),
+        )
+        old = release_all.local_version(repository)
+        worker = repository.path / "Shizune/PWA/sw.js"
+        worker.write_text(
+            worker.read_text(encoding="utf-8").replace(old, "0.0.1"),
+            encoding="utf-8",
+        )
+
+        with self.assertRaises(release_all.ReleaseError):
+            release_all.update_version_references(
+                repository, old, release_all.next_patch(old)
+            )
 
     def test_platform_adds_a_release_without_overwriting_history(
         self,
