@@ -6,6 +6,10 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.159] — 2026-11-15 — Composition Agent 1.59.1, Vision 1.46.0 et Shizune 0.6.0
+
+- Composition Agent 1.59.1, Vision 1.46.0 et Shizune 0.6.0.
+
 ## [1.0.158] — 2026-11-15 — CI
 
 - CI : le workflow réutilisable `ecosystem.yml` exécute sous Linux le contrôle documentaire de tous les dépôts, les tests de l'outillage de release et de la recette, puis la Sandbox complète (`run all --exercise-logs`, sans `--full-stack`). Il tourne à chaque push de Platform et il est appelé par Agent, Vision, Katsuyu, Installer et Shizune sur `main` et sur leurs pull requests. Chaque dépôt est pris sur la branche du même nom que celle de l'événement si elle existe, sinon sur sa branche par défaut.
