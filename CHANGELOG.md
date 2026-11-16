@@ -6,6 +6,10 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+## [1.0.160] — 2026-11-16 — Composition Agent 1.59.2, Vision 1.46.0 et Shizune 0.6.0
+
+- Composition Agent 1.59.2, Vision 1.46.0 et Shizune 0.6.0.
+
 ## [1.0.159] — 2026-11-15 — Composition Agent 1.59.1, Vision 1.46.0 et Shizune 0.6.0
 
 - Composition Agent 1.59.1, Vision 1.46.0 et Shizune 0.6.0.
