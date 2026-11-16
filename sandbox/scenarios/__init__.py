@@ -320,4 +320,11 @@ SCENARIOS = {
             "boucle pas sur les mêmes preuves."
         ),
     ),
+    "zwave-node-removed": (
+        "scenarios.zwave_node_removed",
+        (
+            "Nœud retiré de Z-Wave JS : Vision accepte l'infrastructure (disposition "
+            "comprise) et Tsunade clôt son incident sans le déclarer sain."
+        ),
+    ),
 }
