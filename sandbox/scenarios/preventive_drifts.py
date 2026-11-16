@@ -37,6 +37,11 @@ PARIS = ZoneInfo("Europe/Paris")
 NOW = datetime.now(PARIS).replace(hour=12, minute=0, second=0, microsecond=0)
 DAYS = 28
 SIGNATURE = "<timestamp> error (mainthread) [tapo_control] camera timed out"
+# Ohana's own Z-Wave probe, logged by the Z-Wave JS UI add-on on zwave-01.
+ZWAVE_SERVER = (
+    "<timestamp> haos-zwave app_a0d7b954_zwavejs2mqtt[<value>]: "
+    "<timestamp> info z-wave-server: client disconnected"
+)
 NEWLY_UNAVAILABLE = [
     "binary_sensor.tapo_c200_person",
     "camera.tapo_c200",
@@ -201,7 +206,25 @@ def run() -> dict:
                                                     "occurrences": occurrences,
                                                 }
                                             ],
-                                        }
+                                        },
+                                        {
+                                            # Absent from the older checks,
+                                            # then ~717 a day (16/11 on zwave-01).
+                                            "source": "zwave-01",
+                                            "truncated": False,
+                                            "findings": (
+                                                [
+                                                    {
+                                                        "source": "zwave-01",
+                                                        "signature": ZWAVE_SERVER,
+                                                        "occurrences": 717,
+                                                        "severity": "warning",
+                                                    }
+                                                ]
+                                                if recent
+                                                else []
+                                            ),
+                                        },
                                     ]
                                 }
                             ),
@@ -230,8 +253,11 @@ def run() -> dict:
                 (
                     "anomalie Tapo 12 → 180 par jour dans les contrôles Katsuyu : "
                     "signalée",
-                    "log_errors_growth" in rules
-                    and SIGNATURE[:40] in rules["log_errors_growth"]["title"],
+                    any(
+                        i["rule"] == "log_errors_growth"
+                        and SIGNATURE[:40] in i["title"]
+                        for i in summary["watch"]
+                    ),
                 ),
                 (
                     "Home Assistant : redémarrage ignoré, entités nouvellement "
@@ -280,6 +306,39 @@ def run() -> dict:
                     Path(tmp) / "infrastructure.yaml"
                 ),
                 preventive_monitor=monitor,
+                incident_repository=incidents,
+            )
+            # A component accepted in Vision no longer counts as a rise.
+            zwave_before = [
+                i
+                for i in summary["watch"]
+                if i["rule"] == "log_errors_growth" and i["equipment_id"] == "zwave-01"
+            ]
+            service.accept_log_component(
+                {
+                    "source": "zwave-01",
+                    "component": "zwave_js.server",
+                    "label": "Z-Wave JS (serveur)",
+                }
+            )
+            accepted = monitor.summary(now=NOW)
+            checks.append(
+                (
+                    "« client disconnected » de ZWAVE-01 signalé, puis composant "
+                    "« Z-Wave JS (serveur) » accepté : retiré de la liste",
+                    len(zwave_before) == 1
+                    and not [
+                        i
+                        for i in accepted["watch"]
+                        if i["rule"] == "log_errors_growth"
+                        and i["equipment_id"] == "zwave-01"
+                    ]
+                    and any(
+                        i["rule"] == "log_errors_growth"
+                        and i["equipment_id"] == "ha-01"
+                        for i in accepted["watch"]
+                    ),
+                )
             )
             service.mute_preventive(
                 {
