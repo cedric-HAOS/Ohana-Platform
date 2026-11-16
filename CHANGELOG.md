@@ -6,6 +6,8 @@ Le format s’inspire de Keep a Changelog et le projet suit une stratégie de ve
 
 ## Non publié
 
+- Sandbox : le scénario `incident-history` vérifie aussi le tableau de triage de la page Tsunade (incident ouvert d'abord et sélectionné, recherche par le symptôme d'ouverture d'un incident résolu) et la page d'incidents résolus plus anciens relayée par Vision depuis l'Agent (`/incidents/{id}/older`). Le full-stack suit la nouvelle page : onglet « Incidents », ligne sélectionnée pour atteindre la carte et le dossier, défilement propre de l'onglet « À surveiller ».
+
 ## [1.0.161] — 2026-11-16 — Composition Agent 1.59.3, Vision 1.46.0 et Shizune 0.6.0
 
 - Composition Agent 1.59.3, Vision 1.46.0 et Shizune 0.6.0.

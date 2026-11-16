@@ -3,8 +3,9 @@
 Real Agent HTTP administration listener with the real Tsunade incident
 repository, filled with replayed host.health episodes of INFRA-01 (two
 stopped Vision, one full disk, one repaired unit), a real Vision server and
-Chromium: the "Historique" view (filters, equipment sheet, 30-day timeline)
-and "Incidents semblables" on the open incident card.
+Chromium: the "Historique" view (filters, equipment sheet, 30-day timeline),
+"Incidents semblables" on the open incident card, the Tsunade triage table
+(selection, search) and the page of older resolved incidents Vision relays.
 """
 
 from __future__ import annotations
@@ -72,7 +73,7 @@ def run() -> dict:
         (root / "infrastructure.yaml").write_text(INFRASTRUCTURE_YAML, encoding="utf-8")
         incidents = TsunadeIncidentRepository(root / "control.db")
         vision_before = _episode(incidents, 25, ["vision_http_unavailable"], 7)
-        _episode(incidents, 12, ["disk_critical"], 90)
+        disk = _episode(incidents, 12, ["disk_critical"], 90)
         repaired = _episode(incidents, 6, ["systemd_units_failed"], 3)
         incidents._connection.execute(
             """INSERT INTO tsunade_repairs (repair_id, incident_id, operation,
@@ -178,6 +179,48 @@ def run() -> dict:
                     )
                 )
                 page.screenshot(path=str(output / "similar.png"), full_page=True)
+
+                # Triage table: the open incident first and selected, then the
+                # resolved ones; the search narrows the rows; the next page of
+                # older resolved incidents comes from the Agent through Vision.
+                rows = page.locator("[data-tsunade-select]")
+                expect(rows).to_have_count(4, timeout=10000)
+                checks.append(
+                    (
+                        "tableau Tsunade : l'incident ouvert d'abord et sélectionné",
+                        rows.nth(0).get_attribute("data-tsunade-select")
+                        == str(current.incident_id)
+                        and rows.nth(0).get_attribute("aria-current") == "true",
+                    )
+                )
+                page.locator("#incidents-search").fill("disk")
+                expect(rows).to_have_count(1, timeout=10000)
+                checks.append(
+                    (
+                        "recherche « disk » : seul le disque plein reste",
+                        rows.first.get_attribute("data-tsunade-select") == disk,
+                    )
+                )
+                page.locator("#incidents-search").fill("")
+                expect(rows).to_have_count(4, timeout=10000)
+                newest_resolved = rows.nth(1).get_attribute("data-tsunade-select")
+                older = page.evaluate(
+                    "async (url) => (await fetch(url)).json()",
+                    f"{base}/api/administration/tsunade/incidents/{newest_resolved}/older",
+                )
+                details["page plus ancienne"] = older.get("incidents") and [
+                    item["incident_id"] for item in older["incidents"]
+                ]
+                checks.append(
+                    (
+                        "page suivante (Agent via Vision) : les résolus plus anciens "
+                        "que le réparé, du plus récent au plus ancien",
+                        newest_resolved == repaired
+                        and [item["incident_id"] for item in older.get("incidents", [])]
+                        == [disk, vision_before]
+                        and older.get("has_more") is False,
+                    )
+                )
                 page.set_viewport_size({"width": 390, "height": 844})
                 page.goto(base + "/ui/#history")
                 expect(table.first).to_be_visible(timeout=20000)

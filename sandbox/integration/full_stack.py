@@ -87,6 +87,21 @@ def _wait(label, predicate, *, timeout, worker=None, page=None):
             page.wait_for_timeout(200)
     raise TimeoutError(f"Délai dépassé ({timeout}s) : {label}")
 
+def _open_incident(page, incident_id=None):
+    """Vision's Tsunade incidents tab; with an incident, its row selected.
+
+    Vision remembers the last Tsunade tab for the session, and an incident's
+    card, its buttons and its dossier sit beside the table, for the selected
+    row only: selecting the row also opens the dossier.
+    """
+    page.locator('[data-navigation-target="incidents"]').click()
+    page.locator('[data-tsunade-tab="incidents"]').click()
+    if incident_id is not None:
+        row = page.locator(f'[data-tsunade-select="{incident_id}"]')
+        expect(row).to_be_visible(timeout=20000)
+        row.click()
+
+
 def _serve_vision(server, listener):
     """Serve Vision on a selector loop, as it runs on Linux in production.
 
@@ -162,8 +177,8 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
     section = page.locator("#tsunade-preventive")
     expect(section).to_contain_text(title, timeout=15000)
     expect(section).to_contain_text("Aucune intervention nécessaire.")
-    # Every rule opened at once: the page must stay navigable (the incidents
-    # and the side column each scroll, none is squeezed to zero height).
+    # Every rule opened at once: the page must stay navigable (the watch tab
+    # scrolls on its own, and the incident table keeps its height).
     section.locator("details[data-check]").evaluate_all(
         "elements => elements.forEach((element) => { element.open = true; })"
     )
@@ -171,12 +186,10 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
     expect(section).to_contain_text("INFRA-01 : 74,5 %, +1,2 point/jour")
     layout = page.evaluate(
         """() => {
-            const main = document.querySelector(".incidents-main__scroll");
-            const side = document.querySelector(".incidents-side__scroll");
-            side.scrollTop = 120;
+            const watch = document.querySelector("#tsunade-panel-preventive");
+            watch.scrollTop = 120;
             return {
-                mainHeight: main.clientHeight,
-                sideScrolls: side.scrollHeight > side.clientHeight && side.scrollTop > 0,
+                watchScrolls: watch.scrollHeight > watch.clientHeight && watch.scrollTop > 0,
                 panel: document.querySelector(".incidents-panel").offsetHeight,
                 view: window.innerHeight,
             };
@@ -185,10 +198,15 @@ def _preventive_views(page, context, browser, preventive, service, output, repor
     section.scroll_into_view_if_needed()
     page.screenshot(path=str(output / "vision-preventive.png"))
     report["screenshots"].append("vision-preventive.png")
+    page.locator('[data-tsunade-tab="incidents"]').click()
+    layout["tableHeight"] = page.evaluate(
+        "() => document.querySelector('.incidents-table-scroll').clientHeight"
+    )
+    page.locator('[data-tsunade-tab="preventive"]').click()
     check(
         "Vision détaille la maintenance préventive et ses règles sans bloquer la page",
-        layout["mainHeight"] >= 200
-        and layout["sideScrolls"]
+        layout["tableHeight"] >= 200
+        and layout["watchScrolls"]
         and layout["panel"] <= layout["view"],
     )
 
@@ -597,7 +615,7 @@ def _log_window_extension(
     assessment = incident_assessment(incidents.get(incident_id))
     button = page.locator(f'[data-tsunade-log-extend="{incident_id}"]')
     page.reload(wait_until="networkidle")
-    page.locator('[data-navigation-target="incidents"]').click()
+    _open_incident(page, incident_id)
     expect(button).to_be_visible(timeout=15000)
     check(
         "Vision propose d'étendre aux 24 h précédentes",
@@ -662,7 +680,7 @@ def _log_window_extension(
         and jobs.count("logs.investigate") == 2,
     )
     page.reload(wait_until="networkidle")
-    page.locator('[data-navigation-target="incidents"]').click()
+    _open_incident(page)
     expect(page.locator("#incidents-error")).not_to_be_visible()
     expect(page.locator("#incidents-list .incident-card").first).to_be_visible()
     check(
@@ -1068,9 +1086,8 @@ def run(*, args):
                 ),
             )
             page.reload(wait_until="networkidle")
-            page.locator('[data-navigation-target="incidents"]').click()
+            _open_incident(page, incident_id)
             expect(page.locator("#incidents-error")).not_to_be_visible()
-            page.locator(f'[data-tsunade-details="{incident_id}"]').click()
             katsuyu_analysis = page.locator(
                 "#incidents-list .incident-katsuyu-analysis"
             )
@@ -1130,7 +1147,7 @@ def run(*, args):
                 repairs.diagnose(repair_incident.incident_id)
                 proposed = incidents.get(repair_incident.incident_id).repairs[0]
                 page.reload(wait_until="networkidle")
-                page.locator('[data-navigation-target="incidents"]').click()
+                _open_incident(page, repair_incident.incident_id)
                 return repair_incident.incident_id, str(proposed.repair_id)
 
             def post(fragment, locator):
@@ -1257,7 +1274,7 @@ def run(*, args):
             )
             # Phase 3, lot 3: the refused dnsmasq incident is fixed by hand.
             page.reload(wait_until="networkidle")
-            page.locator('[data-navigation-target="incidents"]').click()
+            _open_incident(page, refused_incident_id)
             page.locator(f'[data-tsunade-manual-open="{refused_incident_id}"]').click()
             manual = page.locator(f'[data-tsunade-manual-form="{refused_incident_id}"]')
             manual.locator("textarea").fill("sudo systemctl restart dnsmasq.service")
@@ -1303,8 +1320,7 @@ def run(*, args):
             # Known log noise: every remaining anomaly accepted from the dossier
             # resolves the log incident, and the daily report lists them.
             page.reload(wait_until="networkidle")
-            page.locator('[data-navigation-target="incidents"]').click()
-            page.locator(f'[data-tsunade-details="{incident_id}"]').click()
+            _open_incident(page, incident_id)
             page.locator(f'[data-tsunade-log-anomalies="{incident_id}"]').click()
             accept = page.locator(f'[data-tsunade-accept-log="{incident_id}"]')
             expect(accept.first).to_be_visible(timeout=15000)
