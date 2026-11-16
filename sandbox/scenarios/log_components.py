@@ -58,6 +58,16 @@ def _ha_lines(now, *, tapo_tail: str, critical: bool) -> list[str]:
     return lines
 
 
+def _zwave_lines(now, *, firmware_error: bool) -> list[str]:
+    """zwave-01 on 15 November: Ohana's own probe every 120 s, one add-on error."""
+    iso = (now - timedelta(minutes=30)).isoformat()
+    addon = f"{iso} haos-zwave app_a0d7b954_zwavejs2mqtt[612]: {iso[:23]}"
+    lines = [f"{addon} INFO Z-WAVE-SERVER: Client disconnected"] * 720
+    if firmware_error:
+        lines.append(f"{addon} ERROR Z-WAVE: Error during bulk firmware update check:")
+    return lines
+
+
 def _findings(s, source: str, ignored: set) -> list[dict]:
     incident = next(
         (
@@ -198,6 +208,60 @@ def run() -> dict:
             )
         )
         details["composants HA-01"] = ", ".join(sorted(components))
+
+        # zwave-01, 16 November: the add-on lines all fell into "Autre", so
+        # accepting the controller never closed the incident.
+        ignored = {item.incident_id for item in s.incidents.list()}
+        s.clock.advance(days=1)
+        _daily_check(
+            s,
+            {
+                **_lines(s.clock(), linky=[]),
+                "zwave-01": _zwave_lines(s.clock(), firmware_error=True),
+            },
+        )
+        zwave = {
+            item["label"]: item
+            for source in s.service.list_incidents()["log_components"]
+            if source["source"] == "zwave-01"
+            for item in source["components"]
+        }
+        checks.append(
+            (
+                "zwave-01 : le serveur Z-Wave JS et l'add-on sont nommés, pas « Autre »",
+                {"Z-Wave JS (serveur)", "Z-Wave JS UI"} <= set(zwave)
+                and "Autre" not in zwave,
+            )
+        )
+        s.service.accept_log_component(
+            {
+                "source": "zwave-01",
+                "component": "zwave_js.server",
+                "label": "Z-Wave JS (serveur)",
+            }
+        )
+        remaining = _findings(s, "zwave-01", ignored)
+        checks.append(
+            (
+                "serveur accepté : seule l'erreur de l'add-on compte encore",
+                [item["component"] for item in remaining] == ["zwave_js_ui"],
+            )
+        )
+        s.clock.advance(days=1)
+        _daily_check(
+            s,
+            {
+                **_lines(s.clock(), linky=[]),
+                "zwave-01": _zwave_lines(s.clock(), firmware_error=False),
+            },
+        )
+        checks.append(
+            (
+                "le lendemain, les connexions de la sonde Ohana ne rouvrent rien",
+                not _findings(s, "zwave-01", ignored),
+            )
+        )
+        details["composants zwave-01"] = ", ".join(sorted(zwave))
     details["portée"] = (
         "Agent, Tsunade et analyseur Katsuyu locaux ; aucun accès production"
     )
